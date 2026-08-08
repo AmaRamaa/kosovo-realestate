@@ -2,16 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
-  Menu, X, Search, Heart, Bell, User, ChevronDown, Sun, Moon,
-  Home, Building2, MapPin, Users, BookOpen, LayoutDashboard,
-  LogOut, Settings, Plus, TrendingUp
+  Menu, X, Search, ChevronDown, Sun, Moon,
+  Home, Building2, MapPin, TrendingUp, PlusCircle
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { cn, getInitials } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import Logo from '@/components/ui/Logo';
 
 const NAV_LINKS = [
   {
@@ -44,11 +42,9 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, logout, isAuthenticated } = useAuth();
   const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -61,14 +57,12 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
     setActiveMenu(null);
-    setUserMenuOpen(false);
   }, [pathname]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setActiveMenu(null);
-        setUserMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClick);
@@ -89,14 +83,8 @@ export default function Navbar() {
       <div className="container-page" ref={menuRef}>
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center">
-              <Home className="w-5 h-5 text-white" />
-            </div>
-            <div className="hidden sm:block">
-              <span className="font-display font-bold text-lg text-neutral-900 dark:text-white leading-none">Kosovo</span>
-              <span className="block text-xs font-medium text-primary-600 leading-none -mt-0.5">Real Estate</span>
-            </div>
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <Logo className="h-9 text-neutral-900 dark:text-white" />
           </Link>
 
           {/* Desktop Nav */}
@@ -181,83 +169,11 @@ export default function Navbar() {
               <Moon className="w-4 h-4 hidden dark:block" />
             </button>
 
-            {isAuthenticated ? (
-              <>
-                {/* Favorites */}
-                <Link href="/dashboard/favorites" className="btn btn-ghost btn-sm hidden sm:flex" aria-label="Favorites">
-                  <Heart className="w-4 h-4" />
-                </Link>
-
-                {/* Notifications */}
-                <Link href="/dashboard/notifications" className="btn btn-ghost btn-sm relative hidden sm:flex" aria-label="Notifications">
-                  <Bell className="w-4 h-4" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                </Link>
-
-                {/* Post Listing */}
-                <Link href="/dashboard/listings/new" className="btn btn-primary btn-sm hidden md:flex">
-                  <Plus className="w-4 h-4" />
-                  Post listing
-                </Link>
-
-                {/* User Menu */}
-                <div className="relative">
-                  <button
-                    className="flex items-center gap-2 p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  >
-                    {user?.avatar ? (
-                      <Image src={user.avatar} alt={user.firstName} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-xs font-semibold text-primary-700 dark:text-primary-300">
-                        {getInitials(user?.firstName || 'U', user?.lastName || 'S')}
-                      </div>
-                    )}
-                    <ChevronDown className={cn('w-4 h-4 text-neutral-500 hidden sm:block transition-transform', userMenuOpen && 'rotate-180')} />
-                  </button>
-
-                  {userMenuOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-1.5 animate-scale-in z-50">
-                      <div className="px-3 py-2 mb-1 border-b border-neutral-200 dark:border-neutral-700">
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{user?.firstName} {user?.lastName}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{user?.email}</p>
-                      </div>
-                      {[
-                        { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                        { href: '/dashboard/listings', label: 'My Listings', icon: Building2 },
-                        { href: '/dashboard/messages', label: 'Messages', icon: BookOpen },
-                        { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-                      ].map(item => {
-                        const Icon = item.icon;
-                        return (
-                          <Link key={item.href} href={item.href} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors">
-                            <Icon className="w-4 h-4 text-neutral-400" /> {item.label}
-                          </Link>
-                        );
-                      })}
-                      {user?.role === 'ADMIN' && (
-                        <Link href="/admin" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors">
-                          <Settings className="w-4 h-4 text-neutral-400" /> Admin Panel
-                        </Link>
-                      )}
-                      <div className="mt-1 pt-1 border-t border-neutral-200 dark:border-neutral-700">
-                        <button
-                          onClick={logout}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
-                        >
-                          <LogOut className="w-4 h-4" /> Sign out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <Link href="/auth/login" className="btn btn-ghost btn-sm hidden sm:flex">Sign in</Link>
-                <Link href="/auth/register" className="btn btn-primary btn-sm">Get started</Link>
-              </>
-            )}
+            {/* List Your Property */}
+            <Link href="/list-your-property" className="btn btn-primary btn-sm hidden sm:flex">
+              <PlusCircle className="w-4 h-4" />
+              List Your Property
+            </Link>
 
             {/* Mobile menu button */}
             <button
@@ -301,25 +217,10 @@ export default function Navbar() {
                 )}
               </div>
             ))}
-            <div className="pt-4 mt-4 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
-              {isAuthenticated ? (
-                <>
-                  <Link href="/dashboard" className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
-                    <LayoutDashboard className="w-4 h-4" /> Dashboard
-                  </Link>
-                  <Link href="/dashboard/listings/new" className="btn btn-primary btn-md w-full">
-                    <Plus className="w-4 h-4" /> Post a listing
-                  </Link>
-                  <button onClick={logout} className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 w-full">
-                    <LogOut className="w-4 h-4" /> Sign out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/login" className="btn btn-secondary btn-md w-full">Sign in</Link>
-                  <Link href="/auth/register" className="btn btn-primary btn-md w-full">Create account</Link>
-                </>
-              )}
+            <div className="pt-4 mt-4 border-t border-neutral-200 dark:border-neutral-800">
+              <Link href="/list-your-property" className="btn btn-primary btn-md w-full">
+                <PlusCircle className="w-4 h-4" /> List Your Property
+              </Link>
             </div>
           </div>
         )}

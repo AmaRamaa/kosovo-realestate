@@ -10,44 +10,6 @@ import { logger } from '../utils/logger';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { email, password, firstName, lastName, phone, role } = req.body;
-
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) throw new AppError('Email already registered', 409);
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const allowedRoles = ['BUYER', 'SELLER'];
-    const userRole = allowedRoles.includes(role) ? role : 'BUYER';
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        phone,
-        role: userRole,
-      },
-      select: { id: true, email: true, firstName: true, lastName: true, role: true },
-    });
-
-    const { accessToken, refreshToken } = generateTokens(user.id, user.role);
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.status(201).json({ user, accessToken });
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;

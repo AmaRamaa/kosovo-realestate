@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  Bed, Bath, Maximize, Car, MapPin, Heart, Share2, Print,
+  Bed, Bath, Maximize, Car, MapPin, Share2,
   ChevronLeft, ChevronRight, Phone, Mail, Calendar, Star,
   Home, Zap, Thermometer, CheckCircle, Building2, Eye, ArrowLeft
 } from 'lucide-react';
@@ -16,8 +16,7 @@ import PropertyCard from '@/components/property/PropertyCard';
 import { listingApi } from '@/lib/api';
 import { formatPrice, formatArea, formatRelativeDate, calculateMortgage, PROPERTY_TYPE_LABELS, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/Toaster';
-import { favoriteApi } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+import type { PropertyType } from '@/types';
 
 function MortgageCalculator({ price }: { price: number }) {
   const [downPct, setDownPct] = useState(20);
@@ -114,8 +113,6 @@ function ImageGallery({ images, title }: { images: any[]; title: string }) {
 
 export default function PropertyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { isAuthenticated } = useAuth();
-  const [favorited, setFavorited] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: 'Hello, I am interested in this property. Could you provide more information?' });
   const [sending, setSending] = useState(false);
 
@@ -130,14 +127,6 @@ export default function PropertyDetailPage() {
     queryFn: () => listingApi.getSimilar(slug).then(r => r.data),
     enabled: !!slug,
   });
-
-  const handleFavorite = async () => {
-    if (!isAuthenticated) { toast('Please sign in to save favorites', 'info'); return; }
-    try {
-      if (favorited) { await favoriteApi.remove(listing.id); setFavorited(false); }
-      else { await favoriteApi.add(listing.id); setFavorited(true); toast('Added to favorites', 'success'); }
-    } catch { toast('Something went wrong', 'error'); }
-  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -233,7 +222,7 @@ export default function PropertyDetailPage() {
                       <span className={cn('badge', listing.listingType === 'SALE' ? 'bg-primary-600 text-white' : 'bg-secondary-600 text-white')}>
                         {listing.listingType === 'SALE' ? 'For Sale' : 'For Rent'}
                       </span>
-                      <span className="badge-gray">{PROPERTY_TYPE_LABELS[listing.propertyType]}</span>
+                      <span className="badge-gray">{PROPERTY_TYPE_LABELS[listing.propertyType as PropertyType]}</span>
                       {listing.isFeatured && <span className="badge bg-amber-500 text-white">Featured</span>}
                     </div>
                     <h1 className="font-display font-bold text-2xl lg:text-3xl text-neutral-900 dark:text-white mb-2">{listing.title}</h1>
@@ -263,9 +252,6 @@ export default function PropertyDetailPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button onClick={handleFavorite} className={cn('btn btn-sm border', favorited ? 'border-red-300 text-red-600 bg-red-50' : 'btn-secondary')}>
-                      <Heart className={cn('w-4 h-4', favorited && 'fill-current')} /> Save
-                    </button>
                     <button onClick={handleShare} className="btn btn-secondary btn-sm"><Share2 className="w-4 h-4" /> Share</button>
                     <button onClick={() => window.print()} className="btn btn-secondary btn-sm hidden sm:flex">Print</button>
                   </div>

@@ -4,7 +4,7 @@ import { Users, Building2, Clock, TrendingUp, CheckCircle, XCircle } from 'lucid
 import { adminApi, listingApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice, formatRelativeDate } from '@/lib/utils';
-import DashboardLayout from '../dashboard/layout';
+import AdminLayout from '@/components/admin/AdminLayout';
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -19,7 +19,7 @@ export default function AdminPage() {
   };
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="p-6 lg:p-8">
         <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white mb-8">Admin Dashboard</h1>
 
@@ -80,6 +80,6 @@ export default function AdminPage() {
           )}
         </div>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

@@ -44,7 +44,6 @@ api.interceptors.response.use(
 
 // Typed API methods
 export const authApi = {
-  register: (data: any) => api.post('/auth/register', data),
   login: (data: any) => api.post('/auth/login', data),
   googleAuth: (credential: string) => api.post('/auth/google', { credential }),
   logout: () => api.post('/auth/logout'),
@@ -62,9 +61,12 @@ export const listingApi = {
   getFeatured: () => api.get('/listings/featured'),
   getRecent: (params?: any) => api.get('/listings/recent', { params }),
   getSimilar: (slug: string) => api.get(`/listings/${slug}/similar`),
-  getMyListings: () => api.get('/listings/user/my-listings'),
   incrementView: (id: string) => api.post(`/listings/${id}/view`),
   approve: (id: string, status: string) => api.patch(`/listings/${id}/approve`, { status }),
+};
+
+export const submissionApi = {
+  submitListing: (data: any) => api.post('/submissions/listing', data),
 };
 
 export const agentApi = {
@@ -80,12 +82,6 @@ export const agencyApi = {
 export const cityApi = {
   getAll: () => api.get('/cities'),
   getBySlug: (slug: string) => api.get(`/cities/${slug}`),
-};
-
-export const favoriteApi = {
-  getAll: () => api.get('/favorites'),
-  add: (listingId: string) => api.post(`/favorites/${listingId}`),
-  remove: (listingId: string) => api.delete(`/favorites/${listingId}`),
 };
 
 export const messageApi = {

@@ -1,52 +1,16 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
-import { Heart, Bed, Bath, Maximize, MapPin, Car } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Car } from 'lucide-react';
 import { Listing } from '@/types';
 import { formatPrice, formatArea, PROPERTY_TYPE_LABELS, cn } from '@/lib/utils';
-import { favoriteApi } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/components/ui/Toaster';
 
 interface PropertyCardProps {
   listing: Listing;
-  isFavorited?: boolean;
   className?: string;
 }
 
-export default function PropertyCard({ listing, isFavorited = false, className }: PropertyCardProps) {
-  const { isAuthenticated } = useAuth();
-  const [favorited, setFavorited] = useState(isFavorited);
-  const [loading, setLoading] = useState(false);
+export default function PropertyCard({ listing, className }: PropertyCardProps) {
   const coverImage = listing.images?.[0]?.url || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';
-
-  const handleFavorite = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      toast('Please sign in to save favorites', 'info');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (favorited) {
-        await favoriteApi.remove(listing.id);
-        setFavorited(false);
-      } else {
-        await favoriteApi.add(listing.id);
-        setFavorited(true);
-        toast('Added to favorites', 'success');
-      }
-    } catch {
-      toast('Something went wrong', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <Link href={`/properties/${listing.slug}`} className={cn('card-hover group block', className)}>
@@ -69,16 +33,6 @@ export default function PropertyCard({ listing, isFavorited = false, className }
             <span className="badge bg-amber-500 text-white">Featured</span>
           )}
         </div>
-
-        {/* Favorite button */}
-        <button
-          onClick={handleFavorite}
-          disabled={loading}
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm flex items-center justify-center hover:bg-white dark:hover:bg-neutral-900 transition-colors shadow-sm"
-          aria-label="Toggle favorite"
-        >
-          <Heart className={cn('w-4 h-4 transition-colors', favorited ? 'fill-red-500 text-red-500' : 'text-neutral-600 dark:text-neutral-300')} />
-        </button>
 
         {/* Price overlay */}
         <div className="absolute bottom-3 left-3">

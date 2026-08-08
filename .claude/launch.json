@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kosovo-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "kosovo-realestate/frontend", "run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "kosovo-backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "kosovo-realestate/backend", "run", "dev"],
+      "port": 5000
+    }
+  ]
+}

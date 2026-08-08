@@ -88,7 +88,7 @@ function PropertiesContent() {
               <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white">
                 {isLoading ? 'Searching...' : `${pagination?.total || 0} properties found`}
               </h1>
-              {filters.search && <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Results for "{filters.search}"</p>}
+              {filters.search && <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Results for &quot;{filters.search}&quot;</p>}
             </div>
 
             <div className="flex items-center gap-2">

@@ -30,6 +30,7 @@ export default function TestimonialsSection() {
     <section className="section">
       <div className="container-page">
         <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="eyebrow">Testimonials</span>
           <h2 className="section-heading text-2xl lg:text-3xl mb-2">What our customers say</h2>
           <p className="text-neutral-500 dark:text-neutral-400">Thousands of Kosovars have found their perfect property through our platform</p>
         </div>

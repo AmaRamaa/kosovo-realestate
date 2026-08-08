@@ -30,7 +30,7 @@ export default function BlogPage() {
         <div className="bg-primary-50 dark:bg-primary-950/30 py-12">
           <div className="container-page text-center">
             <h1 className="font-display font-bold text-3xl lg:text-4xl text-neutral-900 dark:text-white mb-3">Real Estate Insights</h1>
-            <p className="text-neutral-600 dark:text-neutral-400">Guides, analysis, and news about Kosovo's property market</p>
+            <p className="text-neutral-600 dark:text-neutral-400">Guides, analysis, and news about Kosovo&apos;s property market</p>
           </div>
         </div>
         <div className="container-page py-10">

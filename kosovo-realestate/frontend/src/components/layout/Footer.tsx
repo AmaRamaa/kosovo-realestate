@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Home, Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
 
 const FOOTER_LINKS = {
   'Buy': [
@@ -17,6 +18,7 @@ const FOOTER_LINKS = {
   ],
   'Company': [
     { label: 'About Us', href: '/about' },
+    { label: 'List Your Property', href: '/list-your-property' },
     { label: 'Agents', href: '/agents' },
     { label: 'Agencies', href: '/agencies' },
     { label: 'Blog', href: '/blog' },
@@ -39,14 +41,8 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 pb-12 border-b border-neutral-800">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center">
-                <Home className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <span className="font-display font-bold text-lg text-white leading-none block">Kosovo</span>
-                <span className="text-xs font-medium text-primary-400 leading-none">Real Estate</span>
-              </div>
+            <Link href="/" className="flex items-center mb-4">
+              <Logo className="h-9 text-white" />
             </Link>
             <p className="text-sm text-neutral-400 leading-relaxed mb-6 max-w-xs">
               The most trusted platform to buy, sell, and rent properties across all 38 municipalities of Kosovo.

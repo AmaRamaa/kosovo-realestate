@@ -15,8 +15,9 @@ export default function PopularCitiesSection() {
     <section className="section bg-neutral-100/60 dark:bg-neutral-800/30">
       <div className="container-page">
         <div className="mb-8">
+          <span className="eyebrow">Communities</span>
           <h2 className="section-heading text-2xl lg:text-3xl mb-1">Popular cities in Kosovo</h2>
-          <p className="text-neutral-500 dark:text-neutral-400">Explore properties in Kosovo's most sought-after locations</p>
+          <p className="text-neutral-500 dark:text-neutral-400">Explore properties in Kosovo&apos;s most sought-after locations</p>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">

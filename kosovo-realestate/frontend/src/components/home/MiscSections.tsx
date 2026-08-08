@@ -1,39 +1,86 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight, Calendar, Compass, ShieldCheck, HeartHandshake, Award } from 'lucide-react';
 
-const AGENCIES = [
-  { name: 'ERA Real Estate', logo: 'https://ui-avatars.com/api/?name=ERA&background=2563EB&color=fff', listings: 156, rating: 4.8 },
-  { name: 'Kosovo Properties', logo: 'https://ui-avatars.com/api/?name=KP&background=10B981&color=fff', listings: 98, rating: 4.7 },
-  { name: 'Prime Estates KS', logo: 'https://ui-avatars.com/api/?name=PE&background=2563EB&color=fff', listings: 87, rating: 4.9 },
-  { name: 'Balkan Homes', logo: 'https://ui-avatars.com/api/?name=BH&background=10B981&color=fff', listings: 64, rating: 4.6 },
+const FEATURES = [
+  {
+    icon: Compass,
+    title: 'Trusted Local Experts',
+    description: 'Deep knowledge of every municipality, from Prishtinë to the smallest towns.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Verified Listings',
+    description: 'Every property and agent is vetted before it goes live on the platform.',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Dedicated Support',
+    description: 'From your first search to closing day, our team guides you every step.',
+  },
+  {
+    icon: Award,
+    title: 'Proven Track Record',
+    description: 'Thousands of buyers, sellers, and renters have found their place through us.',
+  },
 ];
 
-export function FeaturedAgenciesSection() {
+export function WhyChooseSection() {
   return (
-    <section className="section bg-neutral-100/60 dark:bg-neutral-800/30">
+    <section className="section">
       <div className="container-page">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <h2 className="section-heading text-2xl lg:text-3xl mb-1">Featured agencies</h2>
-            <p className="text-neutral-500 dark:text-neutral-400">Trusted real estate partners across Kosovo</p>
-          </div>
-          <Link href="/agencies" className="link flex items-center gap-1 text-sm">
-            View all <ArrowRight className="w-4 h-4" />
-          </Link>
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="eyebrow">Why Choose Us</span>
+          <h2 className="section-heading text-2xl lg:text-3xl mb-2">Built for Kosovo&apos;s real estate market</h2>
+          <p className="text-neutral-500 dark:text-neutral-400">
+            We combine local expertise, verified listings, and dedicated support to help you find the right property with confidence.
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {AGENCIES.map((agency) => (
-            <div key={agency.name} className="card-hover p-6 text-center">
-              <Image src={agency.logo} alt={agency.name} width={56} height={56} className="rounded-xl mx-auto mb-3" />
-              <h3 className="font-display font-semibold text-neutral-900 dark:text-white text-sm mb-1">{agency.name}</h3>
-              <div className="flex items-center justify-center gap-1 mb-2">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <span className="text-xs text-neutral-600 dark:text-neutral-400">{agency.rating}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {FEATURES.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <div key={feature.title} className="text-center px-2">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+                  <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                </div>
+                <h3 className="font-display font-semibold text-neutral-900 dark:text-white mb-2">{feature.title}</h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">{feature.description}</p>
               </div>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">{agency.listings} listings</p>
-            </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const AGENTS = [
+  { name: 'Arben Krasniqi', role: 'Senior Real Estate Agent', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' },
+  { name: 'Vlora Berisha', role: 'Property Specialist', avatar: 'https://randomuser.me/api/portraits/women/65.jpg' },
+  { name: 'Dren Gashi', role: 'Investment Consultant', avatar: 'https://randomuser.me/api/portraits/men/78.jpg' },
+  { name: 'Elira Hoxha', role: 'Sales Executive', avatar: 'https://randomuser.me/api/portraits/women/32.jpg' },
+];
+
+export function OurAgentsSection() {
+  return (
+    <section className="section">
+      <div className="container-page">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <span className="eyebrow">Our Agents</span>
+          <h2 className="section-heading text-2xl lg:text-3xl mb-2">Meet our experts</h2>
+          <p className="text-neutral-500 dark:text-neutral-400">Experienced professionals dedicated to finding you the perfect property</p>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {AGENTS.map((agent) => (
+            <Link key={agent.name} href="/agents" className="card-hover p-6 text-center block">
+              <Image src={agent.avatar} alt={agent.name} width={80} height={80} className="rounded-full mx-auto mb-4 object-cover" />
+              <h3 className="font-display font-semibold text-neutral-900 dark:text-white text-sm mb-1">{agent.name}</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{agent.role}</p>
+              <span className="link text-xs">View profile</span>
+            </Link>
           ))}
         </div>
       </div>
@@ -70,10 +117,11 @@ const BLOG_POSTS = [
 
 export function BlogPreviewSection() {
   return (
-    <section className="section">
+    <section className="section bg-neutral-100/60 dark:bg-neutral-800/30">
       <div className="container-page">
         <div className="flex items-end justify-between mb-8">
           <div>
+            <span className="eyebrow">Insights</span>
             <h2 className="section-heading text-2xl lg:text-3xl mb-1">Latest from our blog</h2>
             <p className="text-neutral-500 dark:text-neutral-400">Tips, guides, and market insights for Kosovo real estate</p>
           </div>
@@ -98,6 +146,36 @@ export function BlogPreviewSection() {
               </div>
             </Link>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CtaBannerSection() {
+  return (
+    <section className="relative overflow-hidden bg-primary-600">
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+      <div className="container-page relative py-16 lg:py-20 text-center">
+        <h2 className="font-display font-bold text-2xl lg:text-4xl text-white mb-4 text-balance">
+          Ready to find your place in Kosovo?
+        </h2>
+        <p className="text-primary-100 max-w-xl mx-auto mb-8 text-balance">
+          Work with verified agents and browse thousands of listings across all 38 municipalities.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link href="/properties" className="btn bg-white text-primary-700 hover:bg-primary-50 btn-lg">
+            Browse Properties
+          </Link>
+          <Link href="/list-your-property" className="btn border-2 border-white/40 text-white hover:bg-white/10 btn-lg">
+            List Your Property
+          </Link>
         </div>
       </div>
     </section>

@@ -30,7 +30,7 @@ export default function HeroSearchBar() {
             key={type}
             onClick={() => setListingType(type)}
             className={cn(
-              'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-medium transition-colors',
+              'flex-1 sm:flex-none px-6 py-2.5 rounded-full text-sm font-medium transition-colors',
               listingType === type
                 ? 'bg-primary-600 text-white'
                 : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'

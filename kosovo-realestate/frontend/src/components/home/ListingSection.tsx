@@ -9,17 +9,19 @@ import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 interface ListingSectionProps {
   title: string;
   subtitle?: string;
+  eyebrow?: string;
   listings: Listing[];
   isLoading?: boolean;
   viewAllHref: string;
 }
 
-export default function ListingSection({ title, subtitle, listings, isLoading, viewAllHref }: ListingSectionProps) {
+export default function ListingSection({ title, subtitle, eyebrow, listings, isLoading, viewAllHref }: ListingSectionProps) {
   return (
     <section className="section">
       <div className="container-page">
         <div className="flex items-end justify-between mb-8">
           <div>
+            {eyebrow && <span className="eyebrow">{eyebrow}</span>}
             <h2 className="section-heading text-2xl lg:text-3xl mb-1">{title}</h2>
             {subtitle && <p className="text-neutral-500 dark:text-neutral-400">{subtitle}</p>}
           </div>

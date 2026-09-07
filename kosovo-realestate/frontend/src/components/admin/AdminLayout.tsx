@@ -2,9 +2,11 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, LogOut } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { BarChart3, LogOut, Building2, Inbox, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/lib/utils';
+import { adminApi } from '@/lib/api';
 import Image from 'next/image';
 import Logo from '@/components/ui/Logo';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -20,11 +22,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!isAuthenticated || user?.role !== 'ADMIN') router.push('/auth/login');
   }, [isLoading, isAuthenticated, user, router]);
 
+  const isAdmin = !isLoading && isAuthenticated && user?.role === 'ADMIN';
+
+  const { data: statsData } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: () => adminApi.getStats().then(r => r.data),
+    enabled: isAdmin,
+  });
+  const { data: submissionsData } = useQuery({
+    queryKey: ['admin-submissions', { status: 'NEW' }],
+    queryFn: () => adminApi.getSubmissions({ status: 'NEW', limit: 1 }).then(r => r.data),
+    enabled: isAdmin,
+  });
+
+  const pendingCount = statsData?.stats?.pendingListings ?? 0;
+  const newSubmissionsCount = submissionsData?.newCount ?? 0;
+
   if (isLoading || !user || user.role !== 'ADMIN') return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
     </div>
   );
+
+  const NAV_ITEMS = [
+    { href: '/admin', label: t('navOverview'), icon: BarChart3 },
+    { href: '/admin/listings', label: t('navListings'), icon: Building2, badge: pendingCount },
+    { href: '/admin/submissions', label: t('navSubmissions'), icon: Inbox, badge: newSubmissionsCount },
+    { href: '/admin/users', label: t('navUsers'), icon: Users },
+  ] as const;
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex">
@@ -51,9 +76,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          <Link href="/admin" className={pathname === '/admin' ? 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400' : 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white'}>
-            <BarChart3 className="w-4 h-4" /> {t('navOverview')}
-          </Link>
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href;
+            const badge = 'badge' in item ? item.badge : 0;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={active
+                  ? 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400'
+                  : 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white'}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="flex-1">{item.label}</span>
+                {!!badge && <span className="badge-red text-[10px] px-1.5">{badge}</span>}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="p-3 border-t border-neutral-200 dark:border-neutral-700">

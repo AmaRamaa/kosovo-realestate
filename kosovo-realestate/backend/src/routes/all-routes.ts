@@ -188,6 +188,40 @@ adminRouter.patch('/users/:id/toggle', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+adminRouter.get('/submissions', async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20, type, status } = req.query;
+    const where: any = {};
+    if (type) where.type = type;
+    if (status) where.status = status;
+    const [submissions, total, newCount] = await Promise.all([
+      prisma.submission.findMany({
+        where, skip: (Number(page)-1)*Number(limit), take: Number(limit),
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.submission.count({ where }),
+      prisma.submission.count({ where: { status: 'NEW' } }),
+    ]);
+    res.json({ submissions, newCount, pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total/Number(limit)) } });
+  } catch (err) { next(err); }
+});
+
+adminRouter.patch('/submissions/:id', async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!['NEW', 'READ', 'ARCHIVED'].includes(status)) return res.status(400).json({ error: 'Invalid status' });
+    const submission = await prisma.submission.update({ where: { id: req.params.id }, data: { status } });
+    res.json({ submission });
+  } catch (err) { next(err); }
+});
+
+adminRouter.delete('/submissions/:id', async (req, res, next) => {
+  try {
+    await prisma.submission.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Submission deleted' });
+  } catch (err) { next(err); }
+});
+
 // UPLOAD ROUTES
 export const uploadRouter = Router();
 uploadRouter.use(authenticate);

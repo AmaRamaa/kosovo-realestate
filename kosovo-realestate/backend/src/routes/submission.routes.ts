@@ -3,6 +3,8 @@ import { body } from 'express-validator';
 import { rateLimit } from 'express-rate-limit';
 import { validate } from '../middleware/validate.middleware';
 import { sendEmail } from '../utils/email';
+import { prisma } from '../utils/prisma';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -21,6 +23,23 @@ const submissionLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many submissions, please try again later.' },
 });
+
+// Best-effort email — a submission is always persisted first, so a broken
+// SMTP config (still a known gap) never causes the submission itself to be lost.
+async function tryNotifyOwner(options: { subject: string; html: string; replyTo: string }) {
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail) {
+    logger.error('OWNER_EMAIL is not configured — skipping submission email notification');
+    return false;
+  }
+  try {
+    await sendEmail({ to: ownerEmail, subject: options.subject, html: options.html, replyTo: options.replyTo });
+    return true;
+  } catch (err) {
+    logger.error('Failed to email submission notification:', err);
+    return false;
+  }
+}
 
 router.post(
   '/listing',
@@ -48,10 +67,19 @@ router.post(
         city, neighborhood, address, area, bedrooms, bathrooms, notes,
       } = req.body;
 
-      const ownerEmail = process.env.OWNER_EMAIL;
-      if (!ownerEmail) {
-        throw new Error('OWNER_EMAIL is not configured');
-      }
+      const submission = await prisma.submission.create({
+        data: {
+          type: 'LISTING',
+          name: submitterName,
+          email: submitterEmail,
+          phone: submitterPhone || null,
+          message: notes || null,
+          data: {
+            listingType, propertyType, price, currency,
+            city, neighborhood: neighborhood || null, address, area, bedrooms: bedrooms || null, bathrooms: bathrooms || null,
+          },
+        },
+      });
 
       const rows = [
         ['Submitted by', `${submitterName} <${submitterEmail}>${submitterPhone ? ` — ${submitterPhone}` : ''}`],
@@ -75,15 +103,15 @@ router.post(
             </tr>
           `).join('')}
         </table>
-        <p>Reply directly to this email to reach the submitter.</p>
+        <p>Reply directly to this email to reach the submitter, or review it in the admin dashboard.</p>
       `;
 
-      await sendEmail({
-        to: ownerEmail,
+      const emailSent = await tryNotifyOwner({
         subject: `New property submission: ${address}, ${city}`,
         html,
         replyTo: submitterEmail,
       });
+      if (emailSent) await prisma.submission.update({ where: { id: submission.id }, data: { emailSent: true } });
 
       res.status(201).json({ message: 'Submission received' });
     } catch (err) {
@@ -105,24 +133,23 @@ router.post(
     try {
       const { name, email, message } = req.body;
 
-      const ownerEmail = process.env.OWNER_EMAIL;
-      if (!ownerEmail) {
-        throw new Error('OWNER_EMAIL is not configured');
-      }
+      const submission = await prisma.submission.create({
+        data: { type: 'CONTACT', name, email, message, data: { name, email, message } },
+      });
 
       const html = `
         <h2>New contact form message</h2>
         <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
         <p>${String(message).replace(/\n/g, '<br/>')}</p>
-        <p>Reply directly to this email to reach them.</p>
+        <p>Reply directly to this email to reach them, or review it in the admin dashboard.</p>
       `;
 
-      await sendEmail({
-        to: ownerEmail,
+      const emailSent = await tryNotifyOwner({
         subject: `New contact message from ${name}`,
         html,
         replyTo: email,
       });
+      if (emailSent) await prisma.submission.update({ where: { id: submission.id }, data: { emailSent: true } });
 
       res.status(201).json({ message: 'Message received' });
     } catch (err) {

@@ -64,10 +64,12 @@ export const getListings = async (req: Request, res: Response, next: NextFunctio
     const skip = (Number(page) - 1) * Number(limit);
     const where: Prisma.ListingWhereInput = {};
 
-    // Status filter (admin sees all, public sees ACTIVE)
+    // Status filter: everyone defaults to ACTIVE (public browsing stays public-safe
+    // even for a logged-in admin). Admins may pass any explicit status, or 'ALL' to
+    // see every status at once — regular users can never do either.
     const userRole = (req as any).user?.role;
     if (userRole === 'ADMIN') {
-      if (status) where.status = status as any;
+      if (status !== 'ALL') where.status = status as any;
     } else {
       where.status = 'ACTIVE';
     }

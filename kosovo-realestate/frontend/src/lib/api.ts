@@ -106,6 +106,9 @@ export const adminApi = {
   getPendingListings: () => api.get('/admin/listings/pending'),
   getUsers: (params?: any) => api.get('/admin/users', { params }),
   toggleUser: (id: string) => api.patch(`/admin/users/${id}/toggle`),
+  getSubmissions: (params?: any) => api.get('/admin/submissions', { params }),
+  updateSubmission: (id: string, status: string) => api.patch(`/admin/submissions/${id}`, { status }),
+  deleteSubmission: (id: string) => api.delete(`/admin/submissions/${id}`),
 };
 
 export const uploadApi = {

@@ -75,6 +75,17 @@ enum MessageStatus {
   ARCHIVED
 }
 
+enum SubmissionType {
+  LISTING
+  CONTACT
+}
+
+enum SubmissionStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
 model User {
   id              String    @id @default(cuid())
   email           String    @unique
@@ -438,6 +449,21 @@ model Report {
   createdAt   DateTime  @default(now())
 
   @@map("reports")
+}
+
+model Submission {
+  id          String            @id @default(cuid())
+  type        SubmissionType
+  status      SubmissionStatus  @default(NEW)
+  name        String
+  email       String
+  phone       String?
+  message     String?
+  data        Json
+  emailSent   Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+
+  @@map("submissions")
 }
 
 model AuditLog {

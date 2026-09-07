@@ -1,7 +1,8 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Users, Building2, Clock, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
-import { adminApi, listingApi } from '@/lib/api';
+import { adminApi, listingApi, cityApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice, formatRelativeDate } from '@/lib/utils';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -11,14 +12,23 @@ export default function AdminPage() {
   const { user } = useAuth();
   const { t, locale } = useTranslation('admin');
   const { t: tType } = useTranslation('propertyTypes');
+  const queryClient = useQueryClient();
   const { data: statsData } = useQuery({ queryKey: ['admin-stats'], queryFn: () => adminApi.getStats().then(r => r.data) });
   const { data: pendingData } = useQuery({ queryKey: ['admin-pending'], queryFn: () => adminApi.getPendingListings().then(r => r.data) });
+  const { data: citiesData } = useQuery({ queryKey: ['cities'], queryFn: () => cityApi.getAll().then(r => r.data) });
 
   const stats = statsData?.stats;
   const pendingListings = pendingData?.listings || [];
+  const cityNameById: Record<string, string> = {};
+  (citiesData?.cities || []).forEach((c: any) => { cityNameById[c.id] = c.name; });
+
+  const maxTypeCount = Math.max(1, ...(stats?.listingsByType || []).map((r: any) => r._count));
+  const maxCityCount = Math.max(1, ...(stats?.listingsByCity || []).map((r: any) => r._count));
 
   const handleApprove = async (id: string, status: 'ACTIVE' | 'REJECTED') => {
     await listingApi.approve(id, status);
+    queryClient.invalidateQueries({ queryKey: ['admin-pending'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
   };
 
   return (
@@ -45,11 +55,46 @@ export default function AdminPage() {
           })}
         </div>
 
+        {/* Breakdowns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+          <div className="card p-5">
+            <h2 className="font-display font-semibold text-sm text-neutral-900 dark:text-white mb-4">{t('byPropertyType')}</h2>
+            <div className="space-y-2.5">
+              {(stats?.listingsByType || []).map((row: any) => (
+                <div key={row.listingType} className="flex items-center gap-3 text-sm">
+                  <span className="w-16 flex-shrink-0 text-neutral-600 dark:text-neutral-400">{tType(row.listingType)}</span>
+                  <div className="flex-1 h-2 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+                    <div className="h-full bg-primary-500 rounded-full" style={{ width: `${(row._count / maxTypeCount) * 100}%` }} />
+                  </div>
+                  <span className="w-8 flex-shrink-0 text-right text-neutral-500">{row._count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card p-5">
+            <h2 className="font-display font-semibold text-sm text-neutral-900 dark:text-white mb-4">{t('byCity')}</h2>
+            <div className="space-y-2.5">
+              {(stats?.listingsByCity || []).map((row: any) => (
+                <div key={row.cityId} className="flex items-center gap-3 text-sm">
+                  <span className="w-20 flex-shrink-0 text-neutral-600 dark:text-neutral-400 truncate">{cityNameById[row.cityId] || '—'}</span>
+                  <div className="flex-1 h-2 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+                    <div className="h-full bg-secondary-500 rounded-full" style={{ width: `${(row._count / maxCityCount) * 100}%` }} />
+                  </div>
+                  <span className="w-8 flex-shrink-0 text-right text-neutral-500">{row._count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Pending Listings */}
         <div className="card">
           <div className="p-5 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
             <h2 className="font-display font-semibold text-neutral-900 dark:text-white">{t('pendingApprovals')}</h2>
-            <span className="badge-yellow">{pendingListings.length} {t('pendingCount')}</span>
+            <div className="flex items-center gap-3">
+              <span className="badge-yellow">{pendingListings.length} {t('pendingCount')}</span>
+              <Link href="/admin/listings" className="link text-sm">{t('viewAll')}</Link>
+            </div>
           </div>
           {pendingListings.length === 0 ? (
             <div className="p-10 text-center text-neutral-500">{t('noPendingListings')}</div>

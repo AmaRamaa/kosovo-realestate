@@ -43,7 +43,7 @@
   }
 
   .card {
-    @apply bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden;
+    @apply bg-white dark:bg-neutral-800 rounded-xl border border-primary-100 dark:border-primary-900/40 overflow-hidden;
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.05);
   }
 
@@ -52,6 +52,7 @@
   }
 
   .card-hover:hover {
+    @apply border-primary-300 dark:border-primary-700;
     box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
     transform: translateY(-2px);
   }
@@ -143,7 +144,7 @@
   }
 
   .property-stat {
-    @apply flex items-center gap-1.5 text-sm text-neutral-600 dark:text-neutral-400;
+    @apply flex items-center gap-1.5 text-sm text-neutral-600 dark:text-neutral-400 [&>svg]:text-primary-500 dark:[&>svg]:text-primary-400;
   }
 
   .skeleton {
@@ -195,6 +196,14 @@
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
 }
 
 .animate-fade-in { animation: fadeIn 0.3s ease-out; }

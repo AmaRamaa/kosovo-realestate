@@ -7,11 +7,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/lib/utils';
 import Image from 'next/image';
 import Logo from '@/components/ui/Logo';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation('admin');
 
   useEffect(() => {
     if (isLoading) return;
@@ -43,20 +45,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
             <div className="min-w-0">
               <p className="font-medium text-sm text-neutral-900 dark:text-white truncate">{user.firstName} {user.lastName}</p>
-              <span className="badge-blue text-[10px]">Owner</span>
+              <span className="badge-blue text-[10px]">{t('sidebarOwnerBadge')}</span>
             </div>
           </div>
         </div>
 
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           <Link href="/admin" className={pathname === '/admin' ? 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400' : 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white'}>
-            <BarChart3 className="w-4 h-4" /> Overview
+            <BarChart3 className="w-4 h-4" /> {t('navOverview')}
           </Link>
         </nav>
 
         <div className="p-3 border-t border-neutral-200 dark:border-neutral-700">
           <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950">
-            <LogOut className="w-4 h-4" /> Sign out
+            <LogOut className="w-4 h-4" /> {t('signOut')}
           </button>
         </div>
       </aside>

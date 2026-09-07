@@ -1,8 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Bed, Bath, Maximize, MapPin, Car } from 'lucide-react';
 import { Listing } from '@/types';
-import { formatPrice, formatArea, PROPERTY_TYPE_LABELS, cn } from '@/lib/utils';
+import { formatPrice, formatArea, cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface PropertyCardProps {
   listing: Listing;
@@ -10,6 +13,7 @@ interface PropertyCardProps {
 }
 
 export default function PropertyCard({ listing, className }: PropertyCardProps) {
+  const { t } = useTranslation('propertyTypes');
   const coverImage = listing.images?.[0]?.url || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';
 
   return (
@@ -27,10 +31,10 @@ export default function PropertyCard({ listing, className }: PropertyCardProps) 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex gap-2">
           <span className={cn('badge', listing.listingType === 'SALE' ? 'bg-primary-600 text-white' : 'bg-secondary-600 text-white')}>
-            {listing.listingType === 'SALE' ? 'For Sale' : 'For Rent'}
+            {t(listing.listingType)}
           </span>
           {listing.isFeatured && (
-            <span className="badge bg-amber-500 text-white">Featured</span>
+            <span className="badge bg-amber-500 text-white">{t('FEATURED')}</span>
           )}
         </div>
 
@@ -45,7 +49,7 @@ export default function PropertyCard({ listing, className }: PropertyCardProps) 
       {/* Content */}
       <div className="p-4">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="badge-gray text-[11px]">{PROPERTY_TYPE_LABELS[listing.propertyType]}</span>
+          <span className="badge-gray text-[11px]">{t(listing.propertyType)}</span>
         </div>
 
         <h3 className="font-display font-semibold text-neutral-900 dark:text-white line-clamp-1 mb-1.5 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
@@ -57,7 +61,7 @@ export default function PropertyCard({ listing, className }: PropertyCardProps) 
           <span className="line-clamp-1">{listing.neighborhood?.name ? `${listing.neighborhood.name}, ` : ''}{listing.city.name}</span>
         </div>
 
-        <div className="flex items-center gap-4 pt-3 border-t border-neutral-100 dark:border-neutral-700">
+        <div className="flex items-center gap-4 pt-3 border-t border-primary-100 dark:border-primary-900/40">
           {listing.bedrooms !== undefined && listing.bedrooms !== null && (
             <div className="property-stat">
               <Bed className="w-4 h-4" />

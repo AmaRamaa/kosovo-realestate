@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation';
 import { Search, MapPin, Home, ChevronDown } from 'lucide-react';
 import { PROPERTY_TYPES } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function HeroSearchBar() {
   const router = useRouter();
+  const { t } = useTranslation('heroSearch');
+  const { t: tType } = useTranslation('propertyTypes');
   const [listingType, setListingType] = useState<'SALE' | 'RENT'>('SALE');
   const [propertyType, setPropertyType] = useState('');
   const [location, setLocation] = useState('');
@@ -36,7 +39,7 @@ export default function HeroSearchBar() {
                 : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
             )}
           >
-            {type === 'SALE' ? 'Buy' : 'Rent'}
+            {type === 'SALE' ? t('buy') : t('rent')}
           </button>
         ))}
       </div>
@@ -50,7 +53,7 @@ export default function HeroSearchBar() {
           >
             <span className="flex items-center gap-2 truncate">
               <Home className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-              {propertyType ? PROPERTY_TYPES.find(p => p.value === propertyType)?.label : 'Any type'}
+              {propertyType ? tType(propertyType) : t('anyType')}
             </span>
             <ChevronDown className="w-4 h-4 text-neutral-400 flex-shrink-0" />
           </button>
@@ -61,7 +64,7 @@ export default function HeroSearchBar() {
                 onClick={() => { setPropertyType(''); setShowPropertyDropdown(false); }}
                 className="w-full text-left px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
-                Any type
+                {t('anyType')}
               </button>
               {PROPERTY_TYPES.map((type) => (
                 <button
@@ -69,7 +72,7 @@ export default function HeroSearchBar() {
                   onClick={() => { setPropertyType(type.value); setShowPropertyDropdown(false); }}
                   className="w-full text-left px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                 >
-                  {type.label}
+                  {tType(type.value)}
                 </button>
               ))}
             </div>
@@ -81,7 +84,7 @@ export default function HeroSearchBar() {
           <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             type="text"
-            placeholder="City, neighborhood, or address..."
+            placeholder={t('locationPlaceholder')}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -92,7 +95,7 @@ export default function HeroSearchBar() {
         {/* Search button */}
         <button onClick={handleSearch} className="btn-primary h-12 px-6 flex-shrink-0">
           <Search className="w-4 h-4" />
-          <span>Search</span>
+          <span>{t('search')}</span>
         </button>
       </div>
     </div>

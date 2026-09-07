@@ -7,10 +7,13 @@ import HeroSection from '@/components/home/HeroSection';
 import ListingSection from '@/components/home/ListingSection';
 import PopularCitiesSection from '@/components/home/PopularCitiesSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
-import { WhyChooseSection, OurAgentsSection, BlogPreviewSection, CtaBannerSection } from '@/components/home/MiscSections';
+import { WhyChooseSection, OurAgentsSection, CtaBannerSection } from '@/components/home/MiscSections';
 import { listingApi } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function HomePage() {
+  const { t } = useTranslation('home');
+
   const { data: featuredData, isLoading: featuredLoading } = useQuery({
     queryKey: ['listings', 'featured'],
     queryFn: () => listingApi.getFeatured().then(r => r.data),
@@ -25,22 +28,13 @@ export default function HomePage() {
     <>
       <Navbar />
       <main>
-        <HeroSection />
+        <HeroSection listings={featuredData?.listings || []} isLoading={featuredLoading} />
 
-        <ListingSection
-          eyebrow="Featured Listings"
-          title="Discover luxury homes"
-          subtitle="Hand-picked premium listings"
-          listings={featuredData?.listings || []}
-          isLoading={featuredLoading}
-          viewAllHref="/properties?isFeatured=true"
-        />
-
-        <div className="bg-neutral-100/60 dark:bg-neutral-800/30">
+        <div className="pt-16 lg:pt-20">
           <ListingSection
-            eyebrow="Just Listed"
-            title="Newest listings"
-            subtitle="Recently added properties across Kosovo"
+            eyebrow={t('recentEyebrow')}
+            title={t('recentTitle')}
+            subtitle={t('recentSubtitle')}
             listings={recentData?.listings || []}
             isLoading={recentLoading}
             viewAllHref="/properties?sortBy=createdAt&sortOrder=desc"
@@ -51,7 +45,6 @@ export default function HomePage() {
         <PopularCitiesSection />
         <OurAgentsSection />
         <TestimonialsSection />
-        <BlogPreviewSection />
         <CtaBannerSection />
       </main>
       <Footer />

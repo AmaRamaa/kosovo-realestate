@@ -6,8 +6,10 @@ import { Star, Phone, Mail, Building2, CheckCircle } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { agentApi } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function AgentsPage() {
+  const { t } = useTranslation('agentsPage');
   const { data, isLoading } = useQuery({
     queryKey: ['agents'],
     queryFn: () => agentApi.getAll({ limit: 20 }).then(r => r.data),
@@ -21,8 +23,8 @@ export default function AgentsPage() {
       <main className="pt-[72px]">
         <div className="bg-primary-50 dark:bg-primary-950/30 py-12">
           <div className="container-page text-center">
-            <h1 className="font-display font-bold text-3xl lg:text-4xl text-neutral-900 dark:text-white mb-3">Find a trusted agent</h1>
-            <p className="text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto">Connect with verified real estate professionals across Kosovo</p>
+            <h1 className="font-display font-bold text-3xl lg:text-4xl text-neutral-900 dark:text-white mb-3">{t('heading')}</h1>
+            <p className="text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto">{t('subheading')}</p>
           </div>
         </div>
         <div className="container-page py-10">
@@ -48,13 +50,13 @@ export default function AgentsPage() {
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{agent.rating}</span>
-                        <span className="text-xs text-neutral-400">({agent.reviewCount} reviews)</span>
+                        <span className="text-xs text-neutral-400">({agent.reviewCount} {t('reviews')})</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-3 text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-                    <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> {agent._count?.listings || 0} listings</span>
-                    <span>{agent.yearsExperience} yrs exp</span>
+                    <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> {agent._count?.listings || 0} {t('listings')}</span>
+                    <span>{agent.yearsExperience} {t('yearsExperience')}</span>
                   </div>
                   {agent.specializations?.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
@@ -62,7 +64,7 @@ export default function AgentsPage() {
                     </div>
                   )}
                   <div className="flex gap-2">
-                    <Link href={`/agents/${agent.id}`} className="btn-primary btn-sm flex-1">View profile</Link>
+                    <Link href={`/agents/${agent.id}`} className="btn-primary btn-sm flex-1">{t('viewProfile')}</Link>
                     {agent.user.phone && <a href={`tel:${agent.user.phone}`} className="btn-secondary btn-sm w-9 p-0 justify-center"><Phone className="w-4 h-4" /></a>}
                     <a href={`mailto:${agent.user.email}`} className="btn-secondary btn-sm w-9 p-0 justify-center"><Mail className="w-4 h-4" /></a>
                   </div>

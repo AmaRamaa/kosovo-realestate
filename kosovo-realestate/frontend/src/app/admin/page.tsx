@@ -5,9 +5,12 @@ import { adminApi, listingApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice, formatRelativeDate } from '@/lib/utils';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function AdminPage() {
   const { user } = useAuth();
+  const { t, locale } = useTranslation('admin');
+  const { t: tType } = useTranslation('propertyTypes');
   const { data: statsData } = useQuery({ queryKey: ['admin-stats'], queryFn: () => adminApi.getStats().then(r => r.data) });
   const { data: pendingData } = useQuery({ queryKey: ['admin-pending'], queryFn: () => adminApi.getPendingListings().then(r => r.data) });
 
@@ -21,15 +24,15 @@ export default function AdminPage() {
   return (
     <AdminLayout>
       <div className="p-6 lg:p-8">
-        <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white mb-8">Admin Dashboard</h1>
+        <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white mb-8">{t('dashboardTitle')}</h1>
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {[
-            { label: 'Total users', value: stats?.users, icon: Users, color: 'text-primary-600 bg-primary-100 dark:bg-primary-950' },
-            { label: 'Active listings', value: stats?.listings, icon: Building2, color: 'text-secondary-600 bg-secondary-100 dark:bg-secondary-950' },
-            { label: 'Pending review', value: stats?.pendingListings, icon: Clock, color: 'text-amber-600 bg-amber-100 dark:bg-amber-950' },
-            { label: 'Active agents', value: stats?.agents, icon: TrendingUp, color: 'text-purple-600 bg-purple-100 dark:bg-purple-950' },
+            { label: t('statTotalUsers'), value: stats?.users, icon: Users, color: 'text-primary-600 bg-primary-100 dark:bg-primary-950' },
+            { label: t('statActiveListings'), value: stats?.listings, icon: Building2, color: 'text-secondary-600 bg-secondary-100 dark:bg-secondary-950' },
+            { label: t('statPendingReview'), value: stats?.pendingListings, icon: Clock, color: 'text-amber-600 bg-amber-100 dark:bg-amber-950' },
+            { label: t('statActiveAgents'), value: stats?.agents, icon: TrendingUp, color: 'text-purple-600 bg-purple-100 dark:bg-purple-950' },
           ].map(s => {
             const Icon = s.icon;
             return (
@@ -45,11 +48,11 @@ export default function AdminPage() {
         {/* Pending Listings */}
         <div className="card">
           <div className="p-5 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-            <h2 className="font-display font-semibold text-neutral-900 dark:text-white">Pending approvals</h2>
-            <span className="badge-yellow">{pendingListings.length} pending</span>
+            <h2 className="font-display font-semibold text-neutral-900 dark:text-white">{t('pendingApprovals')}</h2>
+            <span className="badge-yellow">{pendingListings.length} {t('pendingCount')}</span>
           </div>
           {pendingListings.length === 0 ? (
-            <div className="p-10 text-center text-neutral-500">No pending listings</div>
+            <div className="p-10 text-center text-neutral-500">{t('noPendingListings')}</div>
           ) : (
             <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {pendingListings.map((listing: any) => (
@@ -59,19 +62,19 @@ export default function AdminPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm text-neutral-900 dark:text-white line-clamp-1">{listing.title}</p>
-                    <p className="text-xs text-neutral-500">{listing.city?.name} · by {listing.user?.firstName} {listing.user?.lastName}</p>
-                    <p className="text-xs text-neutral-400">{formatRelativeDate(listing.createdAt)}</p>
+                    <p className="text-xs text-neutral-500">{listing.city?.name} · {t('byAuthor')} {listing.user?.firstName} {listing.user?.lastName}</p>
+                    <p className="text-xs text-neutral-400">{formatRelativeDate(listing.createdAt, locale)}</p>
                   </div>
                   <div className="text-right flex-shrink-0 mr-4">
                     <p className="font-semibold text-primary-600 text-sm">{formatPrice(listing.price, listing.currency, listing.listingType)}</p>
-                    <p className="text-xs text-neutral-500">{listing.propertyType}</p>
+                    <p className="text-xs text-neutral-500">{tType(listing.propertyType)}</p>
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
                     <button onClick={() => handleApprove(listing.id, 'ACTIVE')} className="btn-sm btn bg-secondary-600 text-white hover:bg-secondary-700">
-                      <CheckCircle className="w-4 h-4" /> Approve
+                      <CheckCircle className="w-4 h-4" /> {t('approve')}
                     </button>
                     <button onClick={() => handleApprove(listing.id, 'REJECTED')} className="btn-sm btn bg-red-600 text-white hover:bg-red-700">
-                      <XCircle className="w-4 h-4" /> Reject
+                      <XCircle className="w-4 h-4" /> {t('reject')}
                     </button>
                   </div>
                 </div>

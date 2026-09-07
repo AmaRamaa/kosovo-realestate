@@ -6,47 +6,50 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
   Menu, X, Search, ChevronDown, Sun, Moon,
-  Home, Building2, MapPin, TrendingUp, PlusCircle
+  Home, Building2, MapPin, TrendingUp, PlusCircle, Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/ui/Logo';
-
-const NAV_LINKS = [
-  {
-    label: 'Buy',
-    href: '/properties?listingType=SALE',
-    mega: [
-      { label: 'Apartments', href: '/properties?listingType=SALE&propertyType=APARTMENT', icon: Building2 },
-      { label: 'Houses', href: '/properties?listingType=SALE&propertyType=HOUSE', icon: Home },
-      { label: 'Villas', href: '/properties?listingType=SALE&propertyType=VILLA', icon: Home },
-      { label: 'Land', href: '/properties?listingType=SALE&propertyType=LAND', icon: MapPin },
-      { label: 'Commercial', href: '/properties?listingType=SALE&propertyType=COMMERCIAL', icon: Building2 },
-      { label: 'New Developments', href: '/properties?listingType=SALE&sortBy=createdAt', icon: TrendingUp },
-    ],
-  },
-  {
-    label: 'Rent',
-    href: '/properties?listingType=RENT',
-    mega: [
-      { label: 'Apartments', href: '/properties?listingType=RENT&propertyType=APARTMENT', icon: Building2 },
-      { label: 'Houses', href: '/properties?listingType=RENT&propertyType=HOUSE', icon: Home },
-      { label: 'Studios', href: '/properties?listingType=RENT&propertyType=STUDIO', icon: Home },
-      { label: 'Offices', href: '/properties?listingType=RENT&propertyType=OFFICE', icon: Building2 },
-      { label: 'Commercial', href: '/properties?listingType=RENT&propertyType=COMMERCIAL', icon: Building2 },
-      { label: 'Short Term', href: '/properties?listingType=RENT', icon: MapPin },
-    ],
-  },
-  { label: 'Agents', href: '/agents' },
-  { label: 'Blog', href: '/blog' },
-];
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { t, locale, setLocale } = useTranslation('navbar');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const NAV_LINKS = [
+    {
+      label: t('buy'),
+      href: '/properties?listingType=SALE',
+      mega: [
+        { label: t('apartments'), href: '/properties?listingType=SALE&propertyType=APARTMENT', icon: Building2 },
+        { label: t('houses'), href: '/properties?listingType=SALE&propertyType=HOUSE', icon: Home },
+        { label: t('villas'), href: '/properties?listingType=SALE&propertyType=VILLA', icon: Home },
+        { label: t('land'), href: '/properties?listingType=SALE&propertyType=LAND', icon: MapPin },
+        { label: t('commercial'), href: '/properties?listingType=SALE&propertyType=COMMERCIAL', icon: Building2 },
+        { label: t('newDevelopments'), href: '/properties?listingType=SALE&sortBy=createdAt', icon: TrendingUp },
+      ],
+      viewAll: t('viewAllForSale'),
+    },
+    {
+      label: t('rent'),
+      href: '/properties?listingType=RENT',
+      mega: [
+        { label: t('apartments'), href: '/properties?listingType=RENT&propertyType=APARTMENT', icon: Building2 },
+        { label: t('houses'), href: '/properties?listingType=RENT&propertyType=HOUSE', icon: Home },
+        { label: t('studios'), href: '/properties?listingType=RENT&propertyType=STUDIO', icon: Home },
+        { label: t('offices'), href: '/properties?listingType=RENT&propertyType=OFFICE', icon: Building2 },
+        { label: t('commercial'), href: '/properties?listingType=RENT&propertyType=COMMERCIAL', icon: Building2 },
+        { label: t('shortTerm'), href: '/properties?listingType=RENT', icon: MapPin },
+      ],
+      viewAll: t('viewAllForRent'),
+    },
+    { label: t('agents'), href: '/agents' },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -84,7 +87,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
-            <Logo className="h-9 text-neutral-900 dark:text-white" />
+            <Logo className="h-12 text-neutral-900 dark:text-white" />
           </Link>
 
           {/* Desktop Nav */}
@@ -141,7 +144,7 @@ export default function Navbar() {
                         href={link.href}
                         className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950 transition-colors"
                       >
-                        View all {link.label === 'Buy' ? 'properties for sale' : 'properties for rent'}
+                        {link.viewAll}
                         <ChevronDown className="w-4 h-4 -rotate-90" />
                       </Link>
                     </div>
@@ -154,16 +157,26 @@ export default function Navbar() {
           {/* Right Actions */}
           <div className="flex items-center gap-2">
             {/* Search */}
-            <Link href="/properties" className="btn btn-ghost btn-sm hidden sm:flex" aria-label="Search">
+            <Link href="/properties" className="btn btn-ghost btn-sm hidden sm:flex" aria-label={t('search')}>
               <Search className="w-4 h-4" />
-              <span className="hidden md:inline">Search</span>
+              <span className="hidden md:inline">{t('search')}</span>
             </Link>
+
+            {/* Language Switcher */}
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => setLocale(locale === 'en' ? 'sq' : 'en')}
+              aria-label={t('changeLanguage')}
+            >
+              <Globe className="w-4 h-4" />
+              <span className="hidden md:inline">{locale === 'en' ? 'EN' : 'SQ'}</span>
+            </button>
 
             {/* Theme Toggle */}
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              aria-label="Toggle theme"
+              aria-label={t('toggleTheme')}
             >
               <Sun className="w-4 h-4 dark:hidden" />
               <Moon className="w-4 h-4 hidden dark:block" />
@@ -172,14 +185,14 @@ export default function Navbar() {
             {/* List Your Property */}
             <Link href="/list-your-property" className="btn btn-primary btn-sm hidden sm:flex">
               <PlusCircle className="w-4 h-4" />
-              List Your Property
+              {t('listYourProperty')}
             </Link>
 
             {/* Mobile menu button */}
             <button
               className="btn btn-ghost btn-sm lg:hidden"
               onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
+              aria-label={t('toggleMenu')}
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -219,7 +232,7 @@ export default function Navbar() {
             ))}
             <div className="pt-4 mt-4 border-t border-neutral-200 dark:border-neutral-800">
               <Link href="/list-your-property" className="btn btn-primary btn-md w-full">
-                <PlusCircle className="w-4 h-4" /> List Your Property
+                <PlusCircle className="w-4 h-4" /> {t('listYourProperty')}
               </Link>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Listing } from '@/types';
 import PropertyCard from '@/components/property/PropertyCard';
 import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ListingSectionProps {
   title: string;
@@ -16,6 +17,7 @@ interface ListingSectionProps {
 }
 
 export default function ListingSection({ title, subtitle, eyebrow, listings, isLoading, viewAllHref }: ListingSectionProps) {
+  const { t } = useTranslation('listingSection');
   return (
     <section className="section">
       <div className="container-page">
@@ -26,7 +28,7 @@ export default function ListingSection({ title, subtitle, eyebrow, listings, isL
             {subtitle && <p className="text-neutral-500 dark:text-neutral-400">{subtitle}</p>}
           </div>
           <Link href={viewAllHref} className="link flex items-center gap-1 text-sm flex-shrink-0 whitespace-nowrap">
-            View all <ArrowRight className="w-4 h-4" />
+            {t('viewAll')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 

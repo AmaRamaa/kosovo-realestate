@@ -13,7 +13,18 @@ import { listingApi, cityApi } from '@/lib/api';
 import { ListingFilters } from '@/types';
 import { SORT_OPTIONS, cn } from '@/lib/utils';
 
+const SORT_LABEL_KEYS: Record<string, string> = {
+  'createdAt:desc': 'sortNewest',
+  'createdAt:asc': 'sortOldest',
+  'price:asc': 'sortPriceAsc',
+  'price:desc': 'sortPriceDesc',
+  'area:desc': 'sortLargest',
+  'viewCount:desc': 'sortMostViewed',
+};
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 function PropertiesContent() {
+  const { t } = useTranslation('properties');
   const searchParams = useSearchParams();
   const router = useRouter();
   const [view, setView] = useState<'grid' | 'list' | 'map'>('grid');
@@ -86,9 +97,9 @@ function PropertiesContent() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white">
-                {isLoading ? 'Searching...' : `${pagination?.total || 0} properties found`}
+                {isLoading ? t('searching') : `${pagination?.total || 0} ${t('propertiesFound')}`}
               </h1>
-              {filters.search && <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Results for &quot;{filters.search}&quot;</p>}
+              {filters.search && <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{t('resultsFor')} &quot;{filters.search}&quot;</p>}
             </div>
 
             <div className="flex items-center gap-2">
@@ -99,7 +110,7 @@ function PropertiesContent() {
                 className="input w-auto text-sm py-2"
               >
                 {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>{t(SORT_LABEL_KEYS[opt.value] ?? opt.label)}</option>
                 ))}
               </select>
 
@@ -122,7 +133,7 @@ function PropertiesContent() {
 
               {/* Mobile filter button */}
               <button onClick={() => setMobileFiltersOpen(true)} className="btn-secondary btn-md lg:hidden">
-                <SlidersHorizontal className="w-4 h-4" /> Filters
+                <SlidersHorizontal className="w-4 h-4" /> {t('filters')}
               </button>
             </div>
           </div>
@@ -141,7 +152,7 @@ function PropertiesContent() {
                 <div className="absolute inset-0 bg-black/50" onClick={() => setMobileFiltersOpen(false)} />
                 <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-neutral-50 dark:bg-neutral-900 overflow-y-auto animate-slide-up">
                   <div className="sticky top-0 bg-white dark:bg-neutral-800 p-4 flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 z-10">
-                    <h3 className="font-display font-semibold">Filters</h3>
+                    <h3 className="font-display font-semibold">{t('filters')}</h3>
                     <button onClick={() => setMobileFiltersOpen(false)}><X className="w-5 h-5" /></button>
                   </div>
                   <div className="p-4">
@@ -159,8 +170,8 @@ function PropertiesContent() {
                 </div>
               ) : listings.length === 0 ? (
                 <div className="text-center py-20">
-                  <p className="text-neutral-500 dark:text-neutral-400 mb-4">No properties match your search criteria.</p>
-                  <button onClick={() => router.push('/properties')} className="btn-primary btn-md">Clear filters</button>
+                  <p className="text-neutral-500 dark:text-neutral-400 mb-4">{t('noResultsTitle')}</p>
+                  <button onClick={() => router.push('/properties')} className="btn-primary btn-md">{t('clearFilters')}</button>
                 </div>
               ) : (
                 <>
@@ -178,7 +189,7 @@ function PropertiesContent() {
                         onClick={() => handlePageChange(pagination.page - 1)}
                         className="btn-secondary btn-sm disabled:opacity-40"
                       >
-                        Previous
+                        {t('previous')}
                       </button>
                       {Array.from({ length: Math.min(pagination.pages, 7) }).map((_, i) => {
                         const page = i + 1;
@@ -200,7 +211,7 @@ function PropertiesContent() {
                         onClick={() => handlePageChange(pagination.page + 1)}
                         className="btn-secondary btn-sm disabled:opacity-40"
                       >
-                        Next
+                        {t('next')}
                       </button>
                     </div>
                   )}

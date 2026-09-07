@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import { ListingFilters, City } from '@/types';
 import { PROPERTY_TYPES, BEDROOM_OPTIONS, BATHROOM_OPTIONS, cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface SearchFiltersProps {
   filters: ListingFilters;
@@ -26,6 +27,8 @@ function FilterSection({ title, children, defaultOpen = true }: { title: string;
 }
 
 export default function SearchFiltersPanel({ filters, cities, onChange, onClear }: SearchFiltersProps) {
+  const { t } = useTranslation('properties');
+  const { t: tType } = useTranslation('propertyTypes');
   const [local, setLocal] = useState<ListingFilters>(filters);
 
   useEffect(() => { setLocal(filters); }, [filters]);
@@ -41,16 +44,16 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-display font-semibold text-neutral-900 dark:text-white">Filters</h3>
+        <h3 className="font-display font-semibold text-neutral-900 dark:text-white">{t('filters')}</h3>
         {activeCount > 0 && (
           <button onClick={onClear} className="text-xs text-primary-600 dark:text-primary-400 font-medium flex items-center gap-1 hover:text-primary-700">
-            <X className="w-3.5 h-3.5" /> Clear ({activeCount})
+            <X className="w-3.5 h-3.5" /> {t('clear')} ({activeCount})
           </button>
         )}
       </div>
 
       {/* Listing Type */}
-      <FilterSection title="Listing type">
+      <FilterSection title={t('listingType')}>
         <div className="flex gap-2">
           {(['SALE', 'RENT'] as const).map((type) => (
             <button
@@ -63,14 +66,14 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
                   : 'border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:border-neutral-300'
               )}
             >
-              {type === 'SALE' ? 'Buy' : 'Rent'}
+              {tType(type)}
             </button>
           ))}
         </div>
       </FilterSection>
 
       {/* Property Type */}
-      <FilterSection title="Property type">
+      <FilterSection title={t('propertyType')}>
         <div className="grid grid-cols-2 gap-2">
           {PROPERTY_TYPES.map((type) => (
             <button
@@ -83,20 +86,20 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
                   : 'border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:border-neutral-300'
               )}
             >
-              {type.label}
+              {tType(type.value)}
             </button>
           ))}
         </div>
       </FilterSection>
 
       {/* City */}
-      <FilterSection title="City">
+      <FilterSection title={t('city')}>
         <select
           value={local.cityId || ''}
           onChange={(e) => update({ cityId: e.target.value || undefined })}
           className="input"
         >
-          <option value="">All cities</option>
+          <option value="">{t('allCities')}</option>
           {cities.map((city) => (
             <option key={city.id} value={city.id}>{city.name}</option>
           ))}
@@ -104,11 +107,11 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
       </FilterSection>
 
       {/* Price Range */}
-      <FilterSection title="Price range (€)">
+      <FilterSection title={t('priceRange')}>
         <div className="flex items-center gap-2">
           <input
             type="number"
-            placeholder="Min"
+            placeholder={t('min')}
             value={local.minPrice || ''}
             onChange={(e) => update({ minPrice: e.target.value ? Number(e.target.value) : undefined })}
             className="input"
@@ -116,7 +119,7 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
           <span className="text-neutral-400">–</span>
           <input
             type="number"
-            placeholder="Max"
+            placeholder={t('max')}
             value={local.maxPrice || ''}
             onChange={(e) => update({ maxPrice: e.target.value ? Number(e.target.value) : undefined })}
             className="input"
@@ -125,11 +128,11 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
       </FilterSection>
 
       {/* Area Range */}
-      <FilterSection title="Area (m²)">
+      <FilterSection title={t('areaRange')}>
         <div className="flex items-center gap-2">
           <input
             type="number"
-            placeholder="Min"
+            placeholder={t('min')}
             value={local.minArea || ''}
             onChange={(e) => update({ minArea: e.target.value ? Number(e.target.value) : undefined })}
             className="input"
@@ -137,7 +140,7 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
           <span className="text-neutral-400">–</span>
           <input
             type="number"
-            placeholder="Max"
+            placeholder={t('max')}
             value={local.maxArea || ''}
             onChange={(e) => update({ maxArea: e.target.value ? Number(e.target.value) : undefined })}
             className="input"
@@ -146,7 +149,7 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
       </FilterSection>
 
       {/* Bedrooms */}
-      <FilterSection title="Bedrooms">
+      <FilterSection title={t('bedrooms')}>
         <div className="flex gap-2 flex-wrap">
           {BEDROOM_OPTIONS.map((num) => (
             <button
@@ -166,7 +169,7 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
       </FilterSection>
 
       {/* Bathrooms */}
-      <FilterSection title="Bathrooms">
+      <FilterSection title={t('bathrooms')}>
         <div className="flex gap-2 flex-wrap">
           {BATHROOM_OPTIONS.map((num) => (
             <button
@@ -186,13 +189,13 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
       </FilterSection>
 
       {/* Amenities */}
-      <FilterSection title="Amenities" defaultOpen={false}>
+      <FilterSection title={t('amenities')} defaultOpen={false}>
         <div className="space-y-2">
           {[
-            { key: 'hasGarden', label: 'Garden' },
-            { key: 'hasPool', label: 'Pool' },
-            { key: 'hasBalcony', label: 'Balcony' },
-            { key: 'hasFurnished', label: 'Furnished' },
+            { key: 'hasGarden', label: t('garden') },
+            { key: 'hasPool', label: t('pool') },
+            { key: 'hasBalcony', label: t('balcony') },
+            { key: 'hasFurnished', label: t('furnished') },
           ].map((item) => (
             <label key={item.key} className="flex items-center gap-2.5 cursor-pointer">
               <input

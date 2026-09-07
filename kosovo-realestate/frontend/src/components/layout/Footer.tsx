@@ -1,51 +1,49 @@
+'use client';
+
 import Link from 'next/link';
 import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
-
-const FOOTER_LINKS = {
-  'Buy': [
-    { label: 'Apartments for Sale', href: '/properties?listingType=SALE&propertyType=APARTMENT' },
-    { label: 'Houses for Sale', href: '/properties?listingType=SALE&propertyType=HOUSE' },
-    { label: 'Villas', href: '/properties?listingType=SALE&propertyType=VILLA' },
-    { label: 'Land', href: '/properties?listingType=SALE&propertyType=LAND' },
-    { label: 'Commercial', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
-  ],
-  'Rent': [
-    { label: 'Apartments for Rent', href: '/properties?listingType=RENT&propertyType=APARTMENT' },
-    { label: 'Houses for Rent', href: '/properties?listingType=RENT&propertyType=HOUSE' },
-    { label: 'Studios', href: '/properties?listingType=RENT&propertyType=STUDIO' },
-    { label: 'Offices', href: '/properties?listingType=RENT&propertyType=OFFICE' },
-  ],
-  'Company': [
-    { label: 'About Us', href: '/about' },
-    { label: 'List Your Property', href: '/list-your-property' },
-    { label: 'Agents', href: '/agents' },
-    { label: 'Agencies', href: '/agencies' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/contact' },
-  ],
-  'Resources': [
-    { label: 'Buying Guide', href: '/blog?category=buying-guide' },
-    { label: 'Selling Guide', href: '/blog?category=selling-guide' },
-    { label: 'Mortgage Calculator', href: '/tools/mortgage-calculator' },
-    { label: 'Market Reports', href: '/blog?category=market-analysis' },
-  ],
-};
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const CITIES = ['Prishtinë', 'Prizren', 'Pejë', 'Gjilan', 'Ferizaj', 'Mitrovicë', 'Gjakovë', 'Podujevë'];
 
 export default function Footer() {
+  const { t } = useTranslation('footer');
+
+  const FOOTER_LINKS = {
+    [t('buyHeading')]: [
+      { label: t('apartmentsForSale'), href: '/properties?listingType=SALE&propertyType=APARTMENT' },
+      { label: t('housesForSale'), href: '/properties?listingType=SALE&propertyType=HOUSE' },
+      { label: t('villas'), href: '/properties?listingType=SALE&propertyType=VILLA' },
+      { label: t('land'), href: '/properties?listingType=SALE&propertyType=LAND' },
+      { label: t('commercial'), href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
+    ],
+    [t('rentHeading')]: [
+      { label: t('apartmentsForRent'), href: '/properties?listingType=RENT&propertyType=APARTMENT' },
+      { label: t('housesForRent'), href: '/properties?listingType=RENT&propertyType=HOUSE' },
+      { label: t('studios'), href: '/properties?listingType=RENT&propertyType=STUDIO' },
+      { label: t('offices'), href: '/properties?listingType=RENT&propertyType=OFFICE' },
+    ],
+    [t('companyHeading')]: [
+      { label: t('aboutUs'), href: '/about' },
+      { label: t('listYourProperty'), href: '/list-your-property' },
+      { label: t('agents'), href: '/agents' },
+      { label: t('agencies'), href: '/agencies' },
+      { label: t('contact'), href: '/contact' },
+    ],
+  };
+
   return (
     <footer className="bg-neutral-900 text-neutral-300 pt-16 pb-8">
       <div className="container-page">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 pb-12 border-b border-neutral-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pb-12 border-b border-neutral-800">
           {/* Brand */}
-          <div className="col-span-2 lg:col-span-2">
+          <div className="sm:col-span-2">
             <Link href="/" className="flex items-center mb-4">
-              <Logo className="h-9 text-white" />
+              <Logo className="h-11 text-white" />
             </Link>
             <p className="text-sm text-neutral-400 leading-relaxed mb-6 max-w-xs">
-              The most trusted platform to buy, sell, and rent properties across all 38 municipalities of Kosovo.
+              {t('tagline')}
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-neutral-400">
@@ -81,7 +79,7 @@ export default function Footer() {
 
         {/* Popular Cities */}
         <div className="py-6 border-b border-neutral-800">
-          <h4 className="font-display font-semibold text-white mb-3 text-sm">Popular Cities</h4>
+          <h4 className="font-display font-semibold text-white mb-3 text-sm">{t('popularCities')}</h4>
           <div className="flex flex-wrap gap-2">
             {CITIES.map((city) => (
               <Link
@@ -97,15 +95,15 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-neutral-500">© {new Date().getFullYear()} Kosovo Real Estate. All rights reserved.</p>
+          <p className="text-sm text-neutral-500">© {new Date().getFullYear()} {t('copyright')}</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-sm text-neutral-500 hover:text-neutral-300">Privacy Policy</Link>
-            <Link href="/terms" className="text-sm text-neutral-500 hover:text-neutral-300">Terms of Service</Link>
+            <Link href="/privacy" className="text-sm text-neutral-500 hover:text-neutral-300">{t('privacyPolicy')}</Link>
+            <Link href="/terms" className="text-sm text-neutral-500 hover:text-neutral-300">{t('termsOfService')}</Link>
           </div>
           <div className="flex items-center gap-3">
             {[Facebook, Instagram, Linkedin, Twitter].map((Icon, i) => (
-              <a key={i} href="#" className="w-9 h-9 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-primary-600 transition-colors">
-                <Icon className="w-4 h-4 text-neutral-300" />
+              <a key={i} href="#" className="group w-9 h-9 rounded-full bg-neutral-800 border border-primary-900/40 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 transition-colors">
+                <Icon className="w-4 h-4 text-primary-400 group-hover:text-white" />
               </a>
             ))}
           </div>

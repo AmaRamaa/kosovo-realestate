@@ -19,21 +19,27 @@ export function formatArea(area: number): string {
   return `${area.toLocaleString()} m²`;
 }
 
-export function formatDate(date: string): string {
-  return new Intl.DateTimeFormat('sq-AL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(date));
+export function formatDate(date: string, locale: 'en' | 'sq' = 'en'): string {
+  return new Intl.DateTimeFormat(locale === 'sq' ? 'sq-AL' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(date));
 }
 
-export function formatRelativeDate(date: string): string {
+const RELATIVE_DATE_LABELS = {
+  en: { today: 'Today', yesterday: 'Yesterday', daysAgo: (n: number) => `${n} days ago`, weeksAgo: (n: number) => `${n} weeks ago`, monthsAgo: (n: number) => `${n} months ago` },
+  sq: { today: 'Sot', yesterday: 'Dje', daysAgo: (n: number) => `${n} ditë më parë`, weeksAgo: (n: number) => `${n} javë më parë`, monthsAgo: (n: number) => `${n} muaj më parë` },
+};
+
+export function formatRelativeDate(date: string, locale: 'en' | 'sq' = 'en'): string {
+  const labels = RELATIVE_DATE_LABELS[locale];
   const now = new Date();
   const d = new Date(date);
   const diffMs = now.getTime() - d.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
-  return formatDate(date);
+  if (diffDays === 0) return labels.today;
+  if (diffDays === 1) return labels.yesterday;
+  if (diffDays < 7) return labels.daysAgo(diffDays);
+  if (diffDays < 30) return labels.weeksAgo(Math.floor(diffDays / 7));
+  if (diffDays < 365) return labels.monthsAgo(Math.floor(diffDays / 30));
+  return formatDate(date, locale);
 }
 
 export function slugify(text: string): string {
@@ -48,23 +54,6 @@ export function truncate(text: string, maxLength: number): string {
 export function getInitials(firstName: string, lastName: string): string {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 }
-
-export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
-  APARTMENT: 'Apartment',
-  HOUSE: 'House',
-  VILLA: 'Villa',
-  LAND: 'Land',
-  COMMERCIAL: 'Commercial',
-  OFFICE: 'Office',
-  WAREHOUSE: 'Warehouse',
-  STUDIO: 'Studio',
-  DUPLEX: 'Duplex',
-};
-
-export const LISTING_TYPE_LABELS: Record<ListingType, string> = {
-  SALE: 'For Sale',
-  RENT: 'For Rent',
-};
 
 export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: 'APARTMENT', label: 'Apartment' },

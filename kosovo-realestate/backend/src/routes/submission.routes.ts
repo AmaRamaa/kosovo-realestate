@@ -92,4 +92,43 @@ router.post(
   }
 );
 
+router.post(
+  '/contact',
+  submissionLimiter,
+  [
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('A valid email is required'),
+    body('message').trim().notEmpty().withMessage('Message is required'),
+  ],
+  validate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { name, email, message } = req.body;
+
+      const ownerEmail = process.env.OWNER_EMAIL;
+      if (!ownerEmail) {
+        throw new Error('OWNER_EMAIL is not configured');
+      }
+
+      const html = `
+        <h2>New contact form message</h2>
+        <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
+        <p>${String(message).replace(/\n/g, '<br/>')}</p>
+        <p>Reply directly to this email to reach them.</p>
+      `;
+
+      await sendEmail({
+        to: ownerEmail,
+        subject: `New contact message from ${name}`,
+        html,
+        replyTo: email,
+      });
+
+      res.status(201).json({ message: 'Message received' });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;

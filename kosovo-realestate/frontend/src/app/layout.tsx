@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { LocaleProvider } from '@/contexts/LocaleContext';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/ui/Toaster';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import './globals.css';
 
 const inter = Inter({
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
   keywords: ['Kosovo real estate', 'property Kosovo', 'apartments Prishtinë', 'houses for sale Kosovo'],
   openGraph: {
     type: 'website',
-    locale: 'sq_AL',
+    locale: 'en_US',
     siteName: 'Kosovo Real Estate',
     title: 'Kosovo Real Estate — Buy, Sell & Rent Properties',
     description: 'Find your perfect property in Kosovo.',
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="sq"
+      lang="en"
       suppressHydrationWarning
       className={`${inter.variable} ${plusJakarta.variable}`}
     >
@@ -47,12 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <QueryProvider>
-            <AuthProvider>
-              {children}
-              <Toaster />
-            </AuthProvider>
-          </QueryProvider>
+          <LocaleProvider>
+            <QueryProvider>
+              <AuthProvider>
+                {children}
+                <Toaster />
+                <WhatsAppButton />
+              </AuthProvider>
+            </QueryProvider>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

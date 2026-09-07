@@ -67,6 +67,7 @@ export const listingApi = {
 
 export const submissionApi = {
   submitListing: (data: any) => api.post('/submissions/listing', data),
+  submitContact: (data: any) => api.post('/submissions/contact', data),
 };
 
 export const agentApi = {
@@ -98,11 +99,6 @@ export const appointmentApi = {
 export const reviewApi = {
   getForAgent: (agentId: string) => api.get(`/reviews/agent/${agentId}`),
   create: (data: any) => api.post('/reviews', data),
-};
-
-export const blogApi = {
-  getAll: (params?: any) => api.get('/blog', { params }),
-  getBySlug: (slug: string) => api.get(`/blog/${slug}`),
 };
 
 export const adminApi = {

@@ -1,0 +1,26 @@
+export const auth = {
+  en: {
+    ownerSignIn: 'Owner sign in',
+    signInToManage: 'Sign in to manage the site.',
+    emailAddress: 'Email address',
+    password: 'Password',
+    forgotPassword: 'Forgot password?',
+    emailPlaceholder: 'you@example.com',
+    signingIn: 'Signing in...',
+    signIn: 'Sign in',
+    welcomeBack: 'Welcome back!',
+    invalidCredentials: 'Invalid credentials',
+  },
+  sq: {
+    ownerSignIn: 'Hyrje e pronarit',
+    signInToManage: 'Kyçu për të menaxhuar faqen.',
+    emailAddress: 'Adresa e email-it',
+    password: 'Fjalëkalimi',
+    forgotPassword: 'Keni harruar fjalëkalimin?',
+    emailPlaceholder: 'ju@shembull.com',
+    signingIn: 'Duke u kyçur...',
+    signIn: 'Kyçu',
+    welcomeBack: 'Mirë se erdhët përsëri!',
+    invalidCredentials: 'Kredenciale të pavlefshme',
+  },
+};

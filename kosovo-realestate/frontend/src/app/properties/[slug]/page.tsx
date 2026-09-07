@@ -14,11 +14,12 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/property/PropertyCard';
 import { listingApi } from '@/lib/api';
-import { formatPrice, formatArea, formatRelativeDate, calculateMortgage, PROPERTY_TYPE_LABELS, cn } from '@/lib/utils';
+import { formatPrice, formatArea, formatRelativeDate, calculateMortgage, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/Toaster';
-import type { PropertyType } from '@/types';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 function MortgageCalculator({ price }: { price: number }) {
+  const { t } = useTranslation('propertyDetail');
   const [downPct, setDownPct] = useState(20);
   const [rate, setRate] = useState(4.5);
   const [years, setYears] = useState(20);
@@ -26,28 +27,28 @@ function MortgageCalculator({ price }: { price: number }) {
 
   return (
     <div className="card p-6">
-      <h3 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-5">Mortgage Calculator</h3>
+      <h3 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-5">{t('mortgageCalculator')}</h3>
       <div className="space-y-4">
         <div>
-          <label className="label">Down payment ({downPct}%)</label>
+          <label className="label">{t('downPayment')} ({downPct}%)</label>
           <input type="range" min={5} max={50} value={downPct} onChange={e => setDownPct(+e.target.value)} className="w-full accent-primary-600" />
           <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>5%</span><span>€{(price * downPct / 100).toLocaleString()}</span><span>50%</span></div>
         </div>
         <div>
-          <label className="label">Interest rate ({rate}%)</label>
+          <label className="label">{t('interestRate')} ({rate}%)</label>
           <input type="range" min={1} max={15} step={0.1} value={rate} onChange={e => setRate(+e.target.value)} className="w-full accent-primary-600" />
           <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>1%</span><span>50%</span></div>
         </div>
         <div>
-          <label className="label">Loan term ({years} years)</label>
+          <label className="label">{t('loanTerm')} ({years} {t('yearsUnit')})</label>
           <input type="range" min={5} max={30} step={5} value={years} onChange={e => setYears(+e.target.value)} className="w-full accent-primary-600" />
-          <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>5yr</span><span>30yr</span></div>
+          <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>5{t('yearAbbrev')}</span><span>30{t('yearAbbrev')}</span></div>
         </div>
         <div className="bg-primary-50 dark:bg-primary-950 rounded-xl p-4 space-y-2">
-          <div className="flex justify-between text-sm"><span className="text-neutral-600 dark:text-neutral-400">Monthly payment</span><span className="font-bold text-primary-600 text-lg">€{Math.round(result.monthlyPayment).toLocaleString()}</span></div>
-          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400"><span>Loan amount</span><span>€{Math.round(result.loanAmount).toLocaleString()}</span></div>
-          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400"><span>Total interest</span><span>€{Math.round(result.totalInterest).toLocaleString()}</span></div>
-          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400"><span>Total payment</span><span>€{Math.round(result.totalPayment).toLocaleString()}</span></div>
+          <div className="flex justify-between text-sm"><span className="text-neutral-600 dark:text-neutral-400">{t('monthlyPayment')}</span><span className="font-bold text-primary-600 text-lg">€{Math.round(result.monthlyPayment).toLocaleString()}</span></div>
+          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400"><span>{t('loanAmount')}</span><span>€{Math.round(result.loanAmount).toLocaleString()}</span></div>
+          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400"><span>{t('totalInterest')}</span><span>€{Math.round(result.totalInterest).toLocaleString()}</span></div>
+          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400"><span>{t('totalPayment')}</span><span>€{Math.round(result.totalPayment).toLocaleString()}</span></div>
         </div>
       </div>
     </div>
@@ -112,8 +113,10 @@ function ImageGallery({ images, title }: { images: any[]; title: string }) {
 }
 
 export default function PropertyDetailPage() {
+  const { t, locale } = useTranslation('propertyDetail');
+  const { t: tType } = useTranslation('propertyTypes');
   const { slug } = useParams<{ slug: string }>();
-  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: 'Hello, I am interested in this property. Could you provide more information?' });
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: t('defaultInquiryMessage') });
   const [sending, setSending] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -130,13 +133,13 @@ export default function PropertyDetailPage() {
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast('Link copied to clipboard', 'success');
+    toast(t('linkCopied'), 'success');
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => { setSending(false); toast('Message sent! The agent will contact you shortly.', 'success'); }, 1000);
+    setTimeout(() => { setSending(false); toast(t('messageSentSuccess'), 'success'); }, 1000);
   };
 
   if (isLoading) return (
@@ -160,8 +163,8 @@ export default function PropertyDetailPage() {
     <>
       <Navbar />
       <main className="pt-[72px] container-page py-20 text-center">
-        <h1 className="text-2xl font-display font-bold mb-4">Property not found</h1>
-        <Link href="/properties" className="btn-primary btn-md inline-flex"><ArrowLeft className="w-4 h-4" /> Back to listings</Link>
+        <h1 className="text-2xl font-display font-bold mb-4">{t('propertyNotFound')}</h1>
+        <Link href="/properties" className="btn-primary btn-md inline-flex"><ArrowLeft className="w-4 h-4" /> {t('backToListings')}</Link>
       </main>
     </>
   );
@@ -170,27 +173,27 @@ export default function PropertyDetailPage() {
   const agent = listing.agent;
 
   const SPECS = [
-    { icon: Bed, label: 'Bedrooms', value: listing.bedrooms != null ? `${listing.bedrooms} bedrooms` : null },
-    { icon: Bath, label: 'Bathrooms', value: listing.bathrooms != null ? `${listing.bathrooms} bathrooms` : null },
-    { icon: Maximize, label: 'Area', value: formatArea(listing.area) },
-    { icon: Building2, label: 'Floor', value: listing.floor != null ? `Floor ${listing.floor}${listing.totalFloors ? ` of ${listing.totalFloors}` : ''}` : null },
-    { icon: Car, label: 'Parking', value: listing.parkingSpaces > 0 ? `${listing.parkingSpaces} space(s)` : null },
-    { icon: Home, label: 'Year built', value: listing.yearBuilt ? `${listing.yearBuilt}` : null },
-    { icon: Thermometer, label: 'Heating', value: listing.heatingType ? listing.heatingType.replace('_', ' ') : null },
-    { icon: Zap, label: 'Energy', value: listing.energyRating ? `Class ${listing.energyRating.replace('_', '+')}` : null },
+    { icon: Bed, label: t('bedrooms'), value: listing.bedrooms != null ? `${listing.bedrooms} ${t('bedroomsUnit')}` : null },
+    { icon: Bath, label: t('bathrooms'), value: listing.bathrooms != null ? `${listing.bathrooms} ${t('bathroomsUnit')}` : null },
+    { icon: Maximize, label: t('area'), value: formatArea(listing.area) },
+    { icon: Building2, label: t('floor'), value: listing.floor != null ? `${t('floor')} ${listing.floor}${listing.totalFloors ? ` ${t('floorOf')} ${listing.totalFloors}` : ''}` : null },
+    { icon: Car, label: t('parking'), value: listing.parkingSpaces > 0 ? `${listing.parkingSpaces} ${t('parkingSpaceUnit')}` : null },
+    { icon: Home, label: t('yearBuilt'), value: listing.yearBuilt ? `${listing.yearBuilt}` : null },
+    { icon: Thermometer, label: t('heating'), value: listing.heatingType ? listing.heatingType.replace('_', ' ') : null },
+    { icon: Zap, label: t('energy'), value: listing.energyRating ? `${t('energyClassPrefix')} ${listing.energyRating.replace('_', '+')}` : null },
   ].filter(s => s.value);
 
   const FEATURES = [
-    { key: 'hasGarden', label: 'Garden' },
-    { key: 'hasPool', label: 'Swimming pool' },
-    { key: 'hasBalcony', label: 'Balcony' },
-    { key: 'hasTerrace', label: 'Terrace' },
-    { key: 'hasElevator', label: 'Elevator' },
-    { key: 'hasSecurity', label: 'Security system' },
-    { key: 'hasAirCon', label: 'Air conditioning' },
-    { key: 'hasHeating', label: 'Heating' },
-    { key: 'hasFurnished', label: 'Furnished' },
-    { key: 'hasStorage', label: 'Storage room' },
+    { key: 'hasGarden', label: t('featureGarden') },
+    { key: 'hasPool', label: t('featurePool') },
+    { key: 'hasBalcony', label: t('featureBalcony') },
+    { key: 'hasTerrace', label: t('featureTerrace') },
+    { key: 'hasElevator', label: t('featureElevator') },
+    { key: 'hasSecurity', label: t('featureSecurity') },
+    { key: 'hasAirCon', label: t('featureAirCon') },
+    { key: 'hasHeating', label: t('heating') },
+    { key: 'hasFurnished', label: t('featureFurnished') },
+    { key: 'hasStorage', label: t('featureStorage') },
   ].filter(f => (listing as any)[f.key]);
 
   return (
@@ -200,9 +203,9 @@ export default function PropertyDetailPage() {
         <div className="container-page py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-neutral-500 mb-6">
-            <Link href="/" className="hover:text-neutral-700 dark:hover:text-neutral-300">Home</Link>
+            <Link href="/" className="hover:text-neutral-700 dark:hover:text-neutral-300">{t('home')}</Link>
             <span>/</span>
-            <Link href="/properties" className="hover:text-neutral-700 dark:hover:text-neutral-300">Properties</Link>
+            <Link href="/properties" className="hover:text-neutral-700 dark:hover:text-neutral-300">{t('properties')}</Link>
             <span>/</span>
             <span className="text-neutral-900 dark:text-white line-clamp-1">{listing.title}</span>
           </nav>
@@ -220,10 +223,10 @@ export default function PropertyDetailPage() {
                   <div>
                     <div className="flex gap-2 mb-3">
                       <span className={cn('badge', listing.listingType === 'SALE' ? 'bg-primary-600 text-white' : 'bg-secondary-600 text-white')}>
-                        {listing.listingType === 'SALE' ? 'For Sale' : 'For Rent'}
+                        {tType(listing.listingType)}
                       </span>
-                      <span className="badge-gray">{PROPERTY_TYPE_LABELS[listing.propertyType as PropertyType]}</span>
-                      {listing.isFeatured && <span className="badge bg-amber-500 text-white">Featured</span>}
+                      <span className="badge-gray">{tType(listing.propertyType)}</span>
+                      {listing.isFeatured && <span className="badge bg-amber-500 text-white">{tType('FEATURED')}</span>}
                     </div>
                     <h1 className="font-display font-bold text-2xl lg:text-3xl text-neutral-900 dark:text-white mb-2">{listing.title}</h1>
                     <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
@@ -235,38 +238,38 @@ export default function PropertyDetailPage() {
                     <div className="font-display font-bold text-3xl text-primary-600 dark:text-primary-400">
                       {formatPrice(listing.price, listing.currency, listing.listingType)}
                     </div>
-                    {listing.priceNegotiable && <p className="text-xs text-neutral-500 mt-0.5">Price negotiable</p>}
+                    {listing.priceNegotiable && <p className="text-xs text-neutral-500 mt-0.5">{t('priceNegotiable')}</p>}
                   </div>
                 </div>
 
                 {/* Quick stats */}
-                <div className="flex flex-wrap gap-6 py-4 border-y border-neutral-200 dark:border-neutral-700">
+                <div className="flex flex-wrap gap-6 py-4 border-y border-primary-100 dark:border-primary-900/40">
                   {listing.bedrooms != null && (
-                    <div className="flex items-center gap-2"><Bed className="w-5 h-5 text-neutral-400" /><span className="text-sm text-neutral-700 dark:text-neutral-300"><strong>{listing.bedrooms}</strong> Bedrooms</span></div>
+                    <div className="flex items-center gap-2"><Bed className="w-5 h-5 text-primary-500 dark:text-primary-400" /><span className="text-sm text-neutral-700 dark:text-neutral-300"><strong>{listing.bedrooms}</strong> {t('bedrooms')}</span></div>
                   )}
                   {listing.bathrooms != null && (
-                    <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-neutral-400" /><span className="text-sm text-neutral-700 dark:text-neutral-300"><strong>{listing.bathrooms}</strong> Bathrooms</span></div>
+                    <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-primary-500 dark:text-primary-400" /><span className="text-sm text-neutral-700 dark:text-neutral-300"><strong>{listing.bathrooms}</strong> {t('bathrooms')}</span></div>
                   )}
-                  <div className="flex items-center gap-2"><Maximize className="w-5 h-5 text-neutral-400" /><span className="text-sm text-neutral-700 dark:text-neutral-300"><strong>{formatArea(listing.area)}</strong></span></div>
-                  <div className="flex items-center gap-1.5 ml-auto"><Eye className="w-4 h-4 text-neutral-400" /><span className="text-sm text-neutral-500">{listing.viewCount} views</span></div>
+                  <div className="flex items-center gap-2"><Maximize className="w-5 h-5 text-primary-500 dark:text-primary-400" /><span className="text-sm text-neutral-700 dark:text-neutral-300"><strong>{formatArea(listing.area)}</strong></span></div>
+                  <div className="flex items-center gap-1.5 ml-auto"><Eye className="w-4 h-4 text-neutral-400" /><span className="text-sm text-neutral-500">{listing.viewCount} {t('views')}</span></div>
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button onClick={handleShare} className="btn btn-secondary btn-sm"><Share2 className="w-4 h-4" /> Share</button>
-                    <button onClick={() => window.print()} className="btn btn-secondary btn-sm hidden sm:flex">Print</button>
+                    <button onClick={handleShare} className="btn btn-secondary btn-sm"><Share2 className="w-4 h-4" /> {t('share')}</button>
+                    <button onClick={() => window.print()} className="btn btn-secondary btn-sm hidden sm:flex">{t('print')}</button>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
               <div className="card p-6">
-                <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-4">Description</h2>
+                <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-4">{t('description')}</h2>
                 <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-line">{listing.description}</p>
               </div>
 
               {/* Property Details */}
               <div className="card p-6">
-                <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-5">Property details</h2>
+                <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-5">{t('propertyDetails')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {SPECS.map((spec) => {
                     const Icon = spec.icon;
@@ -286,7 +289,7 @@ export default function PropertyDetailPage() {
               {/* Features */}
               {FEATURES.length > 0 && (
                 <div className="card p-6">
-                  <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-5">Features & amenities</h2>
+                  <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-5">{t('featuresAmenities')}</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {FEATURES.map((f) => (
                       <div key={f.key} className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
@@ -297,16 +300,24 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
-              {/* Location placeholder */}
+              {/* Location */}
               <div className="card p-6">
-                <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-4">Location</h2>
-                <div className="bg-neutral-100 dark:bg-neutral-700 rounded-xl h-64 flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPin className="w-8 h-8 text-neutral-400 mx-auto mb-2" />
-                    <p className="text-sm text-neutral-500">{listing.address}, {listing.city.name}</p>
-                    <p className="text-xs text-neutral-400 mt-1">Map integration via Google Maps API</p>
+                <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-4">{t('location')}</h2>
+                {listing.lat && listing.lng ? (
+                  <div className="rounded-xl overflow-hidden h-64 border border-primary-100 dark:border-primary-900/40">
+                    <iframe
+                      title={t('propertyLocationTitle')}
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${listing.lng - 0.01}%2C${listing.lat - 0.01}%2C${listing.lng + 0.01}%2C${listing.lat + 0.01}&layer=mapnik&marker=${listing.lat}%2C${listing.lng}`}
+                    />
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-neutral-100 dark:bg-neutral-700 rounded-xl h-64 flex items-center justify-center">
+                    <MapPin className="w-8 h-8 text-primary-400" />
+                  </div>
+                )}
+                <p className="text-sm text-neutral-500 mt-2">{listing.address}, {listing.city.name}</p>
               </div>
 
               {/* Mortgage Calculator */}
@@ -318,7 +329,7 @@ export default function PropertyDetailPage() {
               {/* Agent card */}
               {agent && (
                 <div className="card p-6">
-                  <h3 className="font-display font-semibold text-neutral-900 dark:text-white mb-4">Listed by</h3>
+                  <h3 className="font-display font-semibold text-neutral-900 dark:text-white mb-4">{t('listedBy')}</h3>
                   <Link href={`/agents/${agent.id}`} className="flex items-center gap-3 mb-4 group">
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-700 flex-shrink-0">
                       {agent.user.avatar
@@ -333,7 +344,7 @@ export default function PropertyDetailPage() {
                       {agent.agency && <p className="text-xs text-neutral-500">{agent.agency.name}</p>}
                       <div className="flex items-center gap-1 mt-0.5">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span className="text-xs text-neutral-600 dark:text-neutral-400">{agent.rating} ({agent.reviewCount} reviews)</span>
+                        <span className="text-xs text-neutral-600 dark:text-neutral-400">{agent.rating} ({agent.reviewCount} {t('reviews')})</span>
                       </div>
                     </div>
                   </Link>
@@ -351,15 +362,15 @@ export default function PropertyDetailPage() {
 
                   {/* Contact form */}
                   <form onSubmit={handleSendMessage} className="space-y-3">
-                    <input type="text" placeholder="Your name" value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} className="input" required />
-                    <input type="email" placeholder="Your email" value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} className="input" required />
-                    <input type="tel" placeholder="Your phone" value={contactForm.phone} onChange={e => setContactForm(p => ({...p, phone: e.target.value}))} className="input" />
+                    <input type="text" placeholder={t('yourName')} value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} className="input" required />
+                    <input type="email" placeholder={t('yourEmail')} value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} className="input" required />
+                    <input type="tel" placeholder={t('yourPhone')} value={contactForm.phone} onChange={e => setContactForm(p => ({...p, phone: e.target.value}))} className="input" />
                     <textarea rows={4} value={contactForm.message} onChange={e => setContactForm(p => ({...p, message: e.target.value}))} className="input resize-none" />
                     <button type="submit" disabled={sending} className="btn-primary btn-md w-full">
-                      <Mail className="w-4 h-4" /> {sending ? 'Sending...' : 'Send message'}
+                      <Mail className="w-4 h-4" /> {sending ? t('sending') : t('sendMessage')}
                     </button>
                     <button type="button" className="btn-secondary btn-md w-full">
-                      <Calendar className="w-4 h-4" /> Book viewing
+                      <Calendar className="w-4 h-4" /> {t('bookViewing')}
                     </button>
                   </form>
                 </div>
@@ -369,15 +380,15 @@ export default function PropertyDetailPage() {
               <div className="card p-5">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-xs text-neutral-500 mb-0.5">Price per m²</p>
+                    <p className="text-xs text-neutral-500 mb-0.5">{t('pricePerSqm')}</p>
                     <p className="font-display font-bold text-xl text-neutral-900 dark:text-white">€{Math.round(listing.price / listing.area).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 mb-0.5">Published</p>
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300">{listing.publishedAt ? formatRelativeDate(listing.publishedAt) : 'Recently'}</p>
+                    <p className="text-xs text-neutral-500 mb-0.5">{t('published')}</p>
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300">{listing.publishedAt ? formatRelativeDate(listing.publishedAt, locale) : t('recently')}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 mb-0.5">ID</p>
+                    <p className="text-xs text-neutral-500 mb-0.5">{t('id')}</p>
                     <p className="text-sm font-mono text-neutral-700 dark:text-neutral-300">#{listing.id.slice(-6).toUpperCase()}</p>
                   </div>
                 </div>
@@ -388,7 +399,7 @@ export default function PropertyDetailPage() {
           {/* Similar properties */}
           {similarData?.listings?.length > 0 && (
             <div className="mt-16">
-              <h2 className="section-heading text-2xl mb-6">Similar properties</h2>
+              <h2 className="section-heading text-2xl mb-6">{t('similarProperties')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {similarData.listings.map((l: any) => <PropertyCard key={l.id} listing={l} />)}
               </div>

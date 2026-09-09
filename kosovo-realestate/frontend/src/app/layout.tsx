@@ -22,16 +22,16 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Kosovo Real Estate — Buy, Sell & Rent Properties',
-    template: '%s | Kosovo Real Estate',
+    default: 'Molla Real Estate — Buy, Sell & Rent Properties',
+    template: '%s | Molla Real Estate',
   },
   description: 'Find your perfect property in Kosovo. Browse thousands of verified apartments, houses, villas, and commercial properties across all municipalities.',
   keywords: ['Kosovo real estate', 'property Kosovo', 'apartments Prishtinë', 'houses for sale Kosovo'],
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'Kosovo Real Estate',
-    title: 'Kosovo Real Estate — Buy, Sell & Rent Properties',
+    siteName: 'Molla Real Estate',
+    title: 'Molla Real Estate — Buy, Sell & Rent Properties',
     description: 'Find your perfect property in Kosovo.',
   },
   robots: { index: true, follow: true },

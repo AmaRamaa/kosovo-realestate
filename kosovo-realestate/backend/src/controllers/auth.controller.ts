@@ -154,7 +154,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
       await sendEmail({
         to: email,
-        subject: 'Reset your password - Kosovo Real Estate',
+        subject: 'Reset your password - Molla Real Estate',
         html: `<p>Click <a href="${resetUrl}">here</a> to reset your password. Link expires in 1 hour.</p>`,
       });
     }

@@ -2,18 +2,20 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import { cityApi } from '@/lib/api';
 
-const CITIES = [
-  { name: 'Prishtinë', count: 842, image: 'https://images.unsplash.com/photo-1654983972542-66f3a80a1dbe?w=700&q=80' },
-  { name: 'Prizren', count: 318, image: 'https://images.unsplash.com/photo-1622400456695-951f80571268?w=700&q=80' },
-  { name: 'Pejë', count: 197, image: 'https://images.unsplash.com/photo-1650239995181-b6d37139b837?w=700&q=80' },
-  { name: 'Gjilan', count: 156, image: 'https://images.unsplash.com/photo-1650240430719-261b362f9308?w=700&q=80' },
-  { name: 'Ferizaj', count: 134, image: 'https://images.unsplash.com/photo-1770291841814-0486e0799bbd?w=700&q=80' },
-  { name: 'Gjakovë', count: 112, image: 'https://images.unsplash.com/photo-1597428983834-58c4ec5640fb?w=700&q=80' },
-];
+const CITY_IMAGES: Record<string, string> = {
+  'Prishtinë': 'https://images.unsplash.com/photo-1654983972542-66f3a80a1dbe?w=700&q=80',
+  'Prizren': 'https://images.unsplash.com/photo-1622400456695-951f80571268?w=700&q=80',
+  'Pejë': 'https://images.unsplash.com/photo-1650239995181-b6d37139b837?w=700&q=80',
+  'Gjilan': 'https://images.unsplash.com/photo-1650240430719-261b362f9308?w=700&q=80',
+  'Ferizaj': 'https://images.unsplash.com/photo-1770291841814-0486e0799bbd?w=700&q=80',
+  'Gjakovë': 'https://images.unsplash.com/photo-1597428983834-58c4ec5640fb?w=700&q=80',
+};
 
-function CityCard({ city }: { city: (typeof CITIES)[number] }) {
+function CityCard({ city }: { city: { name: string; count: number; image: string } }) {
   const { t } = useTranslation('popularCities');
   return (
     <Link
@@ -38,7 +40,17 @@ function CityCard({ city }: { city: (typeof CITIES)[number] }) {
 
 export default function PopularCitiesSection() {
   const { t } = useTranslation('popularCities');
-  const track = [...CITIES, ...CITIES];
+  const { data } = useQuery({ queryKey: ['cities'], queryFn: () => cityApi.getAll().then(r => r.data) });
+
+  const cities = (data?.cities || [])
+    .filter((c: any) => CITY_IMAGES[c.name])
+    .sort((a: any, b: any) => (b._count?.listings ?? 0) - (a._count?.listings ?? 0))
+    .slice(0, 6)
+    .map((c: any) => ({ name: c.name, count: c._count?.listings ?? 0, image: CITY_IMAGES[c.name] }));
+
+  if (cities.length === 0) return null;
+
+  const track = [...cities, ...cities];
 
   return (
     <section className="section bg-neutral-100/60 dark:bg-neutral-800/30">

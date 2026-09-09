@@ -5,6 +5,9 @@ import { ChevronDown, X } from 'lucide-react';
 import { ListingFilters, City } from '@/types';
 import { PROPERTY_TYPES, BEDROOM_OPTIONS, BATHROOM_OPTIONS, cn } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import Select from '@/components/ui/Select';
+
+const ALL_CITIES_VALUE = '__all__';
 
 interface SearchFiltersProps {
   filters: ListingFilters;
@@ -94,16 +97,14 @@ export default function SearchFiltersPanel({ filters, cities, onChange, onClear 
 
       {/* City */}
       <FilterSection title={t('city')}>
-        <select
-          value={local.cityId || ''}
-          onChange={(e) => update({ cityId: e.target.value || undefined })}
-          className="input"
-        >
-          <option value="">{t('allCities')}</option>
-          {cities.map((city) => (
-            <option key={city.id} value={city.id}>{city.name}</option>
-          ))}
-        </select>
+        <Select
+          value={local.cityId || ALL_CITIES_VALUE}
+          onValueChange={(v) => update({ cityId: v === ALL_CITIES_VALUE ? undefined : v })}
+          options={[
+            { value: ALL_CITIES_VALUE, label: t('allCities') },
+            ...cities.map((city) => ({ value: city.id, label: city.name })),
+          ]}
+        />
       </FilterSection>
 
       {/* Price Range */}

@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (options: EmailOptions) => {
   try {
     await transporter.sendMail({
-      from: `"Kosovo Real Estate" <${process.env.SMTP_FROM || 'noreply@kosovorealestate.com'}>`,
+      from: `"Molla Real Estate" <${process.env.SMTP_FROM || 'noreply@kosovorealestate.com'}>`,
       ...options,
     });
     logger.info(`Email sent to ${options.to}`);

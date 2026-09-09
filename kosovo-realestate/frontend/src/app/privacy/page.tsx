@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6 text-neutral-700 dark:text-neutral-300 leading-relaxed">
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">Information We Collect</h2>
-              <p>When you use Kosovo Real Estate, we collect information you provide directly, such as your name, email, and phone number when you submit a property, contact us, or create an account as a site administrator. We also collect basic usage data (pages visited, browser type) to help us improve the platform.</p>
+              <p>When you use Molla Real Estate, we collect information you provide directly, such as your name, email, and phone number when you submit a property, contact us, or create an account as a site administrator. We also collect basic usage data (pages visited, browser type) to help us improve the platform.</p>
             </section>
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">How We Use It</h2>

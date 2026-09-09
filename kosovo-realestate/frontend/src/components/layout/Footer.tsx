@@ -36,9 +36,9 @@ export default function Footer() {
   return (
     <footer className="bg-neutral-900 text-neutral-300 pt-16 pb-8">
       <div className="container-page">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pb-12 border-b border-neutral-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-neutral-800">
           {/* Brand */}
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center mb-4">
               <Logo className="h-11 text-white" />
             </Link>

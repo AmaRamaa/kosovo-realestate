@@ -67,6 +67,19 @@ export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: 'WAREHOUSE', label: 'Warehouse' },
 ];
 
+export const HEATING_TYPES = [
+  { value: 'CENTRAL', label: 'Central' },
+  { value: 'ELECTRIC', label: 'Electric' },
+  { value: 'GAS', label: 'Gas' },
+  { value: 'OIL', label: 'Oil' },
+  { value: 'WOOD', label: 'Wood' },
+  { value: 'HEAT_PUMP', label: 'Heat Pump' },
+  { value: 'UNDERFLOOR', label: 'Underfloor' },
+  { value: 'NONE', label: 'None' },
+];
+
+export const ENERGY_RATINGS = ['A_PLUS', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
 export const SORT_OPTIONS = [
   { value: 'createdAt:desc', label: 'Newest First' },
   { value: 'createdAt:asc', label: 'Oldest First' },

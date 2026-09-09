@@ -18,7 +18,7 @@ export default function TermsPage() {
           <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6 text-neutral-700 dark:text-neutral-300 leading-relaxed">
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">Using the Site</h2>
-              <p>Kosovo Real Estate lets you browse property listings and submit properties or inquiries for our team to review. By using the site, you agree to provide accurate information and not to misuse the submission forms (for example, by sending spam or unlawful content).</p>
+              <p>Molla Real Estate lets you browse property listings and submit properties or inquiries for our team to review. By using the site, you agree to provide accurate information and not to misuse the submission forms (for example, by sending spam or unlawful content).</p>
             </section>
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">Listings</h2>

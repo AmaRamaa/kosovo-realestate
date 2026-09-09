@@ -37,7 +37,7 @@ function MortgageCalculator({ price }: { price: number }) {
         <div>
           <label className="label">{t('interestRate')} ({rate}%)</label>
           <input type="range" min={1} max={15} step={0.1} value={rate} onChange={e => setRate(+e.target.value)} className="w-full accent-primary-600" />
-          <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>1%</span><span>50%</span></div>
+          <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>1%</span><span>15%</span></div>
         </div>
         <div>
           <label className="label">{t('loanTerm')} ({years} {t('yearsUnit')})</label>

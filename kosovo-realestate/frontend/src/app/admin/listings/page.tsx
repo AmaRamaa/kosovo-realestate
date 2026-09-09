@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, Star, Trash2, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Star, Trash2, ExternalLink, ChevronLeft, ChevronRight, Plus, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { listingApi } from '@/lib/api';
 import { formatPrice, formatRelativeDate } from '@/lib/utils';
@@ -61,8 +61,13 @@ export default function AdminListingsPage() {
     <AdminLayout>
       <div className="p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white">{t('listingsTitle')}</h1>
-          {pagination && <span className="text-sm text-neutral-500">{pagination.total} {t('resultsCount')}</span>}
+          <div className="flex items-center gap-3">
+            <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-white">{t('listingsTitle')}</h1>
+            {pagination && <span className="text-sm text-neutral-500">{pagination.total} {t('resultsCount')}</span>}
+          </div>
+          <Link href="/admin/listings/new" className="btn-primary btn-md">
+            <Plus className="w-4 h-4" /> New Listing
+          </Link>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-5">
@@ -137,6 +142,9 @@ export default function AdminListingsPage() {
                     </button>
                     <Link href={`/properties/${listing.slug}`} target="_blank" title={t('viewListing')} className="btn-sm btn btn-ghost">
                       <ExternalLink className="w-4 h-4" />
+                    </Link>
+                    <Link href={`/admin/listings/${listing.id}/edit`} title="Edit" className="btn-sm btn btn-ghost">
+                      <Pencil className="w-4 h-4" />
                     </Link>
                     <button onClick={() => handleDelete(listing.id)} title={t('deleteAction')} className="btn-sm btn btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
                       <Trash2 className="w-4 h-4" />

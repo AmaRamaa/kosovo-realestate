@@ -23,7 +23,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
         {/* Background photo */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=2000&q=80"
+            src="https://images.unsplash.com/photo-1654983972542-66f3a80a1dbe?w=2000&q=80"
             alt=""
             fill
             priority
@@ -39,10 +39,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
         <div className="container-page relative pt-36 pb-24 lg:pt-44 lg:pb-32">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="sr-only">{t('logoAlt')}</h1>
-            <Logo className="h-20 sm:h-24 lg:h-28 text-primary-400 mx-auto mb-8" />
-            <p className="text-lg text-white/80 text-balance max-w-2xl mx-auto mb-8">
-              {t('subtitle')}
-            </p>
+            <Logo className="h-[42vh] sm:h-[46vh] lg:h-[50vh] w-[80vw] sm:w-[70vw] lg:w-[55vw] max-w-4xl text-primary-400 mx-auto mb-10" />
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link href="/properties" className="btn-primary btn-lg">
                 {t('exploreProperties')} <ArrowRight className="w-4 h-4" />

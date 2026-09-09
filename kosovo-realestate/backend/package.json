@@ -1,7 +1,7 @@
 {
   "name": "kosovo-realestate-backend",
   "version": "1.0.0",
-  "description": "Kosovo Real Estate Platform API",
+  "description": "Molla Real Estate Platform API",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

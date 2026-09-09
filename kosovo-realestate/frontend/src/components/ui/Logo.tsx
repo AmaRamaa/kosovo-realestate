@@ -8,7 +8,7 @@ export default function Logo({ className }: LogoProps) {
   return (
     <span
       role="img"
-      aria-label="Kosovo Real Estate"
+      aria-label="Molla Real Estate"
       className={cn('inline-block bg-current flex-shrink-0', className)}
       style={{
         WebkitMaskImage: "url('/images/molla-logo-white.png')",

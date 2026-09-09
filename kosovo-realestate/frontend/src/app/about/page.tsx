@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Building2, MapPinned, ShieldCheck, Users2, Headphones, Award } from 'lucide-react';
+import { MapPinned, ShieldCheck, Users2, Headphones, Award } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { CtaBannerSection } from '@/components/home/MiscSections';
@@ -12,7 +12,6 @@ export default function AboutPage() {
   const { t } = useTranslation('staticPages');
 
   const stats = [
-    { icon: Building2, value: `${KOSOVO_STATS.totalListings.toLocaleString()}+`, label: t('statListings') },
     { icon: MapPinned, value: `${KOSOVO_STATS.cities}`, label: t('statCities') },
     { icon: Users2, value: `${KOSOVO_STATS.agents}`, label: t('statAgents') },
     { icon: Award, value: `${KOSOVO_STATS.agencies}`, label: t('statAgencies') },
@@ -61,7 +60,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             {stats.map((s) => {
               const Icon = s.icon;
               return (

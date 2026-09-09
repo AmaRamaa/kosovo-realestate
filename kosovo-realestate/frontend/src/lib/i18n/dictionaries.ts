@@ -5,7 +5,6 @@ import { hero } from './dict/hero';
 import { heroSearch } from './dict/heroSearch';
 import { listingSection } from './dict/listingSection';
 import { popularCities } from './dict/popularCities';
-import { testimonials } from './dict/testimonials';
 import { misc } from './dict/misc';
 import { propertyTypes } from './dict/propertyTypes';
 import { properties } from './dict/properties';
@@ -25,7 +24,6 @@ export const dictionaries = {
   heroSearch,
   listingSection,
   popularCities,
-  testimonials,
   misc,
   propertyTypes,
   properties,

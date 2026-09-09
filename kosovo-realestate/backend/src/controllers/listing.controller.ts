@@ -183,7 +183,7 @@ export const getListingBySlug = async (req: Request, res: Response, next: NextFu
 export const createListing = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.id;
-    const data = req.body;
+    const { images, ...data } = req.body;
 
     let slug = slugify(data.title, { lower: true, strict: true });
     const existing = await prisma.listing.findUnique({ where: { slug } });
@@ -196,7 +196,11 @@ export const createListing = async (req: Request, res: Response, next: NextFunct
         userId,
         status: req.user!.role === 'ADMIN' ? 'ACTIVE' : 'PENDING',
         publishedAt: req.user!.role === 'ADMIN' ? new Date() : null,
+        images: images?.length
+          ? { create: images.map((img: any, i: number) => ({ url: img.url, alt: img.alt, order: i, isCover: i === 0 })) }
+          : undefined,
       },
+      include: { images: true },
     });
 
     res.status(201).json({ listing });
@@ -215,12 +219,56 @@ export const updateListing = async (req: Request, res: Response, next: NextFunct
       throw new AppError('Not authorized', 403);
     }
 
+    const { newImages, ...data } = req.body;
+    const existingImageCount = newImages?.length ? await prisma.listingImage.count({ where: { listingId: id } }) : 0;
+
     const updated = await prisma.listing.update({
       where: { id },
-      data: req.body,
+      data: {
+        ...data,
+        images: newImages?.length
+          ? { create: newImages.map((img: any, i: number) => ({ url: img.url, alt: img.alt, order: existingImageCount + i })) }
+          : undefined,
+      },
+      include: { images: { orderBy: [{ isCover: 'desc' }, { order: 'asc' }] } },
     });
 
     res.json({ listing: updated });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getListingById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const listing = await prisma.listing.findUnique({
+      where: { id: req.params.id },
+      include: {
+        images: { orderBy: [{ isCover: 'desc' }, { order: 'asc' }] },
+        city: true,
+        neighborhood: true,
+      },
+    });
+    if (!listing) throw new AppError('Listing not found', 404);
+    if (listing.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+      throw new AppError('Not authorized', 403);
+    }
+    res.json({ listing });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteListingImage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, imageId } = req.params;
+    const listing = await prisma.listing.findUnique({ where: { id } });
+    if (!listing) throw new AppError('Listing not found', 404);
+    if (listing.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+      throw new AppError('Not authorized', 403);
+    }
+    await prisma.listingImage.delete({ where: { id: imageId } });
+    res.json({ message: 'Image deleted' });
   } catch (err) {
     next(err);
   }

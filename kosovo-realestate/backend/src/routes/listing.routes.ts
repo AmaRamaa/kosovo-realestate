@@ -3,9 +3,11 @@ import { body, query } from 'express-validator';
 import {
   getListings,
   getListingBySlug,
+  getListingById,
   createListing,
   updateListing,
   deleteListing,
+  deleteListingImage,
   getFeaturedListings,
   getRecentListings,
   incrementView,
@@ -28,6 +30,7 @@ router.post('/:id/view', incrementView);
 
 // Protected routes
 router.get('/user/my-listings', authenticate, getUserListings);
+router.get('/id/:id', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), getListingById);
 
 router.post(
   '/',
@@ -49,6 +52,7 @@ router.post(
 
 router.put('/:id', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), updateListing);
 router.delete('/:id', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), deleteListing);
+router.delete('/:id/images/:imageId', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), deleteListingImage);
 
 // Admin only
 router.patch('/:id/approve', authenticate, requireRole(['ADMIN']), approveListing);

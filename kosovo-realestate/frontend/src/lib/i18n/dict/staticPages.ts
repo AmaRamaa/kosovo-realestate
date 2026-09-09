@@ -1,7 +1,7 @@
 export const staticPages = {
   en: {
     aboutTitle: 'About Us',
-    aboutIntro: 'Kosovo Real Estate is the most trusted platform to buy, sell, and rent properties across all 38 municipalities of Kosovo.',
+    aboutIntro: 'Molla Real Estate is the most trusted platform to buy, sell, and rent properties across all 38 municipalities of Kosovo.',
     aboutBody1: 'We connect buyers, sellers, and renters with verified listings and licensed agents across the country — from the busy streets of Prishtinë to the quiet towns of Rugova and beyond.',
     aboutBody2: 'Every listing on our platform is reviewed before it goes live, and every agent is vetted, so you can search with confidence whether you\'re looking for your first apartment or your next investment.',
     statListings: 'Active listings',
@@ -55,7 +55,7 @@ export const staticPages = {
   },
   sq: {
     aboutTitle: 'Rreth Nesh',
-    aboutIntro: 'Kosovo Real Estate është platforma më e besuar për të blerë, shitur dhe dhënë me qira prona në të gjitha 38 komunat e Kosovës.',
+    aboutIntro: 'Molla Real Estate është platforma më e besuar për të blerë, shitur dhe dhënë me qira prona në të gjitha 38 komunat e Kosovës.',
     aboutBody1: 'Ne lidhim blerësit, shitësit dhe qiramarrësit me listime të verifikuara dhe agjentë të licencuar në të gjithë vendin — nga rrugët e gjalla të Prishtinës deri te qytetet e qeta të Rugovës e më gjerë.',
     aboutBody2: 'Çdo listim në platformën tonë shqyrtohet përpara se të publikohet, dhe çdo agjent kontrollohet, në mënyrë që të kërkoni me besim, qoftë duke kërkuar apartamentin tuaj të parë apo investimin tuaj të radhës.',
     statListings: 'Shpallje aktive',

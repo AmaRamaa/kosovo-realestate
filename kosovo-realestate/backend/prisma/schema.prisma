@@ -437,6 +437,17 @@ model BlogPost {
   @@map("blog_posts")
 }
 
+model PageView {
+  id          String    @id @default(cuid())
+  path        String
+  visitorId   String
+  createdAt   DateTime  @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+  @@map("page_views")
+}
+
 model Report {
   id          String    @id @default(cuid())
   userId      String

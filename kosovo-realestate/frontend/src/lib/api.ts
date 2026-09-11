@@ -103,6 +103,11 @@ export const reviewApi = {
   create: (data: any) => api.post('/reviews', data),
 };
 
+export const analyticsApi = {
+  track: (path: string, visitorId: string) => api.post('/analytics/track', { path, visitorId }),
+  getStats: (days?: number) => api.get('/admin/analytics', { params: { days } }),
+};
+
 export const adminApi = {
   getStats: () => api.get('/admin/stats'),
   getPendingListings: () => api.get('/admin/listings/pending'),

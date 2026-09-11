@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/HeroSection';
 import ListingSection from '@/components/home/ListingSection';
 import PopularCitiesSection from '@/components/home/PopularCitiesSection';
-import { WhyChooseSection, OurAgentsSection, CtaBannerSection } from '@/components/home/MiscSections';
+import { OurAgentsSection } from '@/components/home/MiscSections';
 import { listingApi } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
@@ -40,10 +40,8 @@ export default function HomePage() {
           />
         </div>
 
-        <WhyChooseSection />
         <PopularCitiesSection />
         <OurAgentsSection />
-        <CtaBannerSection />
       </main>
       <Footer />
     </>

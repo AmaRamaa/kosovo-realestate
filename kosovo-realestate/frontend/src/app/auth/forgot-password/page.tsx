@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <Link href="/">
-            <Logo className="h-9 text-neutral-900 dark:text-white" />
+            <Logo className="h-9 text-primary-600" />
           </Link>
         </div>
 

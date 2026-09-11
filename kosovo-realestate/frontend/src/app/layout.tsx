@@ -6,6 +6,7 @@ import { LocaleProvider } from '@/contexts/LocaleContext';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/ui/Toaster';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import Analytics from '@/components/analytics/Analytics';
 import './globals.css';
 
 const inter = Inter({
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 {children}
                 <Toaster />
                 <WhatsAppButton />
+                <Analytics />
               </AuthProvider>
             </QueryProvider>
           </LocaleProvider>

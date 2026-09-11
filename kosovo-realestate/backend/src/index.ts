@@ -21,6 +21,7 @@ import blogRouter from './routes/blog.routes';
 import adminRouter from './routes/admin.routes';
 import uploadRouter from './routes/upload.routes';
 import submissionRouter from './routes/submission.routes';
+import analyticsRouter from './routes/analytics.routes';
 import { errorHandler } from './middleware/error.middleware';
 import { logger } from './utils/logger';
 
@@ -94,6 +95,7 @@ app.use('/api/blog', blogRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/submissions', submissionRouter);
+app.use('/api/analytics', analyticsRouter);
 
 // 404 handler
 app.use('*', (req, res) => {

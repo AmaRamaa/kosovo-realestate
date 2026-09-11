@@ -222,6 +222,39 @@ adminRouter.delete('/submissions/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+adminRouter.get('/analytics', async (req, res, next) => {
+  try {
+    const days = Math.min(90, Math.max(1, Number(req.query.days) || 30));
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    const [totalViews, uniqueVisitorRows, viewsByDay, topPageRows] = await Promise.all([
+      prisma.pageView.count({ where: { createdAt: { gte: since } } }),
+      prisma.pageView.findMany({ where: { createdAt: { gte: since } }, select: { visitorId: true }, distinct: ['visitorId'] }),
+      prisma.$queryRaw<{ date: string; count: bigint }[]>`
+        SELECT to_char("createdAt", 'YYYY-MM-DD') AS date, COUNT(*) AS count
+        FROM "page_views"
+        WHERE "createdAt" >= ${since}
+        GROUP BY date
+        ORDER BY date ASC
+      `,
+      prisma.pageView.groupBy({
+        by: ['path'],
+        where: { createdAt: { gte: since } },
+        _count: true,
+        orderBy: { _count: { path: 'desc' } },
+        take: 10,
+      }),
+    ]);
+
+    res.json({
+      totalViews,
+      uniqueVisitors: uniqueVisitorRows.length,
+      viewsByDay: viewsByDay.map(r => ({ date: r.date, count: Number(r.count) })),
+      topPages: topPageRows.map(r => ({ path: r.path, count: r._count })),
+    });
+  } catch (err) { next(err); }
+});
+
 // UPLOAD ROUTES
 export const uploadRouter = Router();
 uploadRouter.use(authenticate);

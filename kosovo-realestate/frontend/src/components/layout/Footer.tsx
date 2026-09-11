@@ -34,28 +34,28 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-neutral-900 text-neutral-300 pt-16 pb-8">
+    <footer className="bg-white text-neutral-600 pt-16 pb-8 border-t border-neutral-200">
       <div className="container-page">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-neutral-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-neutral-200">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center mb-4">
-              <Logo className="h-11 text-white" />
+              <Logo className="h-11 text-primary-600" />
             </Link>
-            <p className="text-sm text-neutral-400 leading-relaxed mb-6 max-w-xs">
+            <p className="text-sm text-neutral-500 leading-relaxed mb-6 max-w-xs">
               {t('tagline')}
             </p>
             <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-neutral-400">
-                <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-neutral-500">
+                <MapPin className="w-4 h-4 text-primary-600 flex-shrink-0" />
                 Rr. Nënë Tereza, Prishtinë, Kosovo
               </div>
-              <div className="flex items-center gap-2 text-neutral-400">
-                <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-neutral-500">
+                <Phone className="w-4 h-4 text-primary-600 flex-shrink-0" />
                 +383 38 123 456
               </div>
-              <div className="flex items-center gap-2 text-neutral-400">
-                <Mail className="w-4 h-4 text-primary-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-neutral-500">
+                <Mail className="w-4 h-4 text-primary-600 flex-shrink-0" />
                 info@kosovorealestate.com
               </div>
             </div>
@@ -63,11 +63,11 @@ export default function Footer() {
 
           {Object.entries(FOOTER_LINKS).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-display font-semibold text-white mb-4 text-sm">{title}</h4>
+              <h4 className="font-display font-semibold text-neutral-900 mb-4 text-sm">{title}</h4>
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-sm text-neutral-400 hover:text-primary-400 transition-colors">
+                    <Link href={link.href} className="text-sm text-neutral-500 hover:text-primary-600 transition-colors">
                       {link.label}
                     </Link>
                   </li>
@@ -78,14 +78,14 @@ export default function Footer() {
         </div>
 
         {/* Popular Cities */}
-        <div className="py-6 border-b border-neutral-800">
-          <h4 className="font-display font-semibold text-white mb-3 text-sm">{t('popularCities')}</h4>
+        <div className="py-6 border-b border-neutral-200">
+          <h4 className="font-display font-semibold text-neutral-900 mb-3 text-sm">{t('popularCities')}</h4>
           <div className="flex flex-wrap gap-2">
             {CITIES.map((city) => (
               <Link
                 key={city}
                 href={`/properties?city=${city}`}
-                className="px-3 py-1.5 rounded-full bg-neutral-800 text-xs text-neutral-300 hover:bg-primary-600 hover:text-white transition-colors"
+                className="px-3 py-1.5 rounded-full bg-neutral-100 text-xs text-neutral-600 hover:bg-primary-600 hover:text-white transition-colors"
               >
                 {city}
               </Link>
@@ -97,13 +97,13 @@ export default function Footer() {
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-neutral-500">© {new Date().getFullYear()} {t('copyright')}</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-sm text-neutral-500 hover:text-neutral-300">{t('privacyPolicy')}</Link>
-            <Link href="/terms" className="text-sm text-neutral-500 hover:text-neutral-300">{t('termsOfService')}</Link>
+            <Link href="/privacy" className="text-sm text-neutral-500 hover:text-neutral-900">{t('privacyPolicy')}</Link>
+            <Link href="/terms" className="text-sm text-neutral-500 hover:text-neutral-900">{t('termsOfService')}</Link>
           </div>
           <div className="flex items-center gap-3">
             {[Facebook, Instagram, Linkedin, Twitter].map((Icon, i) => (
-              <a key={i} href="#" className="group w-9 h-9 rounded-full bg-neutral-800 border border-primary-900/40 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 transition-colors">
-                <Icon className="w-4 h-4 text-primary-400 group-hover:text-white" />
+              <a key={i} href="#" className="group w-9 h-9 rounded-full bg-neutral-100 border border-primary-100 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 transition-colors">
+                <Icon className="w-4 h-4 text-primary-600 group-hover:text-white" />
               </a>
             ))}
           </div>

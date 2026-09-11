@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -14,9 +15,11 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/property/PropertyCard';
 import { listingApi } from '@/lib/api';
-import { formatPrice, formatArea, formatRelativeDate, calculateMortgage, cn } from '@/lib/utils';
+import { formatPrice, formatArea, formatRelativeDate, calculateMortgage, cn, getCookie, setCookie } from '@/lib/utils';
 import { toast } from '@/components/ui/Toaster';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+
+const MapDisplay = dynamic(() => import('@/components/ui/MapDisplay'), { ssr: false });
 
 function MortgageCalculator({ price }: { price: number }) {
   const { t } = useTranslation('propertyDetail');
@@ -130,6 +133,16 @@ export default function PropertyDetailPage() {
     queryFn: () => listingApi.getSimilar(slug).then(r => r.data),
     enabled: !!slug,
   });
+
+  // Count a view once per visitor per listing (cookie-gated) instead of on every render/reload.
+  useEffect(() => {
+    const id = data?.listing?.id;
+    if (!id) return;
+    const cookieName = `viewed_${id}`;
+    if (getCookie(cookieName)) return;
+    setCookie(cookieName, '1', 60 * 60 * 24);
+    listingApi.incrementView(id).catch(() => {});
+  }, [data?.listing?.id]);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -305,12 +318,7 @@ export default function PropertyDetailPage() {
                 <h2 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-4">{t('location')}</h2>
                 {listing.lat && listing.lng ? (
                   <div className="rounded-xl overflow-hidden h-64 border border-primary-100 dark:border-primary-900/40">
-                    <iframe
-                      title={t('propertyLocationTitle')}
-                      className="w-full h-full border-0"
-                      loading="lazy"
-                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${listing.lng - 0.01}%2C${listing.lat - 0.01}%2C${listing.lng + 0.01}%2C${listing.lat + 0.01}&layer=mapnik&marker=${listing.lat}%2C${listing.lng}`}
-                    />
+                    <MapDisplay lat={listing.lat} lng={listing.lng} title={t('propertyLocationTitle')} />
                   </div>
                 ) : (
                   <div className="bg-neutral-100 dark:bg-neutral-700 rounded-xl h-64 flex items-center justify-center">

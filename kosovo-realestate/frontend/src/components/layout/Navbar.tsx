@@ -87,7 +87,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
-            <Logo className="h-12 text-neutral-900 dark:text-white" />
+            <Logo className="h-12 text-primary-600" />
           </Link>
 
           {/* Desktop Nav */}

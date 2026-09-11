@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { BarChart3, LogOut, Building2, Inbox, Users } from 'lucide-react';
+import { BarChart3, LogOut, Building2, Inbox, Users, LineChart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/lib/utils';
 import { adminApi } from '@/lib/api';
@@ -49,6 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/listings', label: t('navListings'), icon: Building2, badge: pendingCount },
     { href: '/admin/submissions', label: t('navSubmissions'), icon: Inbox, badge: newSubmissionsCount },
     { href: '/admin/users', label: t('navUsers'), icon: Users },
+    { href: '/admin/analytics', label: t('navAnalytics'), icon: LineChart },
   ] as const;
 
   return (
@@ -57,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 flex flex-col z-40 hidden lg:flex">
         <div className="p-5 border-b border-neutral-200 dark:border-neutral-700">
           <Link href="/">
-            <Logo className="h-7 text-neutral-900 dark:text-white" />
+            <Logo className="h-7 text-primary-600" />
           </Link>
         </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { MapPin, Phone, Mail, MessageCircle, Clock, CheckCircle2 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -11,6 +12,8 @@ import { toast } from '@/components/ui/Toaster';
 const WHATSAPP_NUMBER = '38338123456';
 const OFFICE_LAT = 42.6629;
 const OFFICE_LNG = 21.1655;
+
+const MapDisplay = dynamic(() => import('@/components/ui/MapDisplay'), { ssr: false });
 
 export default function ContactPage() {
   const { t } = useTranslation('staticPages');
@@ -87,12 +90,7 @@ export default function ContactPage() {
               </div>
 
               <div className="rounded-xl overflow-hidden h-56 border border-primary-100 dark:border-primary-900/40">
-                <iframe
-                  title={t('contactMapTitle')}
-                  className="w-full h-full border-0"
-                  loading="lazy"
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${OFFICE_LNG - 0.01}%2C${OFFICE_LAT - 0.01}%2C${OFFICE_LNG + 0.01}%2C${OFFICE_LAT + 0.01}&layer=mapnik&marker=${OFFICE_LAT}%2C${OFFICE_LNG}`}
-                />
+                <MapDisplay lat={OFFICE_LAT} lng={OFFICE_LNG} title={t('contactMapTitle')} />
               </div>
             </div>
 

@@ -44,6 +44,7 @@ function PropertiesContent() {
     hasPool: searchParams.get('hasPool') === 'true' || undefined,
     hasBalcony: searchParams.get('hasBalcony') === 'true' || undefined,
     hasFurnished: searchParams.get('hasFurnished') === 'true' || undefined,
+    isFeatured: searchParams.get('isFeatured') === 'true' || undefined,
     search: searchParams.get('search') || undefined,
     sortBy: searchParams.get('sortBy') || 'createdAt',
     sortOrder: (searchParams.get('sortOrder') as any) || 'desc',

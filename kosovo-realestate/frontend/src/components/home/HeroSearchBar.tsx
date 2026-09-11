@@ -25,15 +25,15 @@ export default function HeroSearchBar() {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-2 max-w-3xl w-full">
+    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-xl p-1.5 max-w-2xl w-full">
       {/* Tabs */}
-      <div className="flex gap-1 p-1 mb-2">
+      <div className="flex gap-1 p-0.5 mb-1">
         {(['SALE', 'RENT'] as const).map((type) => (
           <button
             key={type}
             onClick={() => setListingType(type)}
             className={cn(
-              'flex-1 sm:flex-none px-6 py-2.5 rounded-full text-sm font-medium transition-colors',
+              'flex-1 sm:flex-none px-5 py-1.5 rounded-full text-xs font-medium transition-colors',
               listingType === type
                 ? 'bg-primary-600 text-white'
                 : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
@@ -44,12 +44,12 @@ export default function HeroSearchBar() {
         ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 p-1">
+      <div className="flex flex-col sm:flex-row gap-1.5 p-0.5">
         {/* Property type */}
-        <div className="relative flex-shrink-0 sm:w-44">
+        <div className="relative flex-shrink-0 sm:w-36">
           <button
             onClick={() => setShowPropertyDropdown(!showPropertyDropdown)}
-            className="w-full h-12 flex items-center justify-between gap-2 px-4 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:border-neutral-300 transition-colors"
+            className="w-full h-10 flex items-center justify-between gap-2 px-3.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:border-neutral-300 transition-colors"
           >
             <span className="flex items-center gap-2 truncate">
               <Home className="w-4 h-4 text-neutral-400 flex-shrink-0" />
@@ -81,19 +81,19 @@ export default function HeroSearchBar() {
 
         {/* Location input */}
         <div className="relative flex-1">
-          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             type="text"
             placeholder={t('locationPlaceholder')}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="w-full h-12 pl-11 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-transparent text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full h-10 pl-9 pr-3.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-transparent text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
         </div>
 
         {/* Search button */}
-        <button onClick={handleSearch} className="btn-primary h-12 px-6 flex-shrink-0">
+        <button onClick={handleSearch} className="btn-primary h-10 px-5 flex-shrink-0">
           <Search className="w-4 h-4" />
           <span>{t('search')}</span>
         </button>

@@ -226,6 +226,7 @@ export interface ListingFilters {
   hasBalcony?: boolean;
   hasGarage?: boolean;
   hasFurnished?: boolean;
+  isFeatured?: boolean;
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';

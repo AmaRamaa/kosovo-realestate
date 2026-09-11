@@ -57,7 +57,7 @@ export const getListings = async (req: Request, res: Response, next: NextFunctio
     const {
       page = 1, limit = 12, listingType, propertyType, cityId, neighborhoodId,
       minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms,
-      hasGarden, hasPool, hasBalcony, hasGarage, hasFurnished,
+      hasGarden, hasPool, hasBalcony, hasGarage, hasFurnished, isFeatured,
       sortBy = 'createdAt', sortOrder = 'desc', search, status = 'ACTIVE',
     } = req.query;
 
@@ -78,6 +78,7 @@ export const getListings = async (req: Request, res: Response, next: NextFunctio
     if (propertyType) where.propertyType = propertyType as any;
     if (cityId) where.cityId = cityId as string;
     if (neighborhoodId) where.neighborhoodId = neighborhoodId as string;
+    if (isFeatured === 'true') where.isFeatured = true;
 
     if (minPrice || maxPrice) {
       where.price = {};

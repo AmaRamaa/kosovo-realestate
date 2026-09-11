@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { PlusCircle, ArrowRight } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import HeroSearchBar from '@/components/home/HeroSearchBar';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -16,6 +17,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ listings = [], isLoading }: HeroSectionProps) {
   const { t } = useTranslation('hero');
+  const { t: tListing } = useTranslation('listingSection');
 
   return (
     <>
@@ -23,7 +25,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
         {/* Background photo */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1654983972542-66f3a80a1dbe?w=2000&q=80"
+            src="/images/hero-villa.jpg"
             alt=""
             fill
             priority
@@ -43,8 +45,11 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
             <div className="flex justify-center mb-3">
               <HeroSearchBar />
             </div>
-            <Link href="/list-your-property" className="text-sm text-white/80 hover:text-white underline underline-offset-4 transition-colors">
-              {t('listYourProperty')}
+            <Link
+              href="/list-your-property"
+              className="btn bg-white/10 text-white border border-white/40 hover:bg-white hover:text-primary-700 hover:border-white btn-md backdrop-blur-sm"
+            >
+              <PlusCircle className="w-4 h-4" /> {t('listYourProperty')}
             </Link>
           </div>
         </div>
@@ -57,6 +62,11 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => <PropertyCardSkeleton key={i} />)
             : listings.slice(0, 4).map((listing) => <PropertyCard key={listing.id} listing={listing} />)}
+        </div>
+        <div className="flex justify-end mt-4">
+          <Link href="/properties?isFeatured=true" className="link flex items-center gap-1 text-sm">
+            {tListing('viewAll')} <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </>

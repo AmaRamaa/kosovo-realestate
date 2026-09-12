@@ -38,7 +38,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/45" />
         </div>
 
-        <div className="container-page relative py-16 lg:py-20">
+        <div className="container-page relative py-16 lg:py-20 w-full min-w-0">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="sr-only">{t('logoAlt')}</h1>
             <Logo className="h-36 sm:h-40 lg:h-44 text-white mx-auto mb-8" />

@@ -25,15 +25,15 @@ export default function HeroSearchBar() {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-2 max-w-2xl w-full">
+    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-1.5 sm:p-2 max-w-2xl w-full">
       {/* Tabs */}
-      <div className="flex gap-1 p-0.5 mb-1.5">
+      <div className="flex gap-1 p-0.5 mb-1">
         {(['SALE', 'RENT'] as const).map((type) => (
           <button
             key={type}
             onClick={() => setListingType(type)}
             className={cn(
-              'flex-1 sm:flex-none px-6 py-2 rounded-full text-sm font-medium transition-colors',
+              'flex-1 sm:flex-none px-4 py-1.5 sm:px-6 sm:py-2 rounded-full text-sm font-medium transition-colors',
               listingType === type
                 ? 'bg-primary-600 text-white'
                 : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
@@ -45,55 +45,57 @@ export default function HeroSearchBar() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-1.5 p-0.5">
-        {/* Property type */}
-        <div className="relative flex-shrink-0 sm:w-36">
-          <button
-            onClick={() => setShowPropertyDropdown(!showPropertyDropdown)}
-            className="w-full h-11 flex items-center justify-between gap-2 px-3.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:border-neutral-300 transition-colors"
-          >
-            <span className="flex items-center gap-2 truncate">
-              <Home className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-              {propertyType ? tType(propertyType) : t('anyType')}
-            </span>
-            <ChevronDown className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-          </button>
+        <div className="flex gap-1.5 sm:contents">
+          {/* Property type */}
+          <div className="relative flex-shrink-0 w-24 sm:w-36">
+            <button
+              onClick={() => setShowPropertyDropdown(!showPropertyDropdown)}
+              className="w-full h-10 sm:h-11 flex items-center justify-between gap-1 sm:gap-2 px-2.5 sm:px-3.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:border-neutral-300 transition-colors"
+            >
+              <span className="flex items-center gap-1.5 sm:gap-2 truncate">
+                <Home className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                <span className="hidden sm:inline truncate">{propertyType ? tType(propertyType) : t('anyType')}</span>
+              </span>
+              <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-400 flex-shrink-0" />
+            </button>
 
-          {showPropertyDropdown && (
-            <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-1.5 z-20 animate-scale-in max-h-72 overflow-y-auto">
-              <button
-                onClick={() => { setPropertyType(''); setShowPropertyDropdown(false); }}
-                className="w-full text-left px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              >
-                {t('anyType')}
-              </button>
-              {PROPERTY_TYPES.map((type) => (
+            {showPropertyDropdown && (
+              <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-1.5 z-20 animate-scale-in max-h-72 overflow-y-auto">
                 <button
-                  key={type.value}
-                  onClick={() => { setPropertyType(type.value); setShowPropertyDropdown(false); }}
+                  onClick={() => { setPropertyType(''); setShowPropertyDropdown(false); }}
                   className="w-full text-left px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                 >
-                  {tType(type.value)}
+                  {t('anyType')}
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
+                {PROPERTY_TYPES.map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => { setPropertyType(type.value); setShowPropertyDropdown(false); }}
+                    className="w-full text-left px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                  >
+                    {tType(type.value)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* Location input */}
-        <div className="relative flex-1">
-          <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-          <input
-            type="text"
-            placeholder={t('locationPlaceholder')}
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="w-full h-11 pl-9 pr-3.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-transparent text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
+          {/* Location input */}
+          <div className="relative flex-1 min-w-0">
+            <MapPin className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+            <input
+              type="text"
+              placeholder={t('locationPlaceholder')}
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              className="w-full h-10 sm:h-11 pl-8 sm:pl-9 pr-2.5 sm:pr-3.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-transparent text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
         </div>
 
         {/* Search button */}
-        <button onClick={handleSearch} className="btn-primary h-11 px-6 flex-shrink-0">
+        <button onClick={handleSearch} className="btn-primary h-10 sm:h-11 px-6 w-full sm:w-auto flex-shrink-0">
           <Search className="w-4 h-4" />
           <span>{t('search')}</span>
         </button>

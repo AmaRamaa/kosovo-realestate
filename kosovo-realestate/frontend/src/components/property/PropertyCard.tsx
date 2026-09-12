@@ -51,7 +51,7 @@ export default function PropertyCard({ listing, className, index }: PropertyCard
       <div className="p-4">
         <div className="flex items-center justify-between mb-1.5">
           <span className="badge-gray text-[11px]">{t(listing.propertyType)}</span>
-          {index !== undefined && <span className="text-[11px] text-neutral-400 font-mono">#{index}</span>}
+          {index !== undefined && <span className="text-[11px] text-neutral-400 font-mono">#{String(index + 1).padStart(3, '0')}</span>}
         </div>
 
         <h3 className="font-display font-semibold text-neutral-900 dark:text-white line-clamp-1 mb-1.5 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">

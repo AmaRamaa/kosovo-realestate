@@ -10,6 +10,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const STATUSES = ['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'] as const;
 const STATUS_BADGE: Record<string, string> = { PENDING: 'badge-yellow', CONFIRMED: 'badge-green', CANCELLED: 'badge-red', COMPLETED: 'badge-blue' };
+const STATUS_LABEL_KEYS: Record<string, string> = { ALL: 'filterAll', PENDING: 'statusPending', CONFIRMED: 'apptConfirmed', CANCELLED: 'apptCancelled', COMPLETED: 'apptCompleted' };
 
 export default function AdminAppointmentsPage() {
   const { t, locale } = useTranslation('admin');
@@ -29,17 +30,17 @@ export default function AdminAppointmentsPage() {
       await adminApi.updateAppointment(id, newStatus);
       invalidate();
     } catch {
-      toast('Could not update', 'error');
+      toast(t('couldNotUpdate'), 'error');
     }
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Delete this viewing request?')) return;
+    if (!confirm(t('deleteAppointmentConfirm'))) return;
     try {
       await adminApi.deleteAppointment(id);
       invalidate();
     } catch {
-      toast('Could not delete', 'error');
+      toast(t('couldNotDelete'), 'error');
     }
   };
 
@@ -58,7 +59,7 @@ export default function AdminAppointmentsPage() {
               onClick={() => setStatus(s)}
               className={s === status ? 'btn-sm btn bg-primary-600 text-white' : 'btn-sm btn bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700'}
             >
-              {s}
+              {t(STATUS_LABEL_KEYS[s])}
             </button>
           ))}
         </div>
@@ -83,13 +84,13 @@ export default function AdminAppointmentsPage() {
                       <a href={`mailto:${appt.buyer.email}`} className="flex items-center gap-1 hover:text-primary-600"><Mail className="w-3 h-3" /> {appt.buyer.email}</a>
                     </p>
                   </div>
-                  <p className="text-xs text-neutral-500 flex-shrink-0">Agent: {appt.agent?.user?.firstName} {appt.agent?.user?.lastName}</p>
+                  <p className="text-xs text-neutral-500 flex-shrink-0">{t('agentLabel')} {appt.agent?.user?.firstName} {appt.agent?.user?.lastName}</p>
                   <select
                     value={appt.status}
                     onChange={(e) => changeStatus(appt.id, e.target.value)}
                     className={`badge ${STATUS_BADGE[appt.status] || 'badge-gray'} border-0 cursor-pointer`}
                   >
-                    {STATUSES.filter((s) => s !== 'ALL').map((s) => <option key={s} value={s}>{s}</option>)}
+                    {STATUSES.filter((s) => s !== 'ALL').map((s) => <option key={s} value={s}>{t(STATUS_LABEL_KEYS[s])}</option>)}
                   </select>
                   <button onClick={() => remove(appt.id)} className="btn-sm btn btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-950 flex-shrink-0"><Trash2 className="w-4 h-4" /></button>
                 </div>

@@ -25,22 +25,31 @@ interface ListingFormProps {
 }
 
 const AMENITY_FIELDS = [
-  { key: 'hasGarden', label: 'Garden' },
-  { key: 'hasPool', label: 'Pool' },
-  { key: 'hasBalcony', label: 'Balcony' },
-  { key: 'hasTerrace', label: 'Terrace' },
-  { key: 'hasElevator', label: 'Elevator' },
-  { key: 'hasSecurity', label: 'Security' },
-  { key: 'hasAirCon', label: 'Air Conditioning' },
-  { key: 'hasHeating', label: 'Heating' },
-  { key: 'hasFurnished', label: 'Furnished' },
-  { key: 'hasStorage', label: 'Storage' },
+  { key: 'hasGarden', labelKey: 'amenityGarden' },
+  { key: 'hasPool', labelKey: 'amenityPool' },
+  { key: 'hasBalcony', labelKey: 'amenityBalcony' },
+  { key: 'hasTerrace', labelKey: 'amenityTerrace' },
+  { key: 'hasElevator', labelKey: 'amenityElevator' },
+  { key: 'hasSecurity', labelKey: 'amenitySecurity' },
+  { key: 'hasAirCon', labelKey: 'amenityAirCon' },
+  { key: 'hasHeating', labelKey: 'amenityHeating' },
+  { key: 'hasFurnished', labelKey: 'amenityFurnished' },
+  { key: 'hasStorage', labelKey: 'amenityStorage' },
 ] as const;
 
 const STATUS_OPTIONS = ['PENDING', 'ACTIVE', 'SOLD', 'RENTED', 'INACTIVE', 'REJECTED'];
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  PENDING: 'statusPending', ACTIVE: 'statusActive', SOLD: 'statusSold',
+  RENTED: 'statusRented', INACTIVE: 'statusInactive', REJECTED: 'statusRejected',
+};
+const HEATING_LABEL_KEYS: Record<string, string> = {
+  CENTRAL: 'heatingCentral', ELECTRIC: 'heatingElectric', GAS: 'heatingGas', OIL: 'heatingOil',
+  WOOD: 'heatingWood', HEAT_PUMP: 'heatingHeatPump', UNDERFLOOR: 'heatingUnderfloor', NONE: 'heatingNone',
+};
 
 export default function ListingForm({ listing }: ListingFormProps) {
   const router = useRouter();
+  const { t } = useTranslation('admin');
   const { t: tType } = useTranslation('propertyTypes');
   const isEdit = !!listing;
 
@@ -110,7 +119,7 @@ export default function ListingForm({ listing }: ListingFormProps) {
       const uploaded = res.data.images.map((img: any) => ({ url: img.url, publicId: img.publicId }));
       setImages((prev) => [...prev, ...uploaded]);
     } catch {
-      toast('Image upload failed — check Cloudinary is configured.', 'error');
+      toast(t('imageUploadFailed'), 'error');
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -125,7 +134,7 @@ export default function ListingForm({ listing }: ListingFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.cityId) return toast('Please select a city', 'error');
+    if (!form.cityId) return toast(t('pleaseSelectCity'), 'error');
     setSaving(true);
     try {
       const payload: any = {
@@ -151,16 +160,16 @@ export default function ListingForm({ listing }: ListingFormProps) {
         const newImages = images.filter((img) => !img.id);
         if (newImages.length) payload.newImages = newImages;
         await listingApi.update(listing!.id, payload);
-        toast('Listing updated', 'success');
+        toast(t('listingUpdatedToast'), 'success');
         router.push('/admin/listings');
       } else {
         payload.images = images;
         const res = await listingApi.create(payload);
-        toast('Listing created', 'success');
+        toast(t('listingCreatedToast'), 'success');
         router.push('/admin/listings');
       }
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Something went wrong', 'error');
+      toast(err?.response?.data?.error || t('somethingWentWrong'), 'error');
     } finally {
       setSaving(false);
     }
@@ -170,18 +179,18 @@ export default function ListingForm({ listing }: ListingFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
       {/* Basic info */}
       <div className="card p-6 space-y-4">
-        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">Basic Info</h2>
+        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">{t('formBasicInfo')}</h2>
         <div>
-          <label className="label">Title</label>
+          <label className="label">{t('fieldTitle')}</label>
           <input className="input" value={form.title} onChange={(e) => set('title', e.target.value)} required maxLength={200} />
         </div>
         <div>
-          <label className="label">Description</label>
+          <label className="label">{t('fieldDescription')}</label>
           <textarea className="input resize-none" rows={5} value={form.description} onChange={(e) => set('description', e.target.value)} required />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="label">Listing Type</label>
+            <label className="label">{t('fieldListingType')}</label>
             <Select
               value={form.listingType}
               onValueChange={(v) => set('listingType', v)}
@@ -189,7 +198,7 @@ export default function ListingForm({ listing }: ListingFormProps) {
             />
           </div>
           <div>
-            <label className="label">Property Type</label>
+            <label className="label">{t('fieldPropertyType')}</label>
             <Select
               value={form.propertyType}
               onValueChange={(v) => set('propertyType', v)}
@@ -198,79 +207,79 @@ export default function ListingForm({ listing }: ListingFormProps) {
           </div>
         </div>
         <div>
-          <label className="label">Status</label>
-          <Select value={form.status} onValueChange={(v) => set('status', v)} options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+          <label className="label">{t('fieldStatus')}</label>
+          <Select value={form.status} onValueChange={(v) => set('status', v)} options={STATUS_OPTIONS.map((s) => ({ value: s, label: t(STATUS_LABEL_KEYS[s]) }))} />
         </div>
       </div>
 
       {/* Pricing */}
       <div className="card p-6 space-y-4">
-        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">Pricing</h2>
+        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">{t('formPricing')}</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="label">Price</label>
+            <label className="label">{t('fieldPrice')}</label>
             <input type="number" min={0} className="input" value={form.price} onChange={(e) => set('price', e.target.value)} required />
           </div>
           <div>
-            <label className="label">Currency</label>
+            <label className="label">{t('fieldCurrency')}</label>
             <Select value={form.currency} onValueChange={(v) => set('currency', v)} options={[{ value: 'EUR', label: 'EUR (€)' }, { value: 'USD', label: 'USD ($)' }]} />
           </div>
         </div>
         <label className="flex items-center gap-2.5 cursor-pointer">
           <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-primary-600" checked={form.priceNegotiable} onChange={(e) => set('priceNegotiable', e.target.checked)} />
-          <span className="text-sm text-neutral-700 dark:text-neutral-300">Price negotiable</span>
+          <span className="text-sm text-neutral-700 dark:text-neutral-300">{t('fieldPriceNegotiable')}</span>
         </label>
       </div>
 
       {/* Details */}
       <div className="card p-6 space-y-4">
-        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">Details</h2>
+        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">{t('formDetails')}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div>
-            <label className="label">Area (m²)</label>
+            <label className="label">{t('fieldArea')}</label>
             <input type="number" min={0} className="input" value={form.area} onChange={(e) => set('area', e.target.value)} required />
           </div>
           <div>
-            <label className="label">Bedrooms</label>
+            <label className="label">{t('fieldBedrooms')}</label>
             <input type="number" min={0} className="input" value={form.bedrooms} onChange={(e) => set('bedrooms', e.target.value)} />
           </div>
           <div>
-            <label className="label">Bathrooms</label>
+            <label className="label">{t('fieldBathrooms')}</label>
             <input type="number" min={0} className="input" value={form.bathrooms} onChange={(e) => set('bathrooms', e.target.value)} />
           </div>
           <div>
-            <label className="label">Floor</label>
+            <label className="label">{t('fieldFloor')}</label>
             <input type="number" className="input" value={form.floor} onChange={(e) => set('floor', e.target.value)} />
           </div>
           <div>
-            <label className="label">Total Floors</label>
+            <label className="label">{t('fieldTotalFloors')}</label>
             <input type="number" min={0} className="input" value={form.totalFloors} onChange={(e) => set('totalFloors', e.target.value)} />
           </div>
           <div>
-            <label className="label">Year Built</label>
+            <label className="label">{t('fieldYearBuilt')}</label>
             <input type="number" className="input" value={form.yearBuilt} onChange={(e) => set('yearBuilt', e.target.value)} />
           </div>
           <div>
-            <label className="label">Parking Spaces</label>
+            <label className="label">{t('fieldParkingSpaces')}</label>
             <input type="number" min={0} className="input" value={form.parkingSpaces} onChange={(e) => set('parkingSpaces', e.target.value)} />
           </div>
           <div>
-            <label className="label">Garage Spaces</label>
+            <label className="label">{t('fieldGarageSpaces')}</label>
             <input type="number" min={0} className="input" value={form.garageSpaces} onChange={(e) => set('garageSpaces', e.target.value)} />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="label">Heating Type</label>
-            <Select value={form.heatingType} onValueChange={(v) => set('heatingType', v)} options={HEATING_TYPES} placeholder="Not specified" />
+            <label className="label">{t('fieldHeatingType')}</label>
+            <Select value={form.heatingType} onValueChange={(v) => set('heatingType', v)} options={HEATING_TYPES.map((h) => ({ value: h.value, label: t(HEATING_LABEL_KEYS[h.value]) }))} placeholder={t('notSpecified')} />
           </div>
           <div>
-            <label className="label">Energy Rating</label>
-            <Select value={form.energyRating} onValueChange={(v) => set('energyRating', v)} options={ENERGY_RATINGS.map((r) => ({ value: r, label: r.replace('_PLUS', '+') }))} placeholder="Not specified" />
+            <label className="label">{t('fieldEnergyRating')}</label>
+            <Select value={form.energyRating} onValueChange={(v) => set('energyRating', v)} options={ENERGY_RATINGS.map((r) => ({ value: r, label: r.replace('_PLUS', '+') }))} placeholder={t('notSpecified')} />
           </div>
         </div>
         <div>
-          <label className="label mb-2">Amenities</label>
+          <label className="label mb-2">{t('fieldAmenities')}</label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
             {AMENITY_FIELDS.map((f) => (
               <label key={f.key} className="flex items-center gap-2 cursor-pointer text-sm text-neutral-700 dark:text-neutral-300">
@@ -280,7 +289,7 @@ export default function ListingForm({ listing }: ListingFormProps) {
                   checked={(form as any)[f.key]}
                   onChange={(e) => set(f.key, e.target.checked)}
                 />
-                {f.label}
+                {t(f.labelKey)}
               </label>
             ))}
           </div>
@@ -289,47 +298,47 @@ export default function ListingForm({ listing }: ListingFormProps) {
 
       {/* Location */}
       <div className="card p-6 space-y-4">
-        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">Location</h2>
+        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">{t('formLocation')}</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="label">City</label>
+            <label className="label">{t('fieldCity')}</label>
             <Select
               value={form.cityId}
               onValueChange={(v) => { set('cityId', v); set('neighborhoodId', ''); }}
               options={cities.map((c: any) => ({ value: c.id, label: c.name }))}
-              placeholder="Select a city"
+              placeholder={t('selectCity')}
             />
           </div>
           <div>
-            <label className="label">Neighborhood</label>
+            <label className="label">{t('fieldNeighborhood')}</label>
             <Select
               value={form.neighborhoodId}
               onValueChange={(v) => set('neighborhoodId', v)}
               options={neighborhoods.map((n: any) => ({ value: n.id, label: n.name }))}
-              placeholder={neighborhoods.length ? 'Select a neighborhood' : 'No neighborhoods'}
+              placeholder={neighborhoods.length ? t('selectNeighborhood') : t('noNeighborhoodsOption')}
             />
           </div>
         </div>
         <div>
-          <label className="label">Address</label>
+          <label className="label">{t('fieldAddress')}</label>
           <input className="input" value={form.address} onChange={(e) => set('address', e.target.value)} required />
         </div>
         <div>
-          <label className="label mb-2">Map location</label>
+          <label className="label mb-2">{t('fieldMapLocation')}</label>
           <LocationPicker lat={form.lat} lng={form.lng} onChange={(lat, lng) => setForm((p) => ({ ...p, lat, lng }))} />
         </div>
       </div>
 
       {/* Images */}
       <div className="card p-6 space-y-4">
-        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">Photos</h2>
+        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">{t('formPhotos')}</h2>
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
           {images.map((img, i) => (
             <div key={img.id || img.url} className="relative aspect-[4/3] rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 group">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
               {i === 0 && (
                 <span className="absolute top-1.5 left-1.5 badge bg-primary-600 text-white text-[10px] flex items-center gap-1">
-                  <Star className="w-2.5 h-2.5 fill-current" /> Cover
+                  <Star className="w-2.5 h-2.5 fill-current" /> {t('coverBadge')}
                 </span>
               )}
               <button
@@ -343,28 +352,28 @@ export default function ListingForm({ listing }: ListingFormProps) {
           ))}
           <label className="aspect-[4/3] rounded-lg border-2 border-dashed border-neutral-300 dark:border-neutral-600 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-primary-400 text-neutral-500">
             {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
-            <span className="text-xs">Upload</span>
+            <span className="text-xs">{t('uploadAction')}</span>
             <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
           </label>
         </div>
-        <p className="text-xs text-neutral-500">The first photo is used as the cover image. Add photos in the order you want them.</p>
+        <p className="text-xs text-neutral-500">{t('photosHelp')}</p>
       </div>
 
       {/* Featured */}
       <div className="card p-6">
         <label className="flex items-center gap-2.5 cursor-pointer">
           <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-primary-600" checked={form.isFeatured} onChange={(e) => set('isFeatured', e.target.checked)} />
-          <span className="text-sm text-neutral-700 dark:text-neutral-300">Feature this listing on the homepage</span>
+          <span className="text-sm text-neutral-700 dark:text-neutral-300">{t('featureOnHomepage')}</span>
         </label>
       </div>
 
       <div className="flex items-center gap-3">
         <button type="submit" disabled={saving} className="btn-primary btn-lg">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          {isEdit ? 'Save Changes' : 'Create Listing'}
+          {isEdit ? t('saveChanges') : t('createListing')}
         </button>
         <button type="button" onClick={() => router.push('/admin/listings')} className="btn-secondary btn-lg">
-          Cancel
+          {t('cancelAction')}
         </button>
       </div>
     </form>

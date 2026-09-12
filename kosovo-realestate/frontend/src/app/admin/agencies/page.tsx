@@ -32,28 +32,28 @@ export default function AdminAgenciesPage() {
   };
 
   const save = async () => {
-    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.cityId) return toast('Name, email, phone, and city are required', 'error');
+    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.cityId) return toast(t('agencyRequiredFields'), 'error');
     setSaving(true);
     try {
       if (modal.editing) await adminApi.updateAgency(modal.editing.id, form);
       else await adminApi.createAgency(form);
-      toast('Saved', 'success');
+      toast(t('savedToast'), 'success');
       setModal({ open: false });
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Something went wrong', 'error');
+      toast(err?.response?.data?.error || t('somethingWentWrong'), 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Delete this agency? This cannot be undone.')) return;
+    if (!confirm(t('deleteAgencyConfirm'))) return;
     try {
       await adminApi.deleteAgency(id);
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Could not delete', 'error');
+      toast(err?.response?.data?.error || t('couldNotDelete'), 'error');
     }
   };
 
@@ -84,7 +84,7 @@ export default function AdminAgenciesPage() {
                   <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> {a._count.listings}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => openEdit(a)} className="btn-sm btn btn-secondary flex-1"><Pencil className="w-3.5 h-3.5" /> Edit</button>
+                  <button onClick={() => openEdit(a)} className="btn-sm btn btn-secondary flex-1"><Pencil className="w-3.5 h-3.5" /> {t('editAction')}</button>
                   <button onClick={() => remove(a.id)} className="btn-sm btn btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-950"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
@@ -93,43 +93,43 @@ export default function AdminAgenciesPage() {
         )}
       </div>
 
-      <Modal open={modal.open} onOpenChange={(open) => setModal({ open })} title={modal.editing ? 'Edit Agency' : 'New Agency'}>
+      <Modal open={modal.open} onOpenChange={(open) => setModal({ open })} title={modal.editing ? t('editAgencyTitle') : t('newAgencyTitle')}>
         <div className="space-y-4">
           <div>
-            <label className="label">Name</label>
+            <label className="label">{t('fieldName')}</label>
             <input className="input" value={form.name} onChange={(e) => setForm((p: any) => ({ ...p, name: e.target.value }))} />
           </div>
           <div>
-            <label className="label">Description</label>
+            <label className="label">{t('fieldDescription')}</label>
             <textarea className="input resize-none" rows={3} value={form.description} onChange={(e) => setForm((p: any) => ({ ...p, description: e.target.value }))} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Email</label>
+              <label className="label">{t('fieldEmail')}</label>
               <input type="email" className="input" value={form.email} onChange={(e) => setForm((p: any) => ({ ...p, email: e.target.value }))} />
             </div>
             <div>
-              <label className="label">Phone</label>
+              <label className="label">{t('fieldPhone')}</label>
               <input className="input" value={form.phone} onChange={(e) => setForm((p: any) => ({ ...p, phone: e.target.value }))} />
             </div>
           </div>
           <div>
-            <label className="label">Address</label>
+            <label className="label">{t('fieldAddress')}</label>
             <input className="input" value={form.address} onChange={(e) => setForm((p: any) => ({ ...p, address: e.target.value }))} />
           </div>
           <div>
-            <label className="label">Website</label>
+            <label className="label">{t('fieldWebsite')}</label>
             <input className="input" value={form.website} onChange={(e) => setForm((p: any) => ({ ...p, website: e.target.value }))} />
           </div>
           <div>
-            <label className="label">City</label>
-            <Select value={form.cityId} onValueChange={(v) => setForm((p: any) => ({ ...p, cityId: v }))} options={cities.map((c: any) => ({ value: c.id, label: c.name }))} placeholder="Select a city" />
+            <label className="label">{t('fieldCity')}</label>
+            <Select value={form.cityId} onValueChange={(v) => setForm((p: any) => ({ ...p, cityId: v }))} options={cities.map((c: any) => ({ value: c.id, label: c.name }))} placeholder={t('selectCity')} />
           </div>
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-primary-600" checked={form.isVerified} onChange={(e) => setForm((p: any) => ({ ...p, isVerified: e.target.checked }))} />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Verified (visible on the site)</span>
+            <span className="text-sm text-neutral-700 dark:text-neutral-300">{t('verifiedVisible')}</span>
           </label>
-          <button onClick={save} disabled={saving} className="btn-primary btn-md w-full">Save</button>
+          <button onClick={save} disabled={saving} className="btn-primary btn-md w-full">{t('saveAction')}</button>
         </div>
       </Modal>
     </AdminLayout>

@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-lea
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Search, Loader2, MapPin } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const PIN_ICON = L.icon({
   iconUrl:
@@ -43,6 +44,7 @@ function Recenter({ lat, lng }: { lat: number; lng: number }) {
 }
 
 export default function LocationPicker({ lat, lng, onChange }: LocationPickerProps) {
+  const { t } = useTranslation('admin');
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState('');
@@ -67,10 +69,10 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
       if (results?.[0]) {
         onChange(Number(results[0].lat), Number(results[0].lon));
       } else {
-        setError('No results found');
+        setError(t('noResultsFound'));
       }
     } catch {
-      setError('Search failed, try again');
+      setError(t('searchFailedRetry'));
     } finally {
       setSearching(false);
     }
@@ -84,11 +86,11 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(); } }}
-          placeholder="Search an address in Kosovo..."
+          placeholder={t('searchAddressPlaceholder')}
           className="input pl-9 pr-20"
         />
         <button type="button" onClick={() => handleSearch()} disabled={searching} className="absolute right-1.5 top-1/2 -translate-y-1/2 btn-sm btn-primary">
-          {searching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Search'}
+          {searching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('searchAction')}
         </button>
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
@@ -119,8 +121,8 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
       <p className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
         <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
         {lat != null && lng != null
-          ? `${lat.toFixed(5)}, ${lng.toFixed(5)} — click the map or drag the pin to adjust`
-          : 'Search an address or click the map to drop a pin'}
+          ? `${lat.toFixed(5)}, ${lng.toFixed(5)} — ${t('mapAdjustHint')}`
+          : t('mapSearchHint')}
       </p>
     </div>
   );

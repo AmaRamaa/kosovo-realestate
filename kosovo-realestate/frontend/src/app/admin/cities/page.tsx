@@ -30,28 +30,28 @@ export default function AdminCitiesPage() {
   const openEditCity = (city: any) => { setCityForm({ name: city.name, nameAlbanian: city.nameAlbanian || '', description: city.description || '', isActive: city.isActive }); setCityModal({ open: true, editing: city }); };
 
   const saveCity = async () => {
-    if (!cityForm.name.trim()) return toast('Name is required', 'error');
+    if (!cityForm.name.trim()) return toast(t('nameRequired'), 'error');
     setSaving(true);
     try {
       if (cityModal.editing) await adminApi.updateCity(cityModal.editing.id, cityForm);
       else await adminApi.createCity(cityForm);
-      toast('Saved', 'success');
+      toast(t('savedToast'), 'success');
       setCityModal({ open: false });
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Something went wrong', 'error');
+      toast(err?.response?.data?.error || t('somethingWentWrong'), 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const deleteCity = async (id: string) => {
-    if (!confirm('Delete this city? This cannot be undone.')) return;
+    if (!confirm(t('deleteCityConfirm'))) return;
     try {
       await adminApi.deleteCity(id);
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Could not delete', 'error');
+      toast(err?.response?.data?.error || t('couldNotDelete'), 'error');
     }
   };
 
@@ -59,28 +59,28 @@ export default function AdminCitiesPage() {
   const openEditNeighborhood = (nb: any) => { setNbForm({ name: nb.name, cityId: nb.cityId }); setNbModal({ open: true, editing: nb }); };
 
   const saveNeighborhood = async () => {
-    if (!nbForm.name.trim()) return toast('Name is required', 'error');
+    if (!nbForm.name.trim()) return toast(t('nameRequired'), 'error');
     setSaving(true);
     try {
       if (nbModal.editing) await adminApi.updateNeighborhood(nbModal.editing.id, { name: nbForm.name });
       else await adminApi.createNeighborhood(nbForm);
-      toast('Saved', 'success');
+      toast(t('savedToast'), 'success');
       setNbModal({ open: false });
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Something went wrong', 'error');
+      toast(err?.response?.data?.error || t('somethingWentWrong'), 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const deleteNeighborhood = async (id: string) => {
-    if (!confirm('Delete this neighborhood?')) return;
+    if (!confirm(t('deleteNeighborhoodConfirm'))) return;
     try {
       await adminApi.deleteNeighborhood(id);
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Could not delete', 'error');
+      toast(err?.response?.data?.error || t('couldNotDelete'), 'error');
     }
   };
 
@@ -107,7 +107,7 @@ export default function AdminCitiesPage() {
                     </button>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-neutral-900 dark:text-white">{city.name}{city.nameAlbanian ? ` (${city.nameAlbanian})` : ''}</p>
-                      <p className="text-xs text-neutral-500">{city._count.neighborhoods} neighborhoods · {city._count.listings} listings</p>
+                      <p className="text-xs text-neutral-500">{city._count.neighborhoods} {t('neighborhoodsCount')} · {city._count.listings} {t('listingsCount')}</p>
                     </div>
                     <span className={city.isActive ? 'badge-green' : 'badge-gray'}>{city.isActive ? t('activeBadge') : t('inactiveBadge')}</span>
                     <div className="flex items-center gap-1">
@@ -138,35 +138,35 @@ export default function AdminCitiesPage() {
         </div>
       </div>
 
-      <Modal open={cityModal.open} onOpenChange={(open) => setCityModal({ open })} title={cityModal.editing ? 'Edit City' : 'New City'}>
+      <Modal open={cityModal.open} onOpenChange={(open) => setCityModal({ open })} title={cityModal.editing ? t('editCityTitle') : t('newCityTitle')}>
         <div className="space-y-4">
           <div>
-            <label className="label">Name (English)</label>
+            <label className="label">{t('nameEnglish')}</label>
             <input className="input" value={cityForm.name} onChange={(e) => setCityForm((p: any) => ({ ...p, name: e.target.value }))} />
           </div>
           <div>
-            <label className="label">Name (Albanian)</label>
+            <label className="label">{t('nameAlbanian')}</label>
             <input className="input" value={cityForm.nameAlbanian} onChange={(e) => setCityForm((p: any) => ({ ...p, nameAlbanian: e.target.value }))} />
           </div>
           <div>
-            <label className="label">Description</label>
+            <label className="label">{t('fieldDescription')}</label>
             <textarea className="input resize-none" rows={3} value={cityForm.description} onChange={(e) => setCityForm((p: any) => ({ ...p, description: e.target.value }))} />
           </div>
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-primary-600" checked={cityForm.isActive} onChange={(e) => setCityForm((p: any) => ({ ...p, isActive: e.target.checked }))} />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Active (visible on the site)</span>
+            <span className="text-sm text-neutral-700 dark:text-neutral-300">{t('activeVisible')}</span>
           </label>
-          <button onClick={saveCity} disabled={saving} className="btn-primary btn-md w-full">Save</button>
+          <button onClick={saveCity} disabled={saving} className="btn-primary btn-md w-full">{t('saveAction')}</button>
         </div>
       </Modal>
 
-      <Modal open={nbModal.open} onOpenChange={(open) => setNbModal({ open })} title={nbModal.editing ? 'Edit Neighborhood' : 'New Neighborhood'}>
+      <Modal open={nbModal.open} onOpenChange={(open) => setNbModal({ open })} title={nbModal.editing ? t('editNeighborhoodTitle') : t('newNeighborhoodTitle')}>
         <div className="space-y-4">
           <div>
-            <label className="label">Name</label>
+            <label className="label">{t('fieldName')}</label>
             <input className="input" value={nbForm.name} onChange={(e) => setNbForm((p: any) => ({ ...p, name: e.target.value }))} />
           </div>
-          <button onClick={saveNeighborhood} disabled={saving} className="btn-primary btn-md w-full">Save</button>
+          <button onClick={saveNeighborhood} disabled={saving} className="btn-primary btn-md w-full">{t('saveAction')}</button>
         </div>
       </Modal>
     </AdminLayout>

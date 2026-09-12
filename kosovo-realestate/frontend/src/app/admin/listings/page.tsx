@@ -66,7 +66,7 @@ export default function AdminListingsPage() {
             {pagination && <span className="text-sm text-neutral-500">{pagination.total} {t('resultsCount')}</span>}
           </div>
           <Link href="/admin/listings/new" className="btn-primary btn-md">
-            <Plus className="w-4 h-4" /> New Listing
+            <Plus className="w-4 h-4" /> {t('newListingBtn')}
           </Link>
         </div>
 
@@ -143,7 +143,7 @@ export default function AdminListingsPage() {
                     <Link href={`/properties/${listing.slug}`} target="_blank" title={t('viewListing')} className="btn-sm btn btn-ghost">
                       <ExternalLink className="w-4 h-4" />
                     </Link>
-                    <Link href={`/admin/listings/${listing.id}/edit`} title="Edit" className="btn-sm btn btn-ghost">
+                    <Link href={`/admin/listings/${listing.id}/edit`} title={t('editAction')} className="btn-sm btn btn-ghost">
                       <Pencil className="w-4 h-4" />
                     </Link>
                     <button onClick={() => handleDelete(listing.id)} title={t('deleteAction')} className="btn-sm btn btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-950">

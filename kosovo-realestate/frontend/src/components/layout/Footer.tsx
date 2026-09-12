@@ -52,7 +52,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-neutral-500">
                 <Phone className="w-4 h-4 text-primary-600 flex-shrink-0" />
-                +383 45 400 807
+                +383 45 400 907
               </div>
               <div className="flex items-center gap-2 text-neutral-500">
                 <Mail className="w-4 h-4 text-primary-600 flex-shrink-0" />

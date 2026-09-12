@@ -38,8 +38,8 @@ export default function AdminAgentsPage() {
   };
 
   const save = async () => {
-    if (!form.firstName.trim() || !form.lastName.trim()) return toast('First and last name are required', 'error');
-    if (!modal.editing && (!form.email.trim() || !form.password.trim())) return toast('Email and password are required for a new agent', 'error');
+    if (!form.firstName.trim() || !form.lastName.trim()) return toast(t('firstLastNameRequired'), 'error');
+    if (!modal.editing && (!form.email.trim() || !form.password.trim())) return toast(t('emailPasswordRequiredNewAgent'), 'error');
     setSaving(true);
     try {
       const agencyId = form.agencyId === NO_AGENCY ? null : form.agencyId || null;
@@ -52,23 +52,23 @@ export default function AdminAgentsPage() {
       } else {
         await adminApi.createAgent({ ...form, agencyId, yearsExperience: Number(form.yearsExperience) || 0 });
       }
-      toast('Saved', 'success');
+      toast(t('savedToast'), 'success');
       setModal({ open: false });
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Something went wrong', 'error');
+      toast(err?.response?.data?.error || t('somethingWentWrong'), 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Remove this agent profile? Their user account will remain but lose agent status.')) return;
+    if (!confirm(t('removeAgentConfirm'))) return;
     try {
       await adminApi.deleteAgent(id);
       invalidate();
     } catch (err: any) {
-      toast(err?.response?.data?.error || 'Could not delete', 'error');
+      toast(err?.response?.data?.error || t('couldNotDelete'), 'error');
     }
   };
 
@@ -94,10 +94,10 @@ export default function AdminAgentsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm text-neutral-900 dark:text-white">{a.user.firstName} {a.user.lastName}</p>
-                    <p className="text-xs text-neutral-500">{a.user.email} · {a.agency?.name || 'No agency'}</p>
+                    <p className="text-xs text-neutral-500">{a.user.email} · {a.agency?.name || t('noAgencyOption')}</p>
                   </div>
                   <div className="flex items-center gap-1 text-xs text-neutral-500 flex-shrink-0">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {a.rating} · {a._count.listings} listings
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {a.rating} · {a._count.listings} {t('listingsCount')}
                   </div>
                   <span className={a.isVerified ? 'badge-green' : 'badge-gray'}>{a.isVerified ? t('activeBadge') : t('inactiveBadge')}</span>
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -111,61 +111,61 @@ export default function AdminAgentsPage() {
         </div>
       </div>
 
-      <Modal open={modal.open} onOpenChange={(open) => setModal({ open })} title={modal.editing ? 'Edit Agent' : 'New Agent'}>
+      <Modal open={modal.open} onOpenChange={(open) => setModal({ open })} title={modal.editing ? t('editAgentTitle') : t('newAgentTitle')}>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">First name</label>
+              <label className="label">{t('fieldFirstName')}</label>
               <input className="input" value={form.firstName} onChange={(e) => setForm((p: any) => ({ ...p, firstName: e.target.value }))} />
             </div>
             <div>
-              <label className="label">Last name</label>
+              <label className="label">{t('fieldLastName')}</label>
               <input className="input" value={form.lastName} onChange={(e) => setForm((p: any) => ({ ...p, lastName: e.target.value }))} />
             </div>
           </div>
           {!modal.editing && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="label">Email</label>
+                <label className="label">{t('fieldEmail')}</label>
                 <input type="email" className="input" value={form.email} onChange={(e) => setForm((p: any) => ({ ...p, email: e.target.value }))} />
               </div>
               <div>
-                <label className="label">Password</label>
+                <label className="label">{t('fieldPassword')}</label>
                 <input type="password" className="input" value={form.password} onChange={(e) => setForm((p: any) => ({ ...p, password: e.target.value }))} />
               </div>
             </div>
           )}
           <div>
-            <label className="label">Phone</label>
+            <label className="label">{t('fieldPhone')}</label>
             <input className="input" value={form.phone} onChange={(e) => setForm((p: any) => ({ ...p, phone: e.target.value }))} />
           </div>
           <div>
-            <label className="label">Agency</label>
+            <label className="label">{t('fieldAgency')}</label>
             <Select
               value={form.agencyId || NO_AGENCY}
               onValueChange={(v) => setForm((p: any) => ({ ...p, agencyId: v }))}
-              options={[{ value: NO_AGENCY, label: 'No agency' }, ...agencies.map((a: any) => ({ value: a.id, label: a.name }))]}
+              options={[{ value: NO_AGENCY, label: t('noAgencyOption') }, ...agencies.map((a: any) => ({ value: a.id, label: a.name }))]}
             />
           </div>
           <div>
-            <label className="label">Bio</label>
+            <label className="label">{t('fieldBio')}</label>
             <textarea className="input resize-none" rows={3} value={form.bio} onChange={(e) => setForm((p: any) => ({ ...p, bio: e.target.value }))} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">License number</label>
+              <label className="label">{t('fieldLicenseNumber')}</label>
               <input className="input" value={form.licenseNumber} onChange={(e) => setForm((p: any) => ({ ...p, licenseNumber: e.target.value }))} />
             </div>
             <div>
-              <label className="label">Years experience</label>
+              <label className="label">{t('fieldYearsExperience')}</label>
               <input type="number" min={0} className="input" value={form.yearsExperience} onChange={(e) => setForm((p: any) => ({ ...p, yearsExperience: e.target.value }))} />
             </div>
           </div>
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-primary-600" checked={form.isVerified} onChange={(e) => setForm((p: any) => ({ ...p, isVerified: e.target.checked }))} />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Verified (visible on the site)</span>
+            <span className="text-sm text-neutral-700 dark:text-neutral-300">{t('verifiedVisible')}</span>
           </label>
-          <button onClick={save} disabled={saving} className="btn-primary btn-md w-full">Save</button>
+          <button onClick={save} disabled={saving} className="btn-primary btn-md w-full">{t('saveAction')}</button>
         </div>
       </Modal>
     </AdminLayout>

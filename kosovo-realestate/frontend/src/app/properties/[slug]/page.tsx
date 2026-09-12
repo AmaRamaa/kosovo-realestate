@@ -409,7 +409,7 @@ export default function PropertyDetailPage() {
             <div className="mt-16">
               <h2 className="section-heading text-2xl mb-6">{t('similarProperties')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {similarData.listings.map((l: any) => <PropertyCard key={l.id} listing={l} />)}
+                {similarData.listings.map((l: any, i: number) => <PropertyCard key={l.id} listing={l} index={i} />)}
               </div>
             </div>
           )}

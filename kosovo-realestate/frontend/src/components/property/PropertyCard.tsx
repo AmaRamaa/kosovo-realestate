@@ -10,9 +10,10 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 interface PropertyCardProps {
   listing: Listing;
   className?: string;
+  index?: number;
 }
 
-export default function PropertyCard({ listing, className }: PropertyCardProps) {
+export default function PropertyCard({ listing, className, index }: PropertyCardProps) {
   const { t } = useTranslation('propertyTypes');
   const coverImage = listing.images?.[0]?.url || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800';
 
@@ -50,6 +51,7 @@ export default function PropertyCard({ listing, className }: PropertyCardProps) 
       <div className="p-4">
         <div className="flex items-center justify-between mb-1.5">
           <span className="badge-gray text-[11px]">{t(listing.propertyType)}</span>
+          {index !== undefined && <span className="text-[11px] text-neutral-400 font-mono">#{index}</span>}
         </div>
 
         <h3 className="font-display font-semibold text-neutral-900 dark:text-white line-clamp-1 mb-1.5 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">

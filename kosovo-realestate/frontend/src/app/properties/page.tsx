@@ -177,8 +177,8 @@ function PropertiesContent() {
               ) : (
                 <>
                   <div className={cn('grid gap-6', view === 'list' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3')}>
-                    {listings.map((listing: any) => (
-                      <PropertyCard key={listing.id} listing={listing} className={view === 'list' ? 'sm:flex sm:flex-row' : ''} />
+                    {listings.map((listing: any, i: number) => (
+                      <PropertyCard key={listing.id} listing={listing} index={i} className={view === 'list' ? 'sm:flex sm:flex-row' : ''} />
                     ))}
                   </div>
 

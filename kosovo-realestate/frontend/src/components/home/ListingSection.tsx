@@ -35,7 +35,7 @@ export default function ListingSection({ title, subtitle, eyebrow, listings, isL
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => <PropertyCardSkeleton key={i} />)
-            : listings.slice(0, 4).map((listing) => <PropertyCard key={listing.id} listing={listing} />)}
+            : listings.slice(0, 4).map((listing, i) => <PropertyCard key={listing.id} listing={listing} index={i} />)}
         </div>
       </div>
     </section>

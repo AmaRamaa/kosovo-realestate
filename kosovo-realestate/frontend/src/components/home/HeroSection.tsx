@@ -41,7 +41,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
         <div className="container-page relative py-16 lg:py-20">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="sr-only">{t('logoAlt')}</h1>
-            <Logo className="h-32 sm:h-36 lg:h-40 text-primary-600 opacity-50 mx-auto mb-8" />
+            <Logo className="h-36 sm:h-40 lg:h-44 text-white mx-auto mb-8" />
             <div className="flex justify-center mb-3">
               <HeroSearchBar />
             </div>
@@ -61,7 +61,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
         <div className="-mt-10 sm:-mt-14 lg:-mt-16 relative z-10 grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => <PropertyCardSkeleton key={i} />)
-            : listings.slice(0, 4).map((listing) => <PropertyCard key={listing.id} listing={listing} />)}
+            : listings.slice(0, 4).map((listing, i) => <PropertyCard key={listing.id} listing={listing} index={i} />)}
         </div>
         <div className="flex justify-end mt-4">
           <Link href="/properties?isFeatured=true" className="link flex items-center gap-1 text-sm">

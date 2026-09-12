@@ -8,11 +8,8 @@ import ListingSection from '@/components/home/ListingSection';
 import PopularCitiesSection from '@/components/home/PopularCitiesSection';
 import { OurAgentsSection } from '@/components/home/MiscSections';
 import { listingApi } from '@/lib/api';
-import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function HomePage() {
-  const { t } = useTranslation('home');
-
   const { data: recentData, isLoading: recentLoading } = useQuery({
     queryKey: ['listings', 'recent'],
     queryFn: () => listingApi.getRecent({ limit: 8 }).then(r => r.data),
@@ -24,11 +21,9 @@ export default function HomePage() {
       <main>
         <HeroSection />
 
-        <div className="-mt-40 sm:-mt-44 lg:-mt-48 relative z-10">
+        <div className="-mt-10 sm:-mt-14 lg:-mt-16 relative z-10">
           <ListingSection
-            eyebrow={t('recentEyebrow')}
-            title={t('recentTitle')}
-            subtitle={t('recentSubtitle')}
+            hideHeader
             listings={recentData?.listings || []}
             isLoading={recentLoading}
             viewAllHref="/properties?sortBy=createdAt&sortOrder=desc"

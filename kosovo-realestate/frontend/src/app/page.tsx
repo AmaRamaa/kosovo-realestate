@@ -24,7 +24,7 @@ export default function HomePage() {
       <main>
         <HeroSection />
 
-        <div className="pt-16 lg:pt-20">
+        <div className="-mt-6 sm:-mt-8 lg:-mt-10 relative z-10">
           <ListingSection
             eyebrow={t('recentEyebrow')}
             title={t('recentTitle')}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Search, Loader2, MapPin } from 'lucide-react';
@@ -18,6 +18,11 @@ const PIN_ICON = L.icon({
 });
 
 const DEFAULT_CENTER: [number, number] = [42.6629, 21.1655]; // Prishtinë
+
+// Only the general area is shown publicly, so the pin only needs to land
+// somewhere within this radius of the real spot — no need to hunt for the
+// exact rooftop.
+const AREA_RADIUS_METERS = 400;
 
 interface LocationPickerProps {
   lat?: number | null;
@@ -104,17 +109,24 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
           <ClickHandler onChange={onChange} />
           <Recenter lat={position[0]} lng={position[1]} />
           {lat != null && lng != null && (
-            <Marker
-              position={[lat, lng]}
-              icon={PIN_ICON}
-              draggable
-              eventHandlers={{
-                dragend: (e) => {
-                  const m = e.target.getLatLng();
-                  onChange(m.lat, m.lng);
-                },
-              }}
-            />
+            <>
+              <Circle
+                center={[lat, lng]}
+                radius={AREA_RADIUS_METERS}
+                pathOptions={{ color: '#6b1220', weight: 1.5, fillColor: '#6b1220', fillOpacity: 0.12, dashArray: '4 4' }}
+              />
+              <Marker
+                position={[lat, lng]}
+                icon={PIN_ICON}
+                draggable
+                eventHandlers={{
+                  dragend: (e) => {
+                    const m = e.target.getLatLng();
+                    onChange(m.lat, m.lng);
+                  },
+                }}
+              />
+            </>
           )}
         </MapContainer>
       </div>

@@ -7,6 +7,7 @@ import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/ui/Toaster';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import Analytics from '@/components/analytics/Analytics';
+import { SITE_URL } from '@/lib/utils';
 import './globals.css';
 
 const inter = Inter({
@@ -22,18 +23,21 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Molla Real Estate — Buy, Sell & Rent Properties',
     template: '%s | Molla Real Estate',
   },
   description: 'Find your perfect property in Kosovo. Browse thousands of verified apartments, houses, villas, and commercial properties across all municipalities.',
   keywords: ['Kosovo real estate', 'property Kosovo', 'apartments Prishtinë', 'houses for sale Kosovo'],
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     siteName: 'Molla Real Estate',
     title: 'Molla Real Estate — Buy, Sell & Rent Properties',
     description: 'Find your perfect property in Kosovo.',
+    url: SITE_URL,
   },
   robots: { index: true, follow: true },
 };

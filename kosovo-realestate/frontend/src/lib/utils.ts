@@ -2,6 +2,9 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ListingType, PropertyType, MortgageResult } from '@/types';
 
+// The finalized production domain — overridable via env for previews/staging.
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.molla-realestate.com').replace(/\/$/, '');
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

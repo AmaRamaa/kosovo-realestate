@@ -35,9 +35,23 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
+// FRONTEND_URL may be a single origin or a comma-separated list (e.g. to allow
+// both the www and apex forms of the production domain at once). Falls back to
+// the finalized production domain so a missing env var doesn't silently break
+// every request instead of a specific one. Trailing slashes are stripped since
+// a browser's Origin header never carries one, but env vars are often pasted
+// with one (a real mismatch we hit with the initial FRONTEND_URL value).
+const allowedOrigins = (process.env.FRONTEND_URL || 'https://www.molla-realestate.com,https://molla-realestate.com')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? (process.env.FRONTEND_URL || 'http://localhost:3000')
+    ? (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+        else callback(new Error('Not allowed by CORS'));
+      }
     : /^http:\/\/localhost:\d+$/,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet';
+import { MapContainer, TileLayer, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface MapDisplayProps {
@@ -11,7 +11,12 @@ interface MapDisplayProps {
   className?: string;
 }
 
-export default function MapDisplay({ lat, lng, title, zoom = 15, className }: MapDisplayProps) {
+// Shows the property's general area rather than its exact address — a real
+// geographic radius (meters, via Circle) rather than a pixel-sized pin, so it
+// stays honest about how approximate the location is at any zoom level.
+const AREA_RADIUS_METERS = 400;
+
+export default function MapDisplay({ lat, lng, title, zoom = 14, className }: MapDisplayProps) {
   return (
     <MapContainer
       center={[lat, lng]}
@@ -24,10 +29,10 @@ export default function MapDisplay({ lat, lng, title, zoom = 15, className }: Ma
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <CircleMarker
+      <Circle
         center={[lat, lng]}
-        radius={12}
-        pathOptions={{ color: '#6b1220', weight: 3, fillColor: '#6b1220', fillOpacity: 0.35 }}
+        radius={AREA_RADIUS_METERS}
+        pathOptions={{ color: '#6b1220', weight: 2, fillColor: '#6b1220', fillOpacity: 0.2 }}
       />
     </MapContainer>
   );

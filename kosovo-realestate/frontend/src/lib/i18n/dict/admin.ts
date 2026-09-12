@@ -162,8 +162,8 @@ export const admin = {
     searchAction: 'Search',
     noResultsFound: 'No results found',
     searchFailedRetry: 'Search failed, try again',
-    mapAdjustHint: 'click the map or drag the pin to adjust',
-    mapSearchHint: 'Search an address or click the map to drop a pin',
+    mapAdjustHint: 'approximate area — click the map or drag the pin to adjust',
+    mapSearchHint: 'Search an address or click the map to drop a pin — the exact spot doesn\'t matter, just the general area',
 
     // Cities / Agencies / Agents modals
     nameEnglish: 'Name (English)',
@@ -389,8 +389,8 @@ export const admin = {
     searchAction: 'Kërko',
     noResultsFound: 'Nuk u gjetën rezultate',
     searchFailedRetry: 'Kërkimi dështoi, provo përsëri',
-    mapAdjustHint: 'kliko hartën ose zvarrit gjilpërën për ta rregulluar',
-    mapSearchHint: 'Kërko një adresë ose kliko hartën për të vendosur gjilpërën',
+    mapAdjustHint: 'zonë e përafërt — kliko hartën ose zvarrit gjilpërën për ta rregulluar',
+    mapSearchHint: 'Kërko një adresë ose kliko hartën për të vendosur gjilpërën — vendi ekzakt nuk ka rëndësi, mjafton zona e përgjithshme',
 
     // Cities / Agencies / Agents modals
     nameEnglish: 'Emri (Anglisht)',

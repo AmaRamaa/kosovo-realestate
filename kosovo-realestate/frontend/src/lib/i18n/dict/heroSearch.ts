@@ -7,7 +7,7 @@ export const heroSearch = {
     search: 'Search',
   },
   sq: {
-    buy: 'Bli',
+    buy: 'Blej',
     rent: 'Qira',
     anyType: 'Çdo lloj',
     locationPlaceholder: 'Qyteti, lagjja, ose adresa...',

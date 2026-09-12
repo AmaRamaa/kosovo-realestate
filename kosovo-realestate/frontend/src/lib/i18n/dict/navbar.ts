@@ -21,7 +21,7 @@ export const navbar = {
     viewAllForRent: 'View all properties for rent',
   },
   sq: {
-    buy: 'Bli',
+    buy: 'Blej',
     rent: 'Qira',
     agents: 'Agjentët',
     search: 'Kërko',

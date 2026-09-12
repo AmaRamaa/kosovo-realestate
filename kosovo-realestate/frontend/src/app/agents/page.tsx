@@ -65,7 +65,7 @@ export default function AgentsPage() {
                   <div className="flex gap-2">
                     <Link href={`/agents/${agent.id}`} className="btn-primary btn-sm flex-1">{t('viewProfile')}</Link>
                     {agent.user.phone && <a href={`tel:${agent.user.phone}`} className="btn-secondary btn-sm w-9 p-0 justify-center"><Phone className="w-4 h-4" /></a>}
-                    <a href={`mailto:${agent.user.email}`} className="btn-secondary btn-sm w-9 p-0 justify-center"><Mail className="w-4 h-4" /></a>
+                    <a href={`mailto:${agent.contactEmail || agent.user.email}`} className="btn-secondary btn-sm w-9 p-0 justify-center"><Mail className="w-4 h-4" /></a>
                   </div>
                 </div>
               ))}

@@ -9,7 +9,7 @@ import { getInitials } from '@/lib/utils';
 import { toast } from '@/components/ui/Toaster';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
-const emptyForm = { firstName: '', lastName: '', email: '', phone: '', password: '', bio: '', licenseNumber: '', yearsExperience: 0, isVerified: true };
+const emptyForm = { firstName: '', lastName: '', email: '', contactEmail: '', phone: '', password: '', bio: '', licenseNumber: '', yearsExperience: 0, isVerified: true };
 
 export default function AdminAgentsPage() {
   const { t } = useTranslation('admin');
@@ -26,7 +26,7 @@ export default function AdminAgentsPage() {
   const openNew = () => { setForm(emptyForm); setModal({ open: true }); };
   const openEdit = (a: any) => {
     setForm({
-      firstName: a.user.firstName, lastName: a.user.lastName, email: a.user.email, phone: a.user.phone || '',
+      firstName: a.user.firstName, lastName: a.user.lastName, email: a.user.email, contactEmail: a.contactEmail || '', phone: a.user.phone || '',
       password: '', bio: a.bio || '', licenseNumber: a.licenseNumber || '',
       yearsExperience: a.yearsExperience, isVerified: a.isVerified,
     });
@@ -41,11 +41,11 @@ export default function AdminAgentsPage() {
       if (modal.editing) {
         await adminApi.updateAgent(modal.editing.id, {
           firstName: form.firstName, lastName: form.lastName, phone: form.phone,
-          bio: form.bio, licenseNumber: form.licenseNumber,
+          contactEmail: form.contactEmail || null, bio: form.bio, licenseNumber: form.licenseNumber,
           yearsExperience: Number(form.yearsExperience) || 0, isVerified: form.isVerified,
         });
       } else {
-        await adminApi.createAgent({ ...form, yearsExperience: Number(form.yearsExperience) || 0 });
+        await adminApi.createAgent({ ...form, contactEmail: form.contactEmail || null, yearsExperience: Number(form.yearsExperience) || 0 });
       }
       toast(t('savedToast'), 'success');
       setModal({ open: false });
@@ -130,9 +130,15 @@ export default function AdminAgentsPage() {
               </div>
             </div>
           )}
-          <div>
-            <label className="label">{t('fieldPhone')}</label>
-            <input className="input" value={form.phone} onChange={(e) => setForm((p: any) => ({ ...p, phone: e.target.value }))} />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label">{t('fieldPhone')}</label>
+              <input className="input" value={form.phone} onChange={(e) => setForm((p: any) => ({ ...p, phone: e.target.value }))} />
+            </div>
+            <div>
+              <label className="label">{t('fieldContactEmail')}</label>
+              <input type="email" className="input" placeholder={form.email} value={form.contactEmail} onChange={(e) => setForm((p: any) => ({ ...p, contactEmail: e.target.value }))} />
+            </div>
           </div>
           <div>
             <label className="label">{t('fieldBio')}</label>

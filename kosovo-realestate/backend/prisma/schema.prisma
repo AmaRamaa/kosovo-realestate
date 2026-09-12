@@ -122,6 +122,10 @@ model Agent {
   id              String    @id @default(cuid())
   userId          String    @unique
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Public contact email shown to site visitors — separate from user.email,
+  // which is the private login credential and shouldn't be exposed/changed
+  // just to update what's displayed publicly.
+  contactEmail    String?
   bio             String?
   licenseNumber   String?
   yearsExperience Int       @default(0)

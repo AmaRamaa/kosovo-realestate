@@ -342,7 +342,7 @@ adminRouter.get('/agents', async (req, res, next) => {
 
 adminRouter.post('/agents', async (req, res, next) => {
   try {
-    const { firstName, lastName, email, phone, password, bio, licenseNumber, yearsExperience, specializations, languages, isVerified } = req.body;
+    const { firstName, lastName, email, contactEmail, phone, password, bio, licenseNumber, yearsExperience, specializations, languages, isVerified } = req.body;
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ error: 'First name, last name, email, and password are required' });
     }
@@ -356,6 +356,7 @@ adminRouter.post('/agents', async (req, res, next) => {
     const agent = await prisma.agent.create({
       data: {
         userId: user.id,
+        contactEmail: contactEmail || null,
         bio, licenseNumber,
         yearsExperience: yearsExperience ?? 0,
         specializations: specializations || [],

@@ -22,6 +22,7 @@ export interface Agent {
   id: string;
   userId: string;
   user: Pick<User, 'firstName' | 'lastName' | 'avatar' | 'email' | 'phone'>;
+  contactEmail?: string | null;
   bio?: string;
   licenseNumber?: string;
   yearsExperience: number;

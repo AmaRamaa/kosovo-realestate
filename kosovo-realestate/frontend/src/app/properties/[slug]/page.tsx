@@ -379,8 +379,8 @@ export default function PropertyDetailPage() {
                           <Phone className="w-4 h-4 text-neutral-400" /> {agent.user.phone}
                         </a>
                       )}
-                      <a href={`mailto:${agent.user.email}`} className="flex items-center gap-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:text-primary-600 transition-colors">
-                        <Mail className="w-4 h-4 text-neutral-400" /> {agent.user.email}
+                      <a href={`mailto:${agent.contactEmail || agent.user.email}`} className="flex items-center gap-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:text-primary-600 transition-colors">
+                        <Mail className="w-4 h-4 text-neutral-400" /> {agent.contactEmail || agent.user.email}
                       </a>
                     </div>
                   </>

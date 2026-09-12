@@ -159,31 +159,12 @@ async function seed() {
     },
   });
 
-  // Create agency
-  const agency = await prisma.agency.upsert({
-    where: { slug: 'era-real-estate-prishtine' },
-    update: {},
-    create: {
-      name: 'ERA Real Estate Prishtinë',
-      slug: 'era-real-estate-prishtine',
-      description: 'One of Kosovo\'s most trusted real estate agencies with over 15 years of experience.',
-      email: 'info@era-ks.com',
-      phone: '+383 38 123 456',
-      address: 'Rr. Nënë Tereza Nr. 12, Prishtinë',
-      cityId: prishtine.id,
-      isVerified: true,
-      rating: 4.8,
-      reviewCount: 124,
-    },
-  });
-
   // Create agents
   const agent1 = await prisma.agent.upsert({
     where: { userId: agentUser1.id },
     update: {},
     create: {
       userId: agentUser1.id,
-      agencyId: agency.id,
       bio: 'Specialist in residential properties in Prishtinë with 8 years of experience.',
       yearsExperience: 8,
       specializations: ['Residential', 'Luxury', 'Investment'],
@@ -200,7 +181,6 @@ async function seed() {
     update: {},
     create: {
       userId: agentUser2.id,
-      agencyId: agency.id,
       bio: 'Expert in commercial and investment properties across Kosovo.',
       yearsExperience: 6,
       specializations: ['Commercial', 'Investment', 'Land'],
@@ -212,7 +192,7 @@ async function seed() {
     },
   });
 
-  console.log('✅ Created users, agents, agency');
+  console.log('✅ Created users, agents');
 
   // Create sample listings
   const sampleListings = [
@@ -587,7 +567,6 @@ async function seed() {
         cityId: cityMap.get(citySlug) || prishtine.id,
         userId: agentUser1.id,
         agentId: i % 2 === 0 ? agent1.id : agent2.id,
-        agencyId: agency.id,
         publishedAt: new Date(),
         images: {
           create: [

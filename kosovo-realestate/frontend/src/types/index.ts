@@ -1,6 +1,6 @@
 export type Role = 'BUYER' | 'SELLER' | 'AGENT' | 'ADMIN';
 export type ListingType = 'SALE' | 'RENT';
-export type PropertyType = 'APARTMENT' | 'HOUSE' | 'VILLA' | 'LAND' | 'COMMERCIAL' | 'OFFICE' | 'WAREHOUSE' | 'STUDIO' | 'DUPLEX';
+export type PropertyType = 'APARTMENT' | 'HOUSE' | 'VILLA' | 'LAND' | 'COMMERCIAL' | 'OFFICE' | 'WAREHOUSE' | 'STUDIO' | 'DUPLEX' | 'LOCAL';
 export type ListingStatus = 'PENDING' | 'ACTIVE' | 'SOLD' | 'RENTED' | 'INACTIVE' | 'REJECTED';
 export type EnergyRating = 'A_PLUS' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type HeatingType = 'CENTRAL' | 'ELECTRIC' | 'GAS' | 'OIL' | 'WOOD' | 'HEAT_PUMP' | 'UNDERFLOOR' | 'NONE';
@@ -22,8 +22,6 @@ export interface Agent {
   id: string;
   userId: string;
   user: Pick<User, 'firstName' | 'lastName' | 'avatar' | 'email' | 'phone'>;
-  agencyId?: string;
-  agency?: Pick<Agency, 'id' | 'name' | 'logo' | 'slug'>;
   bio?: string;
   licenseNumber?: string;
   yearsExperience: number;
@@ -33,26 +31,6 @@ export interface Agent {
   reviewCount: number;
   listingCount: number;
   isVerified: boolean;
-  listings?: Listing[];
-  reviews?: Review[];
-}
-
-export interface Agency {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  logo?: string;
-  coverImage?: string;
-  website?: string;
-  email: string;
-  phone: string;
-  address?: string;
-  city: City;
-  rating: number;
-  reviewCount: number;
-  isVerified: boolean;
-  agents?: Agent[];
   listings?: Listing[];
   reviews?: Review[];
 }
@@ -141,7 +119,6 @@ export interface Listing {
   images: ListingImage[];
   amenities?: Array<{ amenity: Amenity }>;
   agent?: Agent;
-  agency?: Pick<Agency, 'id' | 'name' | 'logo'>;
   _count?: { favorites: number; reviews: number };
 }
 

@@ -210,7 +210,6 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
           select: {
             id: true, bio: true, yearsExperience: true, rating: true,
             reviewCount: true, listingCount: true, isVerified: true,
-            agency: { select: { id: true, name: true, logo: true } },
           },
         },
       },

@@ -4,14 +4,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Pencil, Trash2, Star } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import Modal from '@/components/ui/Modal';
-import Select from '@/components/ui/Select';
 import { adminApi } from '@/lib/api';
 import { getInitials } from '@/lib/utils';
 import { toast } from '@/components/ui/Toaster';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
-const emptyForm = { firstName: '', lastName: '', email: '', phone: '', password: '', agencyId: '', bio: '', licenseNumber: '', yearsExperience: 0, isVerified: true };
-const NO_AGENCY = '__none__';
+const emptyForm = { firstName: '', lastName: '', email: '', phone: '', password: '', bio: '', licenseNumber: '', yearsExperience: 0, isVerified: true };
 
 export default function AdminAgentsPage() {
   const { t } = useTranslation('admin');
@@ -21,9 +19,7 @@ export default function AdminAgentsPage() {
   const [saving, setSaving] = useState(false);
 
   const { data, isLoading } = useQuery({ queryKey: ['admin-agents'], queryFn: () => adminApi.getAgents().then((r) => r.data) });
-  const { data: agenciesData } = useQuery({ queryKey: ['admin-agencies'], queryFn: () => adminApi.getAgencies().then((r) => r.data) });
   const agents = data?.agents || [];
-  const agencies = agenciesData?.agencies || [];
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-agents'] });
 
@@ -31,7 +27,7 @@ export default function AdminAgentsPage() {
   const openEdit = (a: any) => {
     setForm({
       firstName: a.user.firstName, lastName: a.user.lastName, email: a.user.email, phone: a.user.phone || '',
-      password: '', agencyId: a.agency?.id || '', bio: a.bio || '', licenseNumber: a.licenseNumber || '',
+      password: '', bio: a.bio || '', licenseNumber: a.licenseNumber || '',
       yearsExperience: a.yearsExperience, isVerified: a.isVerified,
     });
     setModal({ open: true, editing: a });
@@ -42,15 +38,14 @@ export default function AdminAgentsPage() {
     if (!modal.editing && (!form.email.trim() || !form.password.trim())) return toast(t('emailPasswordRequiredNewAgent'), 'error');
     setSaving(true);
     try {
-      const agencyId = form.agencyId === NO_AGENCY ? null : form.agencyId || null;
       if (modal.editing) {
         await adminApi.updateAgent(modal.editing.id, {
           firstName: form.firstName, lastName: form.lastName, phone: form.phone,
-          agencyId, bio: form.bio, licenseNumber: form.licenseNumber,
+          bio: form.bio, licenseNumber: form.licenseNumber,
           yearsExperience: Number(form.yearsExperience) || 0, isVerified: form.isVerified,
         });
       } else {
-        await adminApi.createAgent({ ...form, agencyId, yearsExperience: Number(form.yearsExperience) || 0 });
+        await adminApi.createAgent({ ...form, yearsExperience: Number(form.yearsExperience) || 0 });
       }
       toast(t('savedToast'), 'success');
       setModal({ open: false });
@@ -94,7 +89,7 @@ export default function AdminAgentsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm text-neutral-900 dark:text-white">{a.user.firstName} {a.user.lastName}</p>
-                    <p className="text-xs text-neutral-500">{a.user.email} · {a.agency?.name || t('noAgencyOption')}</p>
+                    <p className="text-xs text-neutral-500">{a.user.email}</p>
                   </div>
                   <div className="flex items-center gap-1 text-xs text-neutral-500 flex-shrink-0">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {a.rating} · {a._count.listings} {t('listingsCount')}
@@ -138,14 +133,6 @@ export default function AdminAgentsPage() {
           <div>
             <label className="label">{t('fieldPhone')}</label>
             <input className="input" value={form.phone} onChange={(e) => setForm((p: any) => ({ ...p, phone: e.target.value }))} />
-          </div>
-          <div>
-            <label className="label">{t('fieldAgency')}</label>
-            <Select
-              value={form.agencyId || NO_AGENCY}
-              onValueChange={(v) => setForm((p: any) => ({ ...p, agencyId: v }))}
-              options={[{ value: NO_AGENCY, label: t('noAgencyOption') }, ...agencies.map((a: any) => ({ value: a.id, label: a.name }))]}
-            />
           </div>
           <div>
             <label className="label">{t('fieldBio')}</label>

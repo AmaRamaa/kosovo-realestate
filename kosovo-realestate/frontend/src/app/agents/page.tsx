@@ -46,7 +46,6 @@ export default function AgentsPage() {
                     </div>
                     <div>
                       <h3 className="font-display font-semibold text-neutral-900 dark:text-white">{agent.user.firstName} {agent.user.lastName}</h3>
-                      {agent.agency && <p className="text-xs text-neutral-500 dark:text-neutral-400">{agent.agency.name}</p>}
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{agent.rating}</span>

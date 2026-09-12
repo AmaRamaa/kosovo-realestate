@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Phone, Mail, Building2, CheckCircle, ArrowLeft, BadgeCheck, Calendar } from 'lucide-react';
+import { Star, Phone, Mail, CheckCircle, ArrowLeft, BadgeCheck, Calendar } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/property/PropertyCard';
@@ -64,7 +64,6 @@ export default function AgentProfilePage() {
               </div>
               <div>
                 <h1 className="font-display font-bold text-2xl lg:text-3xl text-neutral-900 dark:text-white">{agent.user.firstName} {agent.user.lastName}</h1>
-                {agent.agency && <p className="text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5 mt-1"><Building2 className="w-4 h-4" /> {agent.agency.name}</p>}
                 <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                   <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {agent.rating} ({agent.reviewCount} {t('reviews')})</span>
                   <span>{agent.yearsExperience} {t('yearsExperience')}</span>

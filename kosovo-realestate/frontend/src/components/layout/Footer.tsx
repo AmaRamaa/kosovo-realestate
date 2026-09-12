@@ -33,7 +33,6 @@ export default function Footer() {
       { label: t('aboutUs'), href: '/about' },
       { label: t('listYourProperty'), href: '/list-your-property' },
       { label: t('agents'), href: '/agents' },
-      { label: t('agencies'), href: '/agencies' },
       { label: t('contact'), href: '/contact' },
     ],
   };

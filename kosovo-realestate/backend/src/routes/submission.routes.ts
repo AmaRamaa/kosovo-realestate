@@ -11,7 +11,7 @@ const router = Router();
 const PROPERTY_TYPE_LABELS: Record<string, string> = {
   APARTMENT: 'Apartment', HOUSE: 'House', VILLA: 'Villa', LAND: 'Land',
   COMMERCIAL: 'Commercial', OFFICE: 'Office', WAREHOUSE: 'Warehouse',
-  STUDIO: 'Studio', DUPLEX: 'Duplex',
+  STUDIO: 'Studio', DUPLEX: 'Duplex', LOCAL: 'Storefront',
 };
 
 const LISTING_TYPE_LABELS: Record<string, string> = { SALE: 'For Sale', RENT: 'For Rent' };
@@ -47,7 +47,7 @@ router.post(
     body('submitterEmail').isEmail().withMessage('A valid email is required'),
     body('submitterPhone').optional({ checkFalsy: true }).trim(),
     body('listingType').isIn(['SALE', 'RENT']),
-    body('propertyType').isIn(['APARTMENT', 'HOUSE', 'VILLA', 'LAND', 'COMMERCIAL', 'OFFICE', 'WAREHOUSE', 'STUDIO', 'DUPLEX']),
+    body('propertyType').isIn(['APARTMENT', 'HOUSE', 'VILLA', 'LAND', 'COMMERCIAL', 'OFFICE', 'WAREHOUSE', 'STUDIO', 'DUPLEX', 'LOCAL']),
     body('price').isFloat({ min: 0 }),
     body('city').trim().notEmpty(),
     body('address').trim().notEmpty(),

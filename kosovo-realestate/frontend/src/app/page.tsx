@@ -13,11 +13,6 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 export default function HomePage() {
   const { t } = useTranslation('home');
 
-  const { data: featuredData, isLoading: featuredLoading } = useQuery({
-    queryKey: ['listings', 'featured'],
-    queryFn: () => listingApi.getFeatured().then(r => r.data),
-  });
-
   const { data: recentData, isLoading: recentLoading } = useQuery({
     queryKey: ['listings', 'recent'],
     queryFn: () => listingApi.getRecent({ limit: 8 }).then(r => r.data),
@@ -27,7 +22,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <main>
-        <HeroSection listings={featuredData?.listings || []} isLoading={featuredLoading} />
+        <HeroSection />
 
         <div className="pt-16 lg:pt-20">
           <ListingSection

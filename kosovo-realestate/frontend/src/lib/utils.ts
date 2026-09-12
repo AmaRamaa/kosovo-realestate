@@ -79,6 +79,7 @@ export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: 'COMMERCIAL', label: 'Commercial' },
   { value: 'OFFICE', label: 'Office' },
   { value: 'WAREHOUSE', label: 'Warehouse' },
+  { value: 'LOCAL', label: 'Storefront' },
 ];
 
 export const HEATING_TYPES = [
@@ -130,10 +131,9 @@ export function calculateMortgage(
 }
 
 export const KOSOVO_STATS = {
-  totalListings: 2840,
-  cities: 38,
-  agents: 156,
-  agencies: 42,
+  totalListings: 50,
+  cities: 37,
+  agents: 1,
 };
 
 export const STATUS_COLORS = {

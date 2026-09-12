@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { BarChart3, LogOut, Building2, Inbox, Users, LineChart, MapPin, Briefcase, UserCheck, CalendarClock } from 'lucide-react';
+import { BarChart3, LogOut, Building2, Inbox, Users, LineChart, MapPin, UserCheck, CalendarClock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/lib/utils';
 import { adminApi } from '@/lib/api';
@@ -54,7 +54,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', label: t('navOverview'), icon: BarChart3 },
     { href: '/admin/listings', label: t('navListings'), icon: Building2, badge: pendingCount },
     { href: '/admin/cities', label: t('navCities'), icon: MapPin },
-    { href: '/admin/agencies', label: t('navAgencies'), icon: Briefcase },
     { href: '/admin/agents', label: t('navAgents'), icon: UserCheck },
     { href: '/admin/appointments', label: t('navAppointments'), icon: CalendarClock, badge: pendingAppointmentsCount },
     { href: '/admin/submissions', label: t('navSubmissions'), icon: Inbox, badge: newSubmissionsCount },

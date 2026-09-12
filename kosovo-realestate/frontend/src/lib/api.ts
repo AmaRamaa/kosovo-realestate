@@ -77,11 +77,6 @@ export const agentApi = {
   getById: (id: string) => api.get(`/agents/${id}`),
 };
 
-export const agencyApi = {
-  getAll: () => api.get('/agencies'),
-  getBySlug: (slug: string) => api.get(`/agencies/${slug}`),
-};
-
 export const cityApi = {
   getAll: () => api.get('/cities'),
   getBySlug: (slug: string) => api.get(`/cities/${slug}`),
@@ -123,10 +118,6 @@ export const adminApi = {
   createNeighborhood: (data: any) => api.post('/admin/neighborhoods', data),
   updateNeighborhood: (id: string, data: any) => api.put(`/admin/neighborhoods/${id}`, data),
   deleteNeighborhood: (id: string) => api.delete(`/admin/neighborhoods/${id}`),
-  getAgencies: () => api.get('/admin/agencies'),
-  createAgency: (data: any) => api.post('/admin/agencies', data),
-  updateAgency: (id: string, data: any) => api.put(`/admin/agencies/${id}`, data),
-  deleteAgency: (id: string) => api.delete(`/admin/agencies/${id}`),
   getAgents: () => api.get('/admin/agents'),
   createAgent: (data: any) => api.post('/admin/agents', data),
   updateAgent: (id: string, data: any) => api.put(`/admin/agents/${id}`, data),

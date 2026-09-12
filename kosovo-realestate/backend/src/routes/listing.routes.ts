@@ -40,7 +40,7 @@ router.post(
     body('title').trim().notEmpty().isLength({ max: 200 }),
     body('description').trim().notEmpty(),
     body('listingType').isIn(['SALE', 'RENT']),
-    body('propertyType').isIn(['APARTMENT', 'HOUSE', 'VILLA', 'LAND', 'COMMERCIAL', 'OFFICE', 'WAREHOUSE', 'STUDIO', 'DUPLEX']),
+    body('propertyType').isIn(['APARTMENT', 'HOUSE', 'VILLA', 'LAND', 'COMMERCIAL', 'OFFICE', 'WAREHOUSE', 'STUDIO', 'DUPLEX', 'LOCAL']),
     body('price').isFloat({ min: 0 }),
     body('area').isFloat({ min: 0 }),
     body('cityId').notEmpty(),

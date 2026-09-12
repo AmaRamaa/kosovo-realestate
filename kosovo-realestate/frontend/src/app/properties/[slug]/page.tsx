@@ -366,7 +366,6 @@ export default function PropertyDetailPage() {
                         <p className="font-semibold text-neutral-900 dark:text-white group-hover:text-primary-600 transition-colors">
                           {agent.user.firstName} {agent.user.lastName}
                         </p>
-                        {agent.agency && <p className="text-xs text-neutral-500">{agent.agency.name}</p>}
                         <div className="flex items-center gap-1 mt-0.5">
                           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                           <span className="text-xs text-neutral-600 dark:text-neutral-400">{agent.rating} ({agent.reviewCount} {t('reviews')})</span>

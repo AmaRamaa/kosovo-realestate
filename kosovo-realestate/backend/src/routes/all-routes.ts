@@ -88,9 +88,9 @@ reviewRouter.get('/agent/:agentId', async (req, res, next) => {
 
 reviewRouter.post('/', authenticate, async (req, res, next) => {
   try {
-    const { agentId, agencyId, listingId, rating, comment } = req.body;
+    const { agentId, listingId, rating, comment } = req.body;
     const review = await prisma.review.create({
-      data: { userId: req.user!.id, agentId, agencyId, listingId, rating, comment },
+      data: { userId: req.user!.id, agentId, listingId, rating, comment },
     });
     if (agentId) {
       const stats = await prisma.review.aggregate({ where: { agentId }, _avg: { rating: true }, _count: true });
@@ -138,16 +138,15 @@ adminRouter.use(authenticate, requireRole(['ADMIN']));
 
 adminRouter.get('/stats', async (req, res, next) => {
   try {
-    const [users, listings, pendingListings, agents, agencies] = await Promise.all([
+    const [users, listings, pendingListings, agents] = await Promise.all([
       prisma.user.count(),
       prisma.listing.count({ where: { status: 'ACTIVE' } }),
       prisma.listing.count({ where: { status: 'PENDING' } }),
       prisma.agent.count(),
-      prisma.agency.count(),
     ]);
     const listingsByType = await prisma.listing.groupBy({ by: ['listingType'], _count: true, where: { status: 'ACTIVE' } });
     const listingsByCity = await prisma.listing.groupBy({ by: ['cityId'], _count: true, where: { status: 'ACTIVE' }, orderBy: { _count: { cityId: 'desc' } }, take: 10 });
-    res.json({ stats: { users, listings, pendingListings, agents, agencies, listingsByType, listingsByCity } });
+    res.json({ stats: { users, listings, pendingListings, agents, listingsByType, listingsByCity } });
   } catch (err) { next(err); }
 });
 
@@ -327,55 +326,12 @@ adminRouter.delete('/neighborhoods/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// AGENCIES (admin)
-adminRouter.get('/agencies', async (req, res, next) => {
-  try {
-    const agencies = await prisma.agency.findMany({
-      include: { city: { select: { id: true, name: true } }, _count: { select: { agents: true, listings: true } } },
-      orderBy: { name: 'asc' },
-    });
-    res.json({ agencies });
-  } catch (err) { next(err); }
-});
-
-adminRouter.post('/agencies', async (req, res, next) => {
-  try {
-    const { name, description, logo, coverImage, website, email, phone, address, cityId, isVerified } = req.body;
-    if (!name || !email || !phone || !cityId) return res.status(400).json({ error: 'Name, email, phone, and city are required' });
-    let slug = slugify(name, { lower: true, strict: true });
-    if (await prisma.agency.findUnique({ where: { slug } })) slug = `${slug}-${Date.now()}`;
-    const agency = await prisma.agency.create({
-      data: { name, slug, description, logo, coverImage, website, email, phone, address, cityId, isVerified: isVerified ?? true },
-    });
-    res.status(201).json({ agency });
-  } catch (err) { next(err); }
-});
-
-adminRouter.put('/agencies/:id', async (req, res, next) => {
-  try {
-    const { name, description, logo, coverImage, website, email, phone, address, cityId, isVerified } = req.body;
-    const agency = await prisma.agency.update({
-      where: { id: req.params.id },
-      data: { name, description, logo, coverImage, website, email, phone, address, cityId, isVerified },
-    });
-    res.json({ agency });
-  } catch (err) { next(err); }
-});
-
-adminRouter.delete('/agencies/:id', async (req, res, next) => {
-  try {
-    await prisma.agency.delete({ where: { id: req.params.id } });
-    res.json({ message: 'Agency deleted' });
-  } catch (err) { next(err); }
-});
-
 // AGENTS (admin)
 adminRouter.get('/agents', async (req, res, next) => {
   try {
     const agents = await prisma.agent.findMany({
       include: {
         user: { select: { id: true, firstName: true, lastName: true, email: true, phone: true, avatar: true, isActive: true } },
-        agency: { select: { id: true, name: true } },
         _count: { select: { listings: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -386,7 +342,7 @@ adminRouter.get('/agents', async (req, res, next) => {
 
 adminRouter.post('/agents', async (req, res, next) => {
   try {
-    const { firstName, lastName, email, phone, password, agencyId, bio, licenseNumber, yearsExperience, specializations, languages, isVerified } = req.body;
+    const { firstName, lastName, email, phone, password, bio, licenseNumber, yearsExperience, specializations, languages, isVerified } = req.body;
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ error: 'First name, last name, email, and password are required' });
     }
@@ -400,7 +356,6 @@ adminRouter.post('/agents', async (req, res, next) => {
     const agent = await prisma.agent.create({
       data: {
         userId: user.id,
-        agencyId: agencyId || null,
         bio, licenseNumber,
         yearsExperience: yearsExperience ?? 0,
         specializations: specializations || [],
@@ -409,7 +364,6 @@ adminRouter.post('/agents', async (req, res, next) => {
       },
       include: {
         user: { select: { firstName: true, lastName: true, email: true, avatar: true, phone: true } },
-        agency: { select: { name: true } },
       },
     });
     res.status(201).json({ agent });
@@ -437,7 +391,6 @@ adminRouter.put('/agents/:id', async (req, res, next) => {
       data: agentData,
       include: {
         user: { select: { firstName: true, lastName: true, email: true, avatar: true, phone: true } },
-        agency: { select: { name: true } },
       },
     });
     res.json({ agent: updated });

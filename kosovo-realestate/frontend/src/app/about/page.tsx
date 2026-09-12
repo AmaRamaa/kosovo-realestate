@@ -14,7 +14,7 @@ export default function AboutPage() {
   const stats = [
     { icon: MapPinned, value: `${KOSOVO_STATS.cities}`, label: t('statCities') },
     { icon: Users2, value: `${KOSOVO_STATS.agents}`, label: t('statAgents') },
-    { icon: Award, value: `${KOSOVO_STATS.agencies}`, label: t('statAgencies') },
+    { icon: Award, value: `${KOSOVO_STATS.totalListings}`, label: t('statListings') },
   ];
 
   const features = [

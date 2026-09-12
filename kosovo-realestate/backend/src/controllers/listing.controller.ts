@@ -155,10 +155,8 @@ export const getListingBySlug = async (req: Request, res: Response, next: NextFu
         agent: {
           include: {
             user: { select: { id: true, firstName: true, lastName: true, avatar: true, phone: true, email: true } },
-            agency: { select: { id: true, name: true, logo: true } },
           },
         },
-        agency: { select: { id: true, name: true, logo: true } },
         _count: { select: { favorites: true, reviews: true } },
       },
     });

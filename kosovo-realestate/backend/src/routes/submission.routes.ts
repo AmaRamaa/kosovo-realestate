@@ -24,21 +24,19 @@ const submissionLimiter = rateLimit({
   message: { error: 'Too many submissions, please try again later.' },
 });
 
-// Best-effort email — a submission is always persisted first, so a broken
-// SMTP config (still a known gap) never causes the submission itself to be lost.
-async function tryNotifyOwner(options: { subject: string; html: string; replyTo: string }) {
+// Best-effort, fire-and-forget email — a submission is always persisted and
+// responded to first, so neither a broken SMTP config nor a slow/hanging
+// connection attempt (e.g. a real SMTP user with no password yet) ever
+// delays or loses the submission itself. Callers do NOT await this.
+function notifyOwnerInBackground(submissionId: string, options: { subject: string; html: string; replyTo: string }) {
   const ownerEmail = process.env.OWNER_EMAIL;
   if (!ownerEmail) {
     logger.error('OWNER_EMAIL is not configured — skipping submission email notification');
-    return false;
+    return;
   }
-  try {
-    await sendEmail({ to: ownerEmail, subject: options.subject, html: options.html, replyTo: options.replyTo });
-    return true;
-  } catch (err) {
-    logger.error('Failed to email submission notification:', err);
-    return false;
-  }
+  sendEmail({ to: ownerEmail, subject: options.subject, html: options.html, replyTo: options.replyTo })
+    .then(() => prisma.submission.update({ where: { id: submissionId }, data: { emailSent: true } }))
+    .catch((err) => logger.error('Failed to email submission notification:', err));
 }
 
 router.post(
@@ -106,12 +104,11 @@ router.post(
         <p>Reply directly to this email to reach the submitter, or review it in the admin dashboard.</p>
       `;
 
-      const emailSent = await tryNotifyOwner({
+      notifyOwnerInBackground(submission.id, {
         subject: `New property submission: ${address}, ${city}`,
         html,
         replyTo: submitterEmail,
       });
-      if (emailSent) await prisma.submission.update({ where: { id: submission.id }, data: { emailSent: true } });
 
       res.status(201).json({ message: 'Submission received' });
     } catch (err) {
@@ -144,12 +141,11 @@ router.post(
         <p>Reply directly to this email to reach them, or review it in the admin dashboard.</p>
       `;
 
-      const emailSent = await tryNotifyOwner({
+      notifyOwnerInBackground(submission.id, {
         subject: `New contact message from ${name}`,
         html,
         replyTo: email,
       });
-      if (emailSent) await prisma.submission.update({ where: { id: submission.id }, data: { emailSent: true } });
 
       res.status(201).json({ message: 'Message received' });
     } catch (err) {

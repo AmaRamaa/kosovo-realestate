@@ -17,6 +17,12 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  // A misconfigured or half-configured SMTP account (e.g. user set, password
+  // not yet) should fail within seconds, not hang the request that's waiting
+  // on it — these bound every phase of the connection.
+  connectionTimeout: 10_000,
+  greetingTimeout: 10_000,
+  socketTimeout: 10_000,
 });
 
 export const sendEmail = async (options: EmailOptions) => {

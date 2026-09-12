@@ -21,7 +21,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
 
   return (
     <>
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden min-h-[80vh] flex items-center">
         {/* Background photo */}
         <div className="absolute inset-0">
           <Image
@@ -38,7 +38,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/45" />
         </div>
 
-        <div className="container-page relative pt-24 pb-16 lg:pt-28 lg:pb-20">
+        <div className="container-page relative py-16">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="sr-only">{t('logoAlt')}</h1>
             <Logo className="h-28 sm:h-32 lg:h-36 text-primary-600 opacity-50 mx-auto mb-8" />

@@ -1,14 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
+import { cityApi } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const CITIES = ['Prishtinë', 'Prizren', 'Pejë', 'Gjilan', 'Ferizaj', 'Mitrovicë', 'Gjakovë', 'Podujevë'];
 
 export default function Footer() {
   const { t } = useTranslation('footer');
+  const { data: citiesData } = useQuery({ queryKey: ['cities'], queryFn: () => cityApi.getAll().then((r) => r.data) });
+  const cityIdByName: Record<string, string> = {};
+  (citiesData?.cities || []).forEach((c: any) => { cityIdByName[c.name] = c.id; });
 
   const FOOTER_LINKS = {
     [t('buyHeading')]: [
@@ -84,7 +89,7 @@ export default function Footer() {
             {CITIES.map((city) => (
               <Link
                 key={city}
-                href={`/properties?city=${city}`}
+                href={cityIdByName[city] ? `/properties?cityId=${cityIdByName[city]}` : '/properties'}
                 className="px-3 py-1.5 rounded-full bg-neutral-100 text-xs text-neutral-600 hover:bg-primary-600 hover:text-white transition-colors"
               >
                 {city}
@@ -99,13 +104,6 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-sm text-neutral-500 hover:text-neutral-900">{t('privacyPolicy')}</Link>
             <Link href="/terms" className="text-sm text-neutral-500 hover:text-neutral-900">{t('termsOfService')}</Link>
-          </div>
-          <div className="flex items-center gap-3">
-            {[Facebook, Instagram, Linkedin, Twitter].map((Icon, i) => (
-              <a key={i} href="#" className="group w-9 h-9 rounded-full bg-neutral-100 border border-primary-100 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 transition-colors">
-                <Icon className="w-4 h-4 text-primary-600 group-hover:text-white" />
-              </a>
-            ))}
           </div>
         </div>
       </div>

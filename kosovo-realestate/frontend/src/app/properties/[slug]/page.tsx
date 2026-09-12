@@ -8,13 +8,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   Bed, Bath, Maximize, Car, MapPin, Share2,
-  ChevronLeft, ChevronRight, Phone, Mail, Calendar, Star,
+  ChevronLeft, ChevronRight, Phone, Mail, Star,
   Home, Zap, Thermometer, CheckCircle, Building2, Eye, ArrowLeft
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/property/PropertyCard';
-import { listingApi } from '@/lib/api';
+import { listingApi, submissionApi } from '@/lib/api';
 import { formatPrice, formatArea, formatRelativeDate, calculateMortgage, cn, getCookie, setCookie } from '@/lib/utils';
 import { toast } from '@/components/ui/Toaster';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -75,10 +75,10 @@ function ImageGallery({ images, title }: { images: any[]; title: string }) {
           {/* Nav arrows */}
           {images.length > 1 && (
             <>
-              <button onClick={e => { e.stopPropagation(); setCurrent(p => (p - 1 + images.length) % images.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors shadow-md">
+              <button onClick={e => { e.stopPropagation(); setCurrent(p => (p - 1 + images.length) % images.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 z-[95] w-10 h-10 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors shadow-md">
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button onClick={e => { e.stopPropagation(); setCurrent(p => (p + 1) % images.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors shadow-md">
+              <button onClick={e => { e.stopPropagation(); setCurrent(p => (p + 1) % images.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 z-[95] w-10 h-10 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors shadow-md">
                 <ChevronRight className="w-5 h-5" />
               </button>
             </>
@@ -152,7 +152,22 @@ export default function PropertyDetailPage() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => { setSending(false); toast(t('messageSentSuccess'), 'success'); }, 1000);
+    try {
+      const propertyUrl = typeof window !== 'undefined' ? window.location.href : '';
+      const message = [
+        `Re: ${data?.listing?.title || 'property'} (${propertyUrl})`,
+        contactForm.phone ? `Phone: ${contactForm.phone}` : null,
+        '',
+        contactForm.message,
+      ].filter(Boolean).join('\n');
+      await submissionApi.submitContact({ name: contactForm.name, email: contactForm.email, message });
+      toast(t('messageSentSuccess'), 'success');
+      setContactForm((p) => ({ ...p, message: t('defaultInquiryMessage') }));
+    } catch {
+      toast(t('messageSentError'), 'error');
+    } finally {
+      setSending(false);
+    }
   };
 
   if (isLoading) return (
@@ -334,55 +349,57 @@ export default function PropertyDetailPage() {
 
             {/* RIGHT: Sidebar */}
             <div className="space-y-6">
-              {/* Agent card */}
-              {agent && (
-                <div className="card p-6">
-                  <h3 className="font-display font-semibold text-neutral-900 dark:text-white mb-4">{t('listedBy')}</h3>
-                  <Link href={`/agents/${agent.id}`} className="flex items-center gap-3 mb-4 group">
-                    <div className="relative w-14 h-14 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-700 flex-shrink-0">
-                      {agent.user.avatar
-                        ? <img src={agent.user.avatar} alt={agent.user.firstName} className="w-full h-full object-cover" />
-                        : <div className="w-full h-full flex items-center justify-center text-neutral-500 font-semibold">{agent.user.firstName[0]}</div>
-                      }
-                    </div>
-                    <div>
-                      <p className="font-semibold text-neutral-900 dark:text-white group-hover:text-primary-600 transition-colors">
-                        {agent.user.firstName} {agent.user.lastName}
-                      </p>
-                      {agent.agency && <p className="text-xs text-neutral-500">{agent.agency.name}</p>}
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span className="text-xs text-neutral-600 dark:text-neutral-400">{agent.rating} ({agent.reviewCount} {t('reviews')})</span>
+              {/* Agent card + contact form — the contact form always shows so every
+                  listing has a way to reach out, even ones with no agent assigned. */}
+              <div className="card p-6">
+                {agent ? (
+                  <>
+                    <h3 className="font-display font-semibold text-neutral-900 dark:text-white mb-4">{t('listedBy')}</h3>
+                    <Link href={`/agents/${agent.id}`} className="flex items-center gap-3 mb-4 group">
+                      <div className="relative w-14 h-14 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-700 flex-shrink-0">
+                        {agent.user.avatar
+                          ? <img src={agent.user.avatar} alt={agent.user.firstName} className="w-full h-full object-cover" />
+                          : <div className="w-full h-full flex items-center justify-center text-neutral-500 font-semibold">{agent.user.firstName[0]}</div>
+                        }
                       </div>
-                    </div>
-                  </Link>
+                      <div>
+                        <p className="font-semibold text-neutral-900 dark:text-white group-hover:text-primary-600 transition-colors">
+                          {agent.user.firstName} {agent.user.lastName}
+                        </p>
+                        {agent.agency && <p className="text-xs text-neutral-500">{agent.agency.name}</p>}
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span className="text-xs text-neutral-600 dark:text-neutral-400">{agent.rating} ({agent.reviewCount} {t('reviews')})</span>
+                        </div>
+                      </div>
+                    </Link>
 
-                  <div className="space-y-2 mb-5">
-                    {agent.user.phone && (
-                      <a href={`tel:${agent.user.phone}`} className="flex items-center gap-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:text-primary-600 transition-colors">
-                        <Phone className="w-4 h-4 text-neutral-400" /> {agent.user.phone}
+                    <div className="space-y-2 mb-5">
+                      {agent.user.phone && (
+                        <a href={`tel:${agent.user.phone}`} className="flex items-center gap-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:text-primary-600 transition-colors">
+                          <Phone className="w-4 h-4 text-neutral-400" /> {agent.user.phone}
+                        </a>
+                      )}
+                      <a href={`mailto:${agent.user.email}`} className="flex items-center gap-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:text-primary-600 transition-colors">
+                        <Mail className="w-4 h-4 text-neutral-400" /> {agent.user.email}
                       </a>
-                    )}
-                    <a href={`mailto:${agent.user.email}`} className="flex items-center gap-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:text-primary-600 transition-colors">
-                      <Mail className="w-4 h-4 text-neutral-400" /> {agent.user.email}
-                    </a>
-                  </div>
+                    </div>
+                  </>
+                ) : (
+                  <h3 className="font-display font-semibold text-neutral-900 dark:text-white mb-4">{t('contactAboutProperty')}</h3>
+                )}
 
-                  {/* Contact form */}
-                  <form onSubmit={handleSendMessage} className="space-y-3">
-                    <input type="text" placeholder={t('yourName')} value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} className="input" required />
-                    <input type="email" placeholder={t('yourEmail')} value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} className="input" required />
-                    <input type="tel" placeholder={t('yourPhone')} value={contactForm.phone} onChange={e => setContactForm(p => ({...p, phone: e.target.value}))} className="input" />
-                    <textarea rows={4} value={contactForm.message} onChange={e => setContactForm(p => ({...p, message: e.target.value}))} className="input resize-none" />
-                    <button type="submit" disabled={sending} className="btn-primary btn-md w-full">
-                      <Mail className="w-4 h-4" /> {sending ? t('sending') : t('sendMessage')}
-                    </button>
-                    <button type="button" className="btn-secondary btn-md w-full">
-                      <Calendar className="w-4 h-4" /> {t('bookViewing')}
-                    </button>
-                  </form>
-                </div>
-              )}
+                {/* Contact form */}
+                <form onSubmit={handleSendMessage} className="space-y-3">
+                  <input type="text" placeholder={t('yourName')} value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} className="input" required />
+                  <input type="email" placeholder={t('yourEmail')} value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} className="input" required />
+                  <input type="tel" placeholder={t('yourPhone')} value={contactForm.phone} onChange={e => setContactForm(p => ({...p, phone: e.target.value}))} className="input" />
+                  <textarea rows={4} value={contactForm.message} onChange={e => setContactForm(p => ({...p, message: e.target.value}))} className="input resize-none" />
+                  <button type="submit" disabled={sending} className="btn-primary btn-md w-full">
+                    <Mail className="w-4 h-4" /> {sending ? t('sending') : t('sendMessage')}
+                  </button>
+                </form>
+              </div>
 
               {/* Price per m² */}
               <div className="card p-5">

@@ -10,6 +10,7 @@ import { propertyTypes } from './dict/propertyTypes';
 import { properties } from './dict/properties';
 import { propertyDetail } from './dict/propertyDetail';
 import { agentsPage } from './dict/agentsPage';
+import { agentProfile } from './dict/agentProfile';
 import { auth } from './dict/auth';
 import { listProperty } from './dict/listProperty';
 import { admin } from './dict/admin';
@@ -29,6 +30,7 @@ export const dictionaries = {
   properties,
   propertyDetail,
   agentsPage,
+  agentProfile,
   auth,
   listProperty,
   admin,

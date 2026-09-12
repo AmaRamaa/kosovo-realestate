@@ -15,11 +15,11 @@ const CITY_IMAGES: Record<string, string> = {
   'Gjakovë': 'https://images.unsplash.com/photo-1597428983834-58c4ec5640fb?w=700&q=80',
 };
 
-function CityCard({ city }: { city: { name: string; count: number; image: string } }) {
+function CityCard({ city }: { city: { id: string; name: string; count: number; image: string } }) {
   const { t } = useTranslation('popularCities');
   return (
     <Link
-      href={`/properties?city=${city.name}`}
+      href={`/properties?cityId=${city.id}`}
       className="relative flex-shrink-0 w-72 aspect-[16/10] rounded-xl overflow-hidden group block border border-primary-100 dark:border-primary-900/40"
     >
       <Image
@@ -46,7 +46,7 @@ export default function PopularCitiesSection() {
     .filter((c: any) => CITY_IMAGES[c.name])
     .sort((a: any, b: any) => (b._count?.listings ?? 0) - (a._count?.listings ?? 0))
     .slice(0, 6)
-    .map((c: any) => ({ name: c.name, count: c._count?.listings ?? 0, image: CITY_IMAGES[c.name] }));
+    .map((c: any) => ({ id: c.id, name: c.name, count: c._count?.listings ?? 0, image: CITY_IMAGES[c.name] }));
 
   if (cities.length === 0) return null;
 

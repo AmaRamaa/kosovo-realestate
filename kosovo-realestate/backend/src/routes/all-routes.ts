@@ -445,44 +445,60 @@ adminRouter.delete('/appointments/:id', async (req, res, next) => {
 });
 
 // UPLOAD ROUTES
+// Images are stored as raw bytes directly in Postgres (UploadedImage) rather
+// than an external CDN, and served back from this same backend.
 export const uploadRouter = Router();
-uploadRouter.use(authenticate);
 
-import cloudinary from 'cloudinary';
 import multer from 'multer';
+import sharp from 'sharp';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+function backendOrigin() {
+  if (process.env.RAILWAY_PUBLIC_DOMAIN) return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
+  return `http://localhost:${process.env.PORT || 5000}`;
+}
+
+// Public — registered before the authenticate() gate below, since any site
+// visitor (not just logged-in users) needs to view listing photos.
+uploadRouter.get('/images/:id', async (req, res, next) => {
+  try {
+    const image = await prisma.uploadedImage.findUnique({ where: { id: req.params.id } });
+    if (!image) return res.status(404).end();
+    res.setHeader('Content-Type', image.mimeType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.send(Buffer.from(image.data));
+  } catch (err) { next(err); }
 });
+
+uploadRouter.use(authenticate);
 
 uploadRouter.post('/images', upload.array('images', 20), async (req, res, next) => {
   try {
     const files = req.files as Express.Multer.File[];
     if (!files?.length) return res.status(400).json({ error: 'No files uploaded' });
 
-    const uploaded = await Promise.all(files.map(file =>
-      new Promise<any>((resolve, reject) => {
-        cloudinary.v2.uploader.upload_stream(
-          { folder: 'kosovo-realestate', resource_type: 'image', transformation: [{ width: 1200, quality: 'auto', fetch_format: 'auto' }] },
-          (err, result) => err ? reject(err) : resolve(result)
-        ).end(file.buffer);
-      })
-    ));
+    const uploaded = await Promise.all(files.map(async (file) => {
+      const resized = await sharp(file.buffer)
+        .rotate()
+        .resize({ width: 1600, withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+      return prisma.uploadedImage.create({ data: { data: resized, mimeType: 'image/jpeg' } });
+    }));
 
-    res.json({ images: uploaded.map(r => ({ url: r.secure_url, publicId: r.public_id })) });
+    res.json({ images: uploaded.map(r => ({ url: `${backendOrigin()}/api/upload/images/${r.id}`, publicId: r.id })) });
   } catch (err) { next(err); }
 });
 
 uploadRouter.delete('/images/:publicId', async (req, res, next) => {
   try {
-    await cloudinary.v2.uploader.destroy(req.params.publicId);
+    await prisma.uploadedImage.delete({ where: { id: req.params.publicId } });
     res.json({ success: true });
-  } catch (err) { next(err); }
+  } catch {
+    res.json({ success: true });
+  }
 });
 
 export const userRouter = Router();

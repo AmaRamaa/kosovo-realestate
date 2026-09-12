@@ -260,6 +260,18 @@ model ListingImage {
   @@map("listing_images")
 }
 
+// Raw image bytes stored directly in Postgres instead of an external CDN.
+// ListingImage.url just points here (/api/upload/images/:id); this table is
+// the actual storage. publicId in the upload response is this row's id.
+model UploadedImage {
+  id          String    @id @default(cuid())
+  data        Bytes
+  mimeType    String
+  createdAt   DateTime  @default(now())
+
+  @@map("uploaded_images")
+}
+
 model Amenity {
   id          String    @id @default(cuid())
   name        String    @unique

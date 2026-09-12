@@ -8,7 +8,7 @@ A production-ready full-stack real estate platform for Kosovo, built with Next.j
 
 **Backend:** Node.js · Express.js · TypeScript · Prisma ORM · PostgreSQL
 
-**Services:** Cloudinary (images) · Google OAuth · Nodemailer (email) · JWT Auth
+**Services:** Google OAuth · Nodemailer (email) · JWT Auth
 
 ---
 
@@ -85,7 +85,7 @@ cd ../frontend && npm install
 ```bash
 cd backend
 cp .env.example .env
-# Edit .env with your DATABASE_URL, JWT secrets, Cloudinary, SMTP
+# Edit .env with your DATABASE_URL, JWT secrets, SMTP
 ```
 
 ---
@@ -173,7 +173,7 @@ cd frontend && npm run dev
 - ✅ **38 Kosovo municipalities** seeded with coordinates
 - ✅ **Advanced property search** — type, city, price, area, bedrooms, amenities
 - ✅ **Multi-role auth** — Buyer, Seller, Agent, Admin + Google OAuth
-- ✅ **Image upload** via Cloudinary with cover selection
+- ✅ **Image upload** stored directly in Postgres with cover selection
 - ✅ **Mortgage calculator** built in to property detail
 - ✅ **5-step listing wizard** for posting properties
 - ✅ **Admin approval workflow** for new listings

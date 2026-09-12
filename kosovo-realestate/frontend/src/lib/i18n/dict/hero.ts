@@ -11,6 +11,6 @@ export const hero = {
     subtitle: 'Shfleto mijëra prona të verifikuara për shitje dhe qira në të gjitha 38 komunat — nga Prishtina në Prizren.',
     exploreProperties: 'Shiko Pronat',
     talkToAgent: 'Flit me një Agjent',
-    listYourProperty: 'Listo Pronën Tënde',
+    listYourProperty: 'Ofro Pronën Tënde',
   },
 };

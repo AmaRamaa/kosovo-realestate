@@ -30,7 +30,7 @@ export const listProperty = {
     submitError: 'Something went wrong, please try again',
   },
   sq: {
-    eyebrow: 'Listo Pronën Tënde',
+    eyebrow: 'Ofro Pronën Tënde',
     heading: 'Na trego për pronën tënde',
     subheading: 'Plotëso detajet më poshtë dhe ekipi ynë do të të kontaktojë për ta listuar pronën.',
     thanksHeading: 'Faleminderit, e morëm!',

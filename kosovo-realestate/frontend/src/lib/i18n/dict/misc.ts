@@ -47,6 +47,6 @@ export const misc = {
     ctaTitle: 'Gati të gjeni vendin tuaj në Kosovë?',
     ctaSubtitle: 'Punoni me agjentë të verifikuar dhe shfletoni mijëra listime në të gjitha 38 komunat.',
     browseProperties: 'Shfleto Pronat',
-    listYourProperty: 'Listo Pronën Tënde',
+    listYourProperty: 'Ofro Pronën Tënde',
   },
 };

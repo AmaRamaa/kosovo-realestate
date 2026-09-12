@@ -38,7 +38,7 @@ export const footer = {
     offices: 'Zyra',
     companyHeading: 'Kompania',
     aboutUs: 'Rreth Nesh',
-    listYourProperty: 'Listo Pronën Tënde',
+    listYourProperty: 'Ofro Pronën Tënde',
     agents: 'Agjentët',
     agencies: 'Agjencitë',
     contact: 'Kontakt',

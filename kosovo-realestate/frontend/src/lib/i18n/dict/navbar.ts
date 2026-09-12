@@ -25,7 +25,7 @@ export const navbar = {
     rent: 'Qira',
     agents: 'Agjentët',
     search: 'Kërko',
-    listYourProperty: 'Listo Pronën Tënde',
+    listYourProperty: 'Ofro Pronën Tënde',
     toggleTheme: 'Ndrysho temën',
     toggleMenu: 'Hap menynë',
     changeLanguage: 'Ndrysho gjuhën',

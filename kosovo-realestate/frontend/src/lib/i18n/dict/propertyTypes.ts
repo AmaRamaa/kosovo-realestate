@@ -23,7 +23,7 @@ export const propertyTypes = {
     WAREHOUSE: 'Depo',
     STUDIO: 'Studio',
     DUPLEX: 'Duplex',
-    SALE: 'Në Shitje',
+    SALE: "N'shitje",
     RENT: 'Me Qira',
     FEATURED: 'I Veçantë',
   },

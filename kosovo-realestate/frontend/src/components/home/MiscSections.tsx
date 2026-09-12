@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import { Compass, ShieldCheck, HeartHandshake, Award } from 'lucide-react';
+import { agentApi } from '@/lib/api';
+import { getInitials } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const FEATURES = [
@@ -44,15 +47,16 @@ export function WhyChooseSection() {
   );
 }
 
-const AGENTS = [
-  { name: 'Arben Krasniqi', roleKey: 'agent1Role', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' },
-  { name: 'Vlora Berisha', roleKey: 'agent2Role', avatar: 'https://randomuser.me/api/portraits/women/65.jpg' },
-  { name: 'Dren Gashi', roleKey: 'agent3Role', avatar: 'https://randomuser.me/api/portraits/men/78.jpg' },
-  { name: 'Elira Hoxha', roleKey: 'agent4Role', avatar: 'https://randomuser.me/api/portraits/women/32.jpg' },
-] as const;
-
 export function OurAgentsSection() {
   const { t } = useTranslation('misc');
+  const { data, isLoading } = useQuery({
+    queryKey: ['agents', 'home'],
+    queryFn: () => agentApi.getAll({ limit: 4 }).then((r) => r.data),
+  });
+  const agents = data?.agents || [];
+
+  if (!isLoading && agents.length === 0) return null;
+
   return (
     <section className="section">
       <div className="container-page">
@@ -63,14 +67,28 @@ export function OurAgentsSection() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {AGENTS.map((agent) => (
-            <Link key={agent.name} href="/agents" className="card-hover p-6 text-center block">
-              <Image src={agent.avatar} alt={agent.name} width={80} height={80} className="rounded-full mx-auto mb-4 object-cover" />
-              <h3 className="font-display font-semibold text-neutral-900 dark:text-white text-sm mb-1">{agent.name}</h3>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{t(agent.roleKey)}</p>
-              <span className="link text-xs">{t('viewProfile')}</span>
-            </Link>
-          ))}
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="card p-6 text-center">
+                  <div className="skeleton w-20 h-20 rounded-full mx-auto mb-4" />
+                  <div className="skeleton h-4 w-24 mx-auto mb-2" />
+                  <div className="skeleton h-3 w-16 mx-auto" />
+                </div>
+              ))
+            : agents.map((agent: any) => (
+                <Link key={agent.id} href={`/agents/${agent.id}`} className="card-hover p-6 text-center block">
+                  {agent.user.avatar ? (
+                    <Image src={agent.user.avatar} alt={agent.user.firstName} width={80} height={80} className="rounded-full mx-auto mb-4 object-cover" />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center font-bold text-primary-700 dark:text-primary-300 text-lg mx-auto mb-4">
+                      {getInitials(agent.user.firstName, agent.user.lastName)}
+                    </div>
+                  )}
+                  <h3 className="font-display font-semibold text-neutral-900 dark:text-white text-sm mb-1">{agent.user.firstName} {agent.user.lastName}</h3>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{agent._count?.listings ?? 0} {t('agentListingsCount')}</p>
+                  <span className="link text-xs">{t('viewProfile')}</span>
+                </Link>
+              ))}
         </div>
       </div>
     </section>

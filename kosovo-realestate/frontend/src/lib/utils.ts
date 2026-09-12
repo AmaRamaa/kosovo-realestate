@@ -130,12 +130,6 @@ export function calculateMortgage(
   return { monthlyPayment, totalPayment, totalInterest, loanAmount };
 }
 
-export const KOSOVO_STATS = {
-  totalListings: 50,
-  cities: 37,
-  agents: 1,
-};
-
 export const STATUS_COLORS = {
   PENDING: 'badge-yellow',
   ACTIVE: 'badge-green',

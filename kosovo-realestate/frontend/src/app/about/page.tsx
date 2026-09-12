@@ -1,20 +1,25 @@
 'use client';
 
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import { MapPinned, ShieldCheck, Users2, Headphones, Award } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { CtaBannerSection } from '@/components/home/MiscSections';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import { KOSOVO_STATS } from '@/lib/utils';
+import { cityApi, agentApi, listingApi } from '@/lib/api';
 
 export default function AboutPage() {
   const { t } = useTranslation('staticPages');
 
+  const { data: citiesData } = useQuery({ queryKey: ['cities'], queryFn: () => cityApi.getAll().then((r) => r.data) });
+  const { data: agentsData } = useQuery({ queryKey: ['agents', 'count'], queryFn: () => agentApi.getAll({ limit: 1 }).then((r) => r.data) });
+  const { data: listingsData } = useQuery({ queryKey: ['listings', 'count'], queryFn: () => listingApi.getAll({ limit: 1 }).then((r) => r.data) });
+
   const stats = [
-    { icon: MapPinned, value: `${KOSOVO_STATS.cities}`, label: t('statCities') },
-    { icon: Users2, value: `${KOSOVO_STATS.agents}`, label: t('statAgents') },
-    { icon: Award, value: `${KOSOVO_STATS.totalListings}`, label: t('statListings') },
+    { icon: MapPinned, value: `${citiesData?.cities?.length ?? '—'}`, label: t('statCities') },
+    { icon: Users2, value: `${agentsData?.pagination?.total ?? '—'}`, label: t('statAgents') },
+    { icon: Award, value: `${listingsData?.pagination?.total ?? '—'}`, label: t('statListings') },
   ];
 
   const features = [

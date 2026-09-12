@@ -52,11 +52,11 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-neutral-500">
                 <Phone className="w-4 h-4 text-primary-600 flex-shrink-0" />
-                +383 38 123 456
+                +383 45 400 807
               </div>
               <div className="flex items-center gap-2 text-neutral-500">
                 <Mail className="w-4 h-4 text-primary-600 flex-shrink-0" />
-                info@kosovorealestate.com
+                realestatemolla@gmail.com
               </div>
             </div>
           </div>

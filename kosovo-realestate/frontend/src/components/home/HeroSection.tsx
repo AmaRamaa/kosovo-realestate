@@ -21,7 +21,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
 
   return (
     <>
-      <section className="relative overflow-hidden min-h-[80vh] flex items-center">
+      <section className="relative overflow-hidden min-h-[80vh] flex items-start">
         {/* Background photo */}
         <div className="absolute inset-0">
           <Image
@@ -30,7 +30,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            className="object-cover object-top"
           />
           {/* Uniform dark scrim so text stays legible over the whole photo */}
           <div className="absolute inset-0 bg-black/55" />
@@ -38,7 +38,7 @@ export default function HeroSection({ listings = [], isLoading }: HeroSectionPro
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/45" />
         </div>
 
-        <div className="container-page relative py-16">
+        <div className="container-page relative pt-12 pb-24 lg:pt-16 lg:pb-28">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="sr-only">{t('logoAlt')}</h1>
             <Logo className="h-28 sm:h-32 lg:h-36 text-primary-600 opacity-50 mx-auto mb-8" />

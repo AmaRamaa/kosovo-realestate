@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
+import slugify from 'slugify';
 import { prisma } from '../utils/prisma';
 import { authenticate, requireRole } from '../middleware/auth.middleware';
 
@@ -252,6 +254,240 @@ adminRouter.get('/analytics', async (req, res, next) => {
       viewsByDay: viewsByDay.map(r => ({ date: r.date, count: Number(r.count) })),
       topPages: topPageRows.map(r => ({ path: r.path, count: r._count })),
     });
+  } catch (err) { next(err); }
+});
+
+// CITIES & NEIGHBORHOODS (admin)
+adminRouter.get('/cities', async (req, res, next) => {
+  try {
+    const cities = await prisma.city.findMany({
+      include: {
+        neighborhoods: { orderBy: { name: 'asc' } },
+        _count: { select: { listings: true, neighborhoods: true } },
+      },
+      orderBy: { name: 'asc' },
+    });
+    res.json({ cities });
+  } catch (err) { next(err); }
+});
+
+adminRouter.post('/cities', async (req, res, next) => {
+  try {
+    const { name, nameAlbanian, nameSerbian, description, image, lat, lng, isActive } = req.body;
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+    let slug = slugify(name, { lower: true, strict: true });
+    if (await prisma.city.findUnique({ where: { slug } })) slug = `${slug}-${Date.now()}`;
+    const city = await prisma.city.create({
+      data: { name, nameAlbanian, nameSerbian, slug, description, image, lat, lng, isActive: isActive ?? true },
+    });
+    res.status(201).json({ city });
+  } catch (err) { next(err); }
+});
+
+adminRouter.put('/cities/:id', async (req, res, next) => {
+  try {
+    const { name, nameAlbanian, nameSerbian, description, image, lat, lng, isActive } = req.body;
+    const city = await prisma.city.update({
+      where: { id: req.params.id },
+      data: { name, nameAlbanian, nameSerbian, description, image, lat, lng, isActive },
+    });
+    res.json({ city });
+  } catch (err) { next(err); }
+});
+
+adminRouter.delete('/cities/:id', async (req, res, next) => {
+  try {
+    await prisma.city.delete({ where: { id: req.params.id } });
+    res.json({ message: 'City deleted' });
+  } catch (err) { next(err); }
+});
+
+adminRouter.post('/neighborhoods', async (req, res, next) => {
+  try {
+    const { name, cityId, lat, lng } = req.body;
+    if (!name || !cityId) return res.status(400).json({ error: 'Name and city are required' });
+    const slug = slugify(name, { lower: true, strict: true });
+    const neighborhood = await prisma.neighborhood.create({ data: { name, cityId, slug, lat, lng } });
+    res.status(201).json({ neighborhood });
+  } catch (err) { next(err); }
+});
+
+adminRouter.put('/neighborhoods/:id', async (req, res, next) => {
+  try {
+    const { name, lat, lng } = req.body;
+    const neighborhood = await prisma.neighborhood.update({ where: { id: req.params.id }, data: { name, lat, lng } });
+    res.json({ neighborhood });
+  } catch (err) { next(err); }
+});
+
+adminRouter.delete('/neighborhoods/:id', async (req, res, next) => {
+  try {
+    await prisma.neighborhood.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Neighborhood deleted' });
+  } catch (err) { next(err); }
+});
+
+// AGENCIES (admin)
+adminRouter.get('/agencies', async (req, res, next) => {
+  try {
+    const agencies = await prisma.agency.findMany({
+      include: { city: { select: { id: true, name: true } }, _count: { select: { agents: true, listings: true } } },
+      orderBy: { name: 'asc' },
+    });
+    res.json({ agencies });
+  } catch (err) { next(err); }
+});
+
+adminRouter.post('/agencies', async (req, res, next) => {
+  try {
+    const { name, description, logo, coverImage, website, email, phone, address, cityId, isVerified } = req.body;
+    if (!name || !email || !phone || !cityId) return res.status(400).json({ error: 'Name, email, phone, and city are required' });
+    let slug = slugify(name, { lower: true, strict: true });
+    if (await prisma.agency.findUnique({ where: { slug } })) slug = `${slug}-${Date.now()}`;
+    const agency = await prisma.agency.create({
+      data: { name, slug, description, logo, coverImage, website, email, phone, address, cityId, isVerified: isVerified ?? true },
+    });
+    res.status(201).json({ agency });
+  } catch (err) { next(err); }
+});
+
+adminRouter.put('/agencies/:id', async (req, res, next) => {
+  try {
+    const { name, description, logo, coverImage, website, email, phone, address, cityId, isVerified } = req.body;
+    const agency = await prisma.agency.update({
+      where: { id: req.params.id },
+      data: { name, description, logo, coverImage, website, email, phone, address, cityId, isVerified },
+    });
+    res.json({ agency });
+  } catch (err) { next(err); }
+});
+
+adminRouter.delete('/agencies/:id', async (req, res, next) => {
+  try {
+    await prisma.agency.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Agency deleted' });
+  } catch (err) { next(err); }
+});
+
+// AGENTS (admin)
+adminRouter.get('/agents', async (req, res, next) => {
+  try {
+    const agents = await prisma.agent.findMany({
+      include: {
+        user: { select: { id: true, firstName: true, lastName: true, email: true, phone: true, avatar: true, isActive: true } },
+        agency: { select: { id: true, name: true } },
+        _count: { select: { listings: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ agents });
+  } catch (err) { next(err); }
+});
+
+adminRouter.post('/agents', async (req, res, next) => {
+  try {
+    const { firstName, lastName, email, phone, password, agencyId, bio, licenseNumber, yearsExperience, specializations, languages, isVerified } = req.body;
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ error: 'First name, last name, email, and password are required' });
+    }
+    if (await prisma.user.findUnique({ where: { email } })) {
+      return res.status(409).json({ error: 'A user with this email already exists' });
+    }
+    const hashed = await bcrypt.hash(password, 12);
+    const user = await prisma.user.create({
+      data: { firstName, lastName, email, phone, password: hashed, role: 'AGENT', isVerified: true },
+    });
+    const agent = await prisma.agent.create({
+      data: {
+        userId: user.id,
+        agencyId: agencyId || null,
+        bio, licenseNumber,
+        yearsExperience: yearsExperience ?? 0,
+        specializations: specializations || [],
+        languages: languages || [],
+        isVerified: isVerified ?? true,
+      },
+      include: {
+        user: { select: { firstName: true, lastName: true, email: true, avatar: true, phone: true } },
+        agency: { select: { name: true } },
+      },
+    });
+    res.status(201).json({ agent });
+  } catch (err) { next(err); }
+});
+
+adminRouter.put('/agents/:id', async (req, res, next) => {
+  try {
+    const { firstName, lastName, phone, ...agentData } = req.body;
+    const agent = await prisma.agent.findUnique({ where: { id: req.params.id } });
+    if (!agent) return res.status(404).json({ error: 'Agent not found' });
+    if (firstName !== undefined || lastName !== undefined || phone !== undefined) {
+      await prisma.user.update({
+        where: { id: agent.userId },
+        data: {
+          ...(firstName !== undefined && { firstName }),
+          ...(lastName !== undefined && { lastName }),
+          ...(phone !== undefined && { phone }),
+        },
+      });
+    }
+    delete agentData.userId;
+    const updated = await prisma.agent.update({
+      where: { id: req.params.id },
+      data: agentData,
+      include: {
+        user: { select: { firstName: true, lastName: true, email: true, avatar: true, phone: true } },
+        agency: { select: { name: true } },
+      },
+    });
+    res.json({ agent: updated });
+  } catch (err) { next(err); }
+});
+
+adminRouter.delete('/agents/:id', async (req, res, next) => {
+  try {
+    const agent = await prisma.agent.findUnique({ where: { id: req.params.id } });
+    if (!agent) return res.status(404).json({ error: 'Agent not found' });
+    await prisma.agent.delete({ where: { id: req.params.id } });
+    await prisma.user.update({ where: { id: agent.userId }, data: { role: 'BUYER' } }).catch(() => {});
+    res.json({ message: 'Agent removed' });
+  } catch (err) { next(err); }
+});
+
+// APPOINTMENTS / VIEWING REQUESTS (admin)
+adminRouter.get('/appointments', async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    const where: any = {};
+    if (status) where.status = status;
+    const appointments = await prisma.appointment.findMany({
+      where,
+      include: {
+        listing: { select: { title: true, slug: true, images: { where: { isCover: true }, take: 1 } } },
+        buyer: { select: { firstName: true, lastName: true, email: true, phone: true } },
+        agent: { include: { user: { select: { firstName: true, lastName: true } } } },
+      },
+      orderBy: { scheduledAt: 'desc' },
+    });
+    res.json({ appointments });
+  } catch (err) { next(err); }
+});
+
+adminRouter.patch('/appointments/:id', async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+    const appointment = await prisma.appointment.update({ where: { id: req.params.id }, data: { status } });
+    res.json({ appointment });
+  } catch (err) { next(err); }
+});
+
+adminRouter.delete('/appointments/:id', async (req, res, next) => {
+  try {
+    await prisma.appointment.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Appointment deleted' });
   } catch (err) { next(err); }
 });
 

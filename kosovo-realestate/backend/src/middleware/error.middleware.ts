@@ -17,6 +17,9 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   if (err.code === 'P2025') {
     return res.status(404).json({ error: 'Record not found' });
   }
+  if (err.code === 'P2003') {
+    return res.status(409).json({ error: 'This record is still referenced by other data and cannot be deleted' });
+  }
 
   logger.error('Unhandled error:', err);
 

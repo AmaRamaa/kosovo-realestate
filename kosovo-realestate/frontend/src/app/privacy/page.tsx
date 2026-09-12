@@ -30,11 +30,11 @@ export default function PrivacyPage() {
             </section>
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">Your Rights</h2>
-              <p>You may request access to, correction of, or deletion of your personal information at any time by contacting us at info@kosovorealestate.com.</p>
+              <p>You may request access to, correction of, or deletion of your personal information at any time by contacting us at realestatemolla@gmail.com.</p>
             </section>
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">Contact</h2>
-              <p>Questions about this policy can be sent to info@kosovorealestate.com.</p>
+              <p>Questions about this policy can be sent to realestatemolla@gmail.com.</p>
             </section>
           </div>
         </div>

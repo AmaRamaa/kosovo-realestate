@@ -34,7 +34,7 @@ export default function TermsPage() {
             </section>
             <section>
               <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-2">Contact</h2>
-              <p>Questions about these terms can be sent to info@kosovorealestate.com.</p>
+              <p>Questions about these terms can be sent to realestatemolla@gmail.com.</p>
             </section>
           </div>
         </div>

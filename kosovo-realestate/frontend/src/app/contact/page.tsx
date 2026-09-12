@@ -9,7 +9,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 import { submissionApi } from '@/lib/api';
 import { toast } from '@/components/ui/Toaster';
 
-const WHATSAPP_NUMBER = '38338123456';
+const WHATSAPP_NUMBER = '38345400807';
 const OFFICE_LAT = 42.6629;
 const OFFICE_LNG = 21.1655;
 
@@ -36,8 +36,8 @@ export default function ContactPage() {
 
   const infoItems = [
     { icon: MapPin, label: t('address'), value: 'Rr. Nënë Tereza, Prishtinë, Kosovo' },
-    { icon: Phone, label: t('phone'), value: '+383 38 123 456', href: 'tel:+38338123456' },
-    { icon: Mail, label: t('email'), value: 'info@kosovorealestate.com', href: 'mailto:info@kosovorealestate.com' },
+    { icon: Phone, label: t('phone'), value: '+383 45 400 807', href: 'tel:+38345400807' },
+    { icon: Mail, label: t('email'), value: 'realestatemolla@gmail.com', href: 'mailto:realestatemolla@gmail.com' },
     { icon: MessageCircle, label: t('whatsapp'), value: t('chatNow'), href: `https://wa.me/${WHATSAPP_NUMBER}` },
     { icon: Clock, label: t('contactHoursLabel'), value: t('contactHours') },
   ];

@@ -25,7 +25,7 @@ export default function HeroSearchBar() {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-xl p-1.5 max-w-2xl w-full">
+    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-1.5 max-w-2xl w-full">
       {/* Tabs */}
       <div className="flex gap-1 p-0.5 mb-1">
         {(['SALE', 'RENT'] as const).map((type) => (

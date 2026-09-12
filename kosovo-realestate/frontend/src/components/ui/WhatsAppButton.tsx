@@ -2,7 +2,7 @@
 
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
-const WHATSAPP_NUMBER = '38338123456'; // +383 38 123 456, same number used in the Footer
+const WHATSAPP_NUMBER = '38345400807'; // +383 45 400 807, same number used in the Footer
 
 export default function WhatsAppButton() {
   const { t } = useTranslation('whatsapp');

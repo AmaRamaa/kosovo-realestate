@@ -12,7 +12,7 @@ import { listingApi } from '@/lib/api';
 export default function HomePage() {
   const { data: recentData, isLoading: recentLoading } = useQuery({
     queryKey: ['listings', 'recent'],
-    queryFn: () => listingApi.getRecent({ limit: 8 }).then(r => r.data),
+    queryFn: () => listingApi.getRecent({ limit: 100 }).then(r => r.data),
   });
 
   return (

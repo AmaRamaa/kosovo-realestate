@@ -21,7 +21,7 @@ export default function HomePage() {
       <main>
         <HeroSection />
 
-        <div className="-mt-10 sm:-mt-14 lg:-mt-16 relative z-10">
+        <div className="relative -mt-28 sm:-mt-32 lg:-mt-40 pb-10 z-10">
           <ListingSection
             hideHeader
             listings={recentData?.listings || []}

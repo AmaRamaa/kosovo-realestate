@@ -61,11 +61,11 @@ function MortgageCalculator({ price }: { price: number }) {
 function ImageGallery({ images, title }: { images: any[]; title: string }) {
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  const frame = 'relative h-72 sm:h-96 lg:h-[28rem] rounded-2xl overflow-hidden';
+  const frame = 'relative h-72 sm:h-96 lg:h-[28rem] sm:rounded-2xl overflow-hidden';
 
   if (!images.length) {
     return (
-      <div className={cn(frame, 'bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-300 dark:text-neutral-600')}>
+      <div className={cn(frame, '-mx-4 sm:mx-0 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-300 dark:text-neutral-600')}>
         <Home className="w-14 h-14" />
       </div>
     );
@@ -73,7 +73,7 @@ function ImageGallery({ images, title }: { images: any[]; title: string }) {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative -mx-4 sm:mx-0">
         {/* Main image — fixed-height frame; the photo is shown whole (object-contain)
             over a blurred copy of itself, so portrait/odd-ratio photos never get
             cropped or blow the layout up. */}

@@ -179,10 +179,22 @@ export const getListingBySlug = async (req: Request, res: Response, next: NextFu
   }
 };
 
+// Owner contact is admin-only, private data. Normalise the incoming shape and
+// treat "all blank" as "no contact on file".
+function cleanOwnerContact(input: any) {
+  if (!input || typeof input !== 'object') return null;
+  const pick = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null);
+  const contact = { name: pick(input.name), phone: pick(input.phone), email: pick(input.email), notes: pick(input.notes) };
+  return contact.name || contact.phone || contact.email || contact.notes ? contact : null;
+}
+
 export const createListing = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.id;
-    const { images, ...data } = req.body;
+    const isAdmin = req.user!.role === 'ADMIN';
+    const { images, ownerContact, ...data } = req.body;
+    if (data.agentId === '') data.agentId = null;
+    const contact = isAdmin ? cleanOwnerContact(ownerContact) : null;
 
     let slug = slugify(data.title, { lower: true, strict: true });
     const existing = await prisma.listing.findUnique({ where: { slug } });
@@ -191,6 +203,7 @@ export const createListing = async (req: Request, res: Response, next: NextFunct
     const listing = await prisma.listing.create({
       data: {
         ...data,
+        ...(contact && { ownerContact: { create: contact } }),
         slug,
         userId,
         status: req.user!.role === 'ADMIN' ? 'ACTIVE' : 'PENDING',
@@ -218,7 +231,8 @@ export const updateListing = async (req: Request, res: Response, next: NextFunct
       throw new AppError('Not authorized', 403);
     }
 
-    const { newImages, ...data } = req.body;
+    const { newImages, ownerContact, ...data } = req.body;
+    if (data.agentId === '') data.agentId = null;
     const existingImageCount = newImages?.length ? await prisma.listingImage.count({ where: { listingId: id } }) : 0;
 
     const updated = await prisma.listing.update({
@@ -231,6 +245,16 @@ export const updateListing = async (req: Request, res: Response, next: NextFunct
       },
       include: { images: { orderBy: [{ isCover: 'desc' }, { order: 'asc' }] } },
     });
+
+    // Owner contact is admin-only; ignore it entirely for anyone else.
+    if (req.user!.role === 'ADMIN' && ownerContact !== undefined) {
+      const contact = cleanOwnerContact(ownerContact);
+      if (contact) {
+        await prisma.listingOwnerContact.upsert({ where: { listingId: id }, create: { listingId: id, ...contact }, update: contact });
+      } else {
+        await prisma.listingOwnerContact.deleteMany({ where: { listingId: id } });
+      }
+    }
 
     res.json({ listing: updated });
   } catch (err) {
@@ -246,6 +270,8 @@ export const getListingById = async (req: Request, res: Response, next: NextFunc
         images: { orderBy: [{ isCover: 'desc' }, { order: 'asc' }] },
         city: true,
         neighborhood: true,
+        // Only admins ever get the owner's private contact back.
+        ownerContact: req.user!.role === 'ADMIN',
       },
     });
     if (!listing) throw new AppError('Listing not found', 404);

@@ -119,7 +119,10 @@ export interface Listing {
   publishedAt?: string;
   images: ListingImage[];
   amenities?: Array<{ amenity: Amenity }>;
+  agentId?: string | null;
   agent?: Agent;
+  // Admin-only; the API never sends this to anyone else.
+  ownerContact?: { name?: string | null; phone?: string | null; email?: string | null; notes?: string | null } | null;
   _count?: { favorites: number; reviews: number };
 }
 

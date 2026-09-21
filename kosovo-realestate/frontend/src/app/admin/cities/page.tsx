@@ -55,6 +55,17 @@ export default function AdminCitiesPage() {
     }
   };
 
+  const toggleCityActive = async (city: any) => {
+    try {
+      await adminApi.updateCity(city.id, { isActive: !city.isActive });
+      invalidate();
+      // The public city lists (filters, listing form, homepage) only show active cities.
+      queryClient.invalidateQueries({ queryKey: ['cities'] });
+    } catch (err: any) {
+      toast(err?.response?.data?.error || t('somethingWentWrong'), 'error');
+    }
+  };
+
   const openNewNeighborhood = (cityId: string) => { setNbForm({ name: '', cityId }); setNbModal({ open: true }); };
   const openEditNeighborhood = (nb: any) => { setNbForm({ name: nb.name, cityId: nb.cityId }); setNbModal({ open: true, editing: nb }); };
 
@@ -105,12 +116,18 @@ export default function AdminCitiesPage() {
                     <button onClick={() => setExpandedCity(expandedCity === city.id ? null : city.id)} className="text-neutral-400">
                       <ChevronDown className={`w-4 h-4 transition-transform ${expandedCity === city.id ? 'rotate-180' : ''}`} />
                     </button>
-                    <div className="flex-1 min-w-0">
+                    <div className={`flex-1 min-w-0 ${city.isActive ? '' : 'opacity-50'}`}>
                       <p className="font-medium text-sm text-neutral-900 dark:text-white">{city.name}{city.nameAlbanian ? ` (${city.nameAlbanian})` : ''}</p>
                       <p className="text-xs text-neutral-500">{city._count.neighborhoods} {t('neighborhoodsCount')} · {city._count.listings} {t('listingsCount')}</p>
                     </div>
                     <span className={city.isActive ? 'badge-green' : 'badge-gray'}>{city.isActive ? t('activeBadge') : t('inactiveBadge')}</span>
                     <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => toggleCityActive(city)}
+                        className={`btn-sm btn ${city.isActive ? 'btn-secondary' : 'btn-primary'}`}
+                      >
+                        {city.isActive ? t('deactivate') : t('activate')}
+                      </button>
                       <button onClick={() => openEditCity(city)} className="btn-sm btn btn-ghost"><Pencil className="w-4 h-4" /></button>
                       <button onClick={() => deleteCity(city.id)} className="btn-sm btn btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-950"><Trash2 className="w-4 h-4" /></button>
                     </div>

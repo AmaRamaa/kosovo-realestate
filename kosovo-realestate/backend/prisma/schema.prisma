@@ -246,8 +246,25 @@ model Listing {
   reviews         Review[]
   recentViews     RecentView[]
   reports         Report[]
+  ownerContact    ListingOwnerContact?
 
   @@map("listings")
+}
+
+// Private contact details of the property's original owner. Kept in its own
+// table (not columns on Listing) so it can never ride along on a public
+// listing response — it only appears where an admin endpoint explicitly
+// includes it.
+model ListingOwnerContact {
+  listingId   String    @id
+  listing     Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  name        String?
+  phone       String?
+  email       String?
+  notes       String?
+  updatedAt   DateTime  @updatedAt
+
+  @@map("listing_owner_contacts")
 }
 
 model ListingImage {

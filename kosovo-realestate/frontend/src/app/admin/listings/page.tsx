@@ -117,7 +117,10 @@ export default function AdminListingsPage() {
                       {listing.isFeatured && <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 flex-shrink-0" />}
                       {listing.title}
                     </p>
-                    <p className="text-xs text-neutral-500">{listing.city?.name} · {tType(listing.propertyType)}</p>
+                    <p className="text-xs text-neutral-500">
+                      {listing.city?.name} · {tType(listing.propertyType)}
+                      {listing.agent?.user ? ` · ${listing.agent.user.firstName} ${listing.agent.user.lastName}` : ''}
+                    </p>
                     <p className="text-xs text-neutral-400">{formatRelativeDate(listing.createdAt, locale)}</p>
                   </div>
                   <div className="text-sm font-semibold text-primary-600 flex-shrink-0 min-w-[90px]">

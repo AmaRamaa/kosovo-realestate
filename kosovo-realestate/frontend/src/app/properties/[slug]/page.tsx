@@ -61,14 +61,25 @@ function MortgageCalculator({ price }: { price: number }) {
 function ImageGallery({ images, title }: { images: any[]; title: string }) {
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  if (!images.length) return null;
+  const frame = 'relative h-72 sm:h-96 lg:h-[28rem] rounded-2xl overflow-hidden';
+
+  if (!images.length) {
+    return (
+      <div className={cn(frame, 'bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-300 dark:text-neutral-600')}>
+        <Home className="w-14 h-14" />
+      </div>
+    );
+  }
 
   return (
     <>
       <div className="relative">
-        {/* Main image */}
-        <div className="relative aspect-[16/9] rounded-2xl overflow-hidden cursor-pointer bg-neutral-100 dark:bg-neutral-800" onClick={() => setLightbox(true)}>
-          <Image src={images[current]?.url} alt={title} fill className="object-cover" sizes="100vw" priority />
+        {/* Main image — fixed-height frame; the photo is shown whole (object-contain)
+            over a blurred copy of itself, so portrait/odd-ratio photos never get
+            cropped or blow the layout up. */}
+        <div className={cn(frame, 'cursor-zoom-in bg-neutral-900')} onClick={() => setLightbox(true)}>
+          <Image src={images[current]?.url} alt="" aria-hidden fill sizes="160px" className="object-cover blur-2xl scale-125 opacity-60" />
+          <Image src={images[current]?.url} alt={title} fill className="object-contain" sizes="(min-width: 1024px) 800px, 100vw" priority />
           <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1.5 rounded-lg">
             {current + 1} / {images.length}
           </div>
@@ -238,13 +249,11 @@ export default function PropertyDetailPage() {
             <span className="text-neutral-900 dark:text-white line-clamp-1">{listing.title}</span>
           </nav>
 
-          <div className="mb-6">
-            <ImageGallery images={listing.images} title={listing.title} />
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* LEFT: Main content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-8 min-w-0">
+              <ImageGallery images={listing.images} title={listing.title} />
+
               {/* Header */}
               <div>
                 <div className="flex flex-wrap items-start justify-between gap-4 mb-3">

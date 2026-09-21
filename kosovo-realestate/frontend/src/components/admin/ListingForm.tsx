@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
-import { Upload, X, Loader2, Star } from 'lucide-react';
-import { cityApi, listingApi, uploadApi } from '@/lib/api';
+import { Upload, X, Loader2, Star, Lock } from 'lucide-react';
+import { adminApi, cityApi, listingApi, uploadApi } from '@/lib/api';
 import { PROPERTY_TYPES, HEATING_TYPES, ENERGY_RATINGS } from '@/lib/utils';
 import { Listing } from '@/types';
 import { toast } from '@/components/ui/Toaster';
@@ -46,6 +46,8 @@ const HEATING_LABEL_KEYS: Record<string, string> = {
   CENTRAL: 'heatingCentral', ELECTRIC: 'heatingElectric', GAS: 'heatingGas', OIL: 'heatingOil',
   WOOD: 'heatingWood', HEAT_PUMP: 'heatingHeatPump', UNDERFLOOR: 'heatingUnderfloor', NONE: 'heatingNone',
 };
+// Radix Select doesn't allow an empty-string item value, so "no agent" gets a sentinel.
+const NO_AGENT = '__none__';
 
 export default function ListingForm({ listing }: ListingFormProps) {
   const router = useRouter();
@@ -59,6 +61,7 @@ export default function ListingForm({ listing }: ListingFormProps) {
     listingType: listing?.listingType || 'SALE',
     propertyType: listing?.propertyType || 'APARTMENT',
     status: listing?.status || 'ACTIVE',
+    agentId: listing?.agentId || listing?.agent?.id || '',
     price: listing?.price ?? '',
     currency: listing?.currency || 'EUR',
     priceNegotiable: listing?.priceNegotiable || false,
@@ -90,6 +93,15 @@ export default function ListingForm({ listing }: ListingFormProps) {
     hasStorage: listing?.hasStorage || false,
   });
 
+  // The original owner's private contact — sent to the API as `ownerContact`,
+  // which only stores/returns it for admins.
+  const [owner, setOwner] = useState({
+    name: listing?.ownerContact?.name || '',
+    phone: listing?.ownerContact?.phone || '',
+    email: listing?.ownerContact?.email || '',
+    notes: listing?.ownerContact?.notes || '',
+  });
+
   const [images, setImages] = useState<ImageItem[]>(
     (listing?.images || []).map((img) => ({ id: img.id, url: img.url, publicId: img.publicId }))
   );
@@ -107,6 +119,15 @@ export default function ListingForm({ listing }: ListingFormProps) {
     enabled: !!selectedCity?.slug,
   });
   const neighborhoods = cityDetail?.city?.neighborhoods || [];
+
+  const { data: agentsData } = useQuery({ queryKey: ['admin-agents'], queryFn: () => adminApi.getAgents().then((r) => r.data) });
+  const agents = agentsData?.agents || [];
+
+  // New listings default to the first agent so it isn't forgotten; the admin can still pick "no agent".
+  useEffect(() => {
+    if (!isEdit && !form.agentId && agents.length > 0) setForm((p) => ({ ...p, agentId: agents[0].id }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, agents.length]);
 
   const set = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -151,6 +172,8 @@ export default function ListingForm({ listing }: ListingFormProps) {
         heatingType: form.heatingType || null,
         energyRating: form.energyRating || null,
         neighborhoodId: form.neighborhoodId || null,
+        agentId: form.agentId || null,
+        ownerContact: owner,
       };
 
       if (isEdit) {
@@ -206,9 +229,22 @@ export default function ListingForm({ listing }: ListingFormProps) {
             />
           </div>
         </div>
-        <div>
-          <label className="label">{t('fieldStatus')}</label>
-          <Select value={form.status} onValueChange={(v) => set('status', v)} options={STATUS_OPTIONS.map((s) => ({ value: s, label: t(STATUS_LABEL_KEYS[s]) }))} />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label">{t('fieldStatus')}</label>
+            <Select value={form.status} onValueChange={(v) => set('status', v)} options={STATUS_OPTIONS.map((s) => ({ value: s, label: t(STATUS_LABEL_KEYS[s]) }))} />
+          </div>
+          <div>
+            <label className="label">{t('fieldAgent')}</label>
+            <Select
+              value={form.agentId || NO_AGENT}
+              onValueChange={(v) => set('agentId', v === NO_AGENT ? '' : v)}
+              options={[
+                { value: NO_AGENT, label: t('noAgentOption') },
+                ...agents.map((a: any) => ({ value: a.id, label: `${a.user.firstName} ${a.user.lastName}` })),
+              ]}
+            />
+          </div>
         </div>
       </div>
 
@@ -326,6 +362,34 @@ export default function ListingForm({ listing }: ListingFormProps) {
         <div>
           <label className="label mb-2">{t('fieldMapLocation')}</label>
           <LocationPicker lat={form.lat} lng={form.lng} onChange={(lat, lng) => setForm((p) => ({ ...p, lat, lng }))} />
+        </div>
+      </div>
+
+      {/* Original owner — private, admin-only */}
+      <div className="card p-6 space-y-4 border-amber-300 bg-amber-50/60 dark:border-amber-700/50 dark:bg-amber-950/20">
+        <div>
+          <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white flex items-center gap-2">
+            <Lock className="w-4 h-4 text-amber-600" /> {t('ownerContactHeading')}
+          </h2>
+          <p className="text-xs text-amber-800 dark:text-amber-300 mt-1">{t('ownerContactPrivateNote')}</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="label">{t('ownerNameLabel')}</label>
+            <input className="input" value={owner.name} onChange={(e) => setOwner((p) => ({ ...p, name: e.target.value }))} autoComplete="off" />
+          </div>
+          <div>
+            <label className="label">{t('ownerPhoneLabel')}</label>
+            <input className="input" value={owner.phone} onChange={(e) => setOwner((p) => ({ ...p, phone: e.target.value }))} autoComplete="off" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">{t('ownerEmailLabel')}</label>
+            <input type="email" className="input" value={owner.email} onChange={(e) => setOwner((p) => ({ ...p, email: e.target.value }))} autoComplete="off" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">{t('ownerNotesLabel')}</label>
+            <textarea rows={3} className="input resize-none" placeholder={t('ownerNotesPlaceholder')} value={owner.notes} onChange={(e) => setOwner((p) => ({ ...p, notes: e.target.value }))} />
+          </div>
         </div>
       </div>
 

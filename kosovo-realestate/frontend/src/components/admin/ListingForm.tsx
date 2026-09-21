@@ -229,22 +229,9 @@ export default function ListingForm({ listing }: ListingFormProps) {
             />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="label">{t('fieldStatus')}</label>
-            <Select value={form.status} onValueChange={(v) => set('status', v)} options={STATUS_OPTIONS.map((s) => ({ value: s, label: t(STATUS_LABEL_KEYS[s]) }))} />
-          </div>
-          <div>
-            <label className="label">{t('fieldAgent')}</label>
-            <Select
-              value={form.agentId || NO_AGENT}
-              onValueChange={(v) => set('agentId', v === NO_AGENT ? '' : v)}
-              options={[
-                { value: NO_AGENT, label: t('noAgentOption') },
-                ...agents.map((a: any) => ({ value: a.id, label: `${a.user.firstName} ${a.user.lastName}` })),
-              ]}
-            />
-          </div>
+        <div>
+          <label className="label">{t('fieldStatus')}</label>
+          <Select value={form.status} onValueChange={(v) => set('status', v)} options={STATUS_OPTIONS.map((s) => ({ value: s, label: t(STATUS_LABEL_KEYS[s]) }))} />
         </div>
       </div>
 
@@ -391,6 +378,19 @@ export default function ListingForm({ listing }: ListingFormProps) {
             <textarea rows={3} className="input resize-none" placeholder={t('ownerNotesPlaceholder')} value={owner.notes} onChange={(e) => setOwner((p) => ({ ...p, notes: e.target.value }))} />
           </div>
         </div>
+      </div>
+
+      {/* Agent managing this listing */}
+      <div className="card p-6 space-y-4">
+        <h2 className="font-display font-semibold text-lg text-neutral-900 dark:text-white">{t('fieldAgent')}</h2>
+        <Select
+          value={form.agentId || NO_AGENT}
+          onValueChange={(v) => set('agentId', v === NO_AGENT ? '' : v)}
+          options={[
+            { value: NO_AGENT, label: t('noAgentOption') },
+            ...agents.map((a: any) => ({ value: a.id, label: `${a.user.firstName} ${a.user.lastName}` })),
+          ]}
+        />
       </div>
 
       {/* Images */}

@@ -7,6 +7,7 @@ import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/ui/Toaster';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import Analytics from '@/components/analytics/Analytics';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/utils';
 import './globals.css';
 
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Toaster />
                 <WhatsAppButton />
                 <Analytics />
+                <SpeedInsights />
               </AuthProvider>
             </QueryProvider>
           </LocaleProvider>

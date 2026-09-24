@@ -60,6 +60,7 @@ export const listingApi = {
   update: (id: string, data: any) => api.put(`/listings/${id}`, data),
   delete: (id: string) => api.delete(`/listings/${id}`),
   deleteImage: (id: string, imageId: string) => api.delete(`/listings/${id}/images/${imageId}`),
+  reorderImages: (id: string, data: { order: string[]; coverId?: string }) => api.put(`/listings/${id}/images/order`, data),
   getFeatured: () => api.get('/listings/featured'),
   getRecent: (params?: any) => api.get('/listings/recent', { params }),
   getSimilar: (slug: string) => api.get(`/listings/${slug}/similar`),

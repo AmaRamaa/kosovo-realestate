@@ -74,12 +74,10 @@ function ImageGallery({ images, title }: { images: any[]; title: string }) {
   return (
     <>
       <div className="relative -mx-4 sm:mx-0">
-        {/* Main image — fixed-height frame; the photo is shown whole (object-contain)
-            over a blurred copy of itself, so portrait/odd-ratio photos never get
-            cropped or blow the layout up. */}
-        <div className={cn(frame, 'cursor-zoom-in bg-neutral-900')} onClick={() => setLightbox(true)}>
-          <Image src={images[current]?.url} alt="" aria-hidden fill sizes="160px" className="object-cover blur-2xl scale-125 opacity-60" />
-          <Image src={images[current]?.url} alt={title} fill className="object-contain" sizes="(min-width: 1024px) 800px, 100vw" priority />
+        {/* Main image — fixed-height frame that the photo always fills edge to edge
+            (object-cover); the lightbox shows the whole uncropped photo. */}
+        <div className={cn(frame, 'cursor-zoom-in bg-neutral-200 dark:bg-neutral-800')} onClick={() => setLightbox(true)}>
+          <Image src={images[current]?.url} alt={title} fill className="object-cover" sizes="(min-width: 1024px) 800px, 100vw" priority />
           <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1.5 rounded-lg">
             {current + 1} / {images.length}
           </div>
@@ -97,7 +95,7 @@ function ImageGallery({ images, title }: { images: any[]; title: string }) {
         </div>
         {/* Thumbnails */}
         {images.length > 1 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide px-4 sm:px-0">
             {images.map((img, i) => (
               <button key={img.id} onClick={() => setCurrent(i)} className={cn('flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all', i === current ? 'border-primary-600' : 'border-transparent hover:border-neutral-300')}>
                 <Image src={img.url} alt={`${i + 1}`} width={80} height={56} className="w-full h-full object-cover" />

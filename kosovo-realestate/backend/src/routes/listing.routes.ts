@@ -8,6 +8,7 @@ import {
   updateListing,
   deleteListing,
   deleteListingImage,
+  reorderListingImages,
   getFeaturedListings,
   getRecentListings,
   incrementView,
@@ -53,6 +54,7 @@ router.post(
 router.put('/:id', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), updateListing);
 router.delete('/:id', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), deleteListing);
 router.delete('/:id/images/:imageId', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), deleteListingImage);
+router.put('/:id/images/order', authenticate, requireRole(['SELLER', 'AGENT', 'ADMIN']), reorderListingImages);
 
 // Admin only
 router.patch('/:id/approve', authenticate, requireRole(['ADMIN']), approveListing);

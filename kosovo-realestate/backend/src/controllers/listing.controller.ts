@@ -209,7 +209,19 @@ export const createListing = async (req: Request, res: Response, next: NextFunct
         status: req.user!.role === 'ADMIN' ? 'ACTIVE' : 'PENDING',
         publishedAt: req.user!.role === 'ADMIN' ? new Date() : null,
         images: images?.length
-          ? { create: images.map((img: any, i: number) => ({ url: img.url, alt: img.alt, order: i, isCover: i === 0 })) }
+          ? {
+              // Respect an explicit cover choice from the form; otherwise the first photo wins.
+              create: (() => {
+                const coverIdx = images.findIndex((im: any) => im.isCover);
+                const effectiveCoverIdx = coverIdx === -1 ? 0 : coverIdx;
+                return images.map((img: any, i: number) => ({
+                  url: img.url,
+                  alt: img.alt,
+                  order: i,
+                  isCover: i === effectiveCoverIdx,
+                }));
+              })(),
+            }
           : undefined,
       },
       include: { images: true },
@@ -234,13 +246,26 @@ export const updateListing = async (req: Request, res: Response, next: NextFunct
     const { newImages, ownerContact, ...data } = req.body;
     if (data.agentId === '') data.agentId = null;
     const existingImageCount = newImages?.length ? await prisma.listingImage.count({ where: { listingId: id } }) : 0;
+    // A listing whose photos were all added via edits (not at creation) can end up
+    // with no isCover image at all — that's why it can be missing from card views
+    // while still showing fine on the detail page. Give it one if it has none.
+    const hasCover = newImages?.length
+      ? Boolean(await prisma.listingImage.findFirst({ where: { listingId: id, isCover: true } }))
+      : true;
 
     const updated = await prisma.listing.update({
       where: { id },
       data: {
         ...data,
         images: newImages?.length
-          ? { create: newImages.map((img: any, i: number) => ({ url: img.url, alt: img.alt, order: existingImageCount + i })) }
+          ? {
+              create: newImages.map((img: any, i: number) => ({
+                url: img.url,
+                alt: img.alt,
+                order: existingImageCount + i,
+                isCover: !hasCover && i === 0,
+              })),
+            }
           : undefined,
       },
       include: { images: { orderBy: [{ isCover: 'desc' }, { order: 'asc' }] } },
@@ -292,8 +317,50 @@ export const deleteListingImage = async (req: Request, res: Response, next: Next
     if (listing.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
       throw new AppError('Not authorized', 403);
     }
-    await prisma.listingImage.delete({ where: { id: imageId } });
+    const deleted = await prisma.listingImage.delete({ where: { id: imageId } });
+    // Don't leave the listing coverless — promote the next photo if the cover was removed.
+    if (deleted.isCover) {
+      const next = await prisma.listingImage.findFirst({ where: { listingId: id }, orderBy: { order: 'asc' } });
+      if (next) await prisma.listingImage.update({ where: { id: next.id }, data: { isCover: true } });
+    }
     res.json({ message: 'Image deleted' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Reorders a listing's photos and/or changes which one is the cover (the photo
+// shown on listing cards, search results, etc.). Takes the full desired order.
+export const reorderListingImages = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { order, coverId } = req.body as { order?: string[]; coverId?: string };
+
+    const listing = await prisma.listing.findUnique({ where: { id }, include: { images: true } });
+    if (!listing) throw new AppError('Listing not found', 404);
+    if (listing.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+      throw new AppError('Not authorized', 403);
+    }
+
+    const validIds = new Set(listing.images.map((img) => img.id));
+    const orderedIds = (order || []).filter((imgId) => validIds.has(imgId));
+    if (!orderedIds.length) throw new AppError('No valid image order given', 400);
+    if (coverId && !validIds.has(coverId)) throw new AppError('Invalid cover image', 400);
+
+    await prisma.$transaction(
+      orderedIds.map((imgId, i) =>
+        prisma.listingImage.update({
+          where: { id: imgId },
+          data: { order: i, ...(coverId ? { isCover: imgId === coverId } : {}) },
+        })
+      )
+    );
+
+    const images = await prisma.listingImage.findMany({
+      where: { listingId: id },
+      orderBy: [{ isCover: 'desc' }, { order: 'asc' }],
+    });
+    res.json({ images });
   } catch (err) {
     next(err);
   }

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
-import { Upload, X, Loader2, Star, Lock } from 'lucide-react';
+import { Upload, X, Loader2, Star, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { adminApi, cityApi, listingApi, uploadApi } from '@/lib/api';
 import { PROPERTY_TYPES, HEATING_TYPES, ENERGY_RATINGS } from '@/lib/utils';
 import { Listing } from '@/types';
@@ -18,6 +18,7 @@ interface ImageItem {
   id?: string;
   url: string;
   publicId?: string;
+  isCover?: boolean;
 }
 
 interface ListingFormProps {
@@ -103,7 +104,7 @@ export default function ListingForm({ listing }: ListingFormProps) {
   });
 
   const [images, setImages] = useState<ImageItem[]>(
-    (listing?.images || []).map((img) => ({ id: img.id, url: img.url, publicId: img.publicId }))
+    (listing?.images || []).map((img: any) => ({ id: img.id, url: img.url, publicId: img.publicId, isCover: img.isCover }))
   );
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -153,6 +154,26 @@ export default function ListingForm({ listing }: ListingFormProps) {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const moveImage = (index: number, direction: -1 | 1) => {
+    setImages((prev) => {
+      const target = index + direction;
+      if (target < 0 || target >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  };
+
+  const setCoverImage = (index: number) => {
+    setImages((prev) => prev.map((img, i) => ({ ...img, isCover: i === index })));
+  };
+
+  // Which photo is currently the cover — an explicit pick, or the first photo by default.
+  const coverIndex = (() => {
+    const explicit = images.findIndex((img) => img.isCover);
+    return explicit === -1 ? 0 : explicit;
+  })();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.cityId) return toast(t('pleaseSelectCity'), 'error');
@@ -182,7 +203,24 @@ export default function ListingForm({ listing }: ListingFormProps) {
         }
         const newImages = images.filter((img) => !img.id);
         if (newImages.length) payload.newImages = newImages;
-        await listingApi.update(listing!.id, payload);
+        const res = await listingApi.update(listing!.id, payload);
+
+        // Reconcile order + cover choice across existing and newly-created photos.
+        // New images don't have real ids until the update above creates them, so
+        // match them back up by their position among the server's newest rows.
+        if (images.length) {
+          const usedIds = new Set(images.filter((img) => img.id).map((img) => img.id));
+          const createdNew = (res.data.listing.images || [])
+            .filter((si: any) => !usedIds.has(si.id))
+            .sort((a: any, b: any) => a.order - b.order);
+          let newPtr = 0;
+          const finalOrderIds = images.map((img) => img.id || createdNew[newPtr++]?.id).filter(Boolean);
+          const coverId = finalOrderIds[coverIndex];
+          if (finalOrderIds.length) {
+            await listingApi.reorderImages(listing!.id, { order: finalOrderIds, coverId });
+          }
+        }
+
         toast(t('listingUpdatedToast'), 'success');
         router.push('/admin/listings');
       } else {
@@ -400,10 +438,19 @@ export default function ListingForm({ listing }: ListingFormProps) {
           {images.map((img, i) => (
             <div key={img.id || img.url} className="relative aspect-[4/3] rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 group">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
-              {i === 0 && (
+              {i === coverIndex ? (
                 <span className="absolute top-1.5 left-1.5 badge bg-primary-600 text-white text-[10px] flex items-center gap-1">
                   <Star className="w-2.5 h-2.5 fill-current" /> {t('coverBadge')}
                 </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setCoverImage(i)}
+                  title={t('setCoverAction')}
+                  className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-primary-600"
+                >
+                  <Star className="w-3.5 h-3.5" />
+                </button>
               )}
               <button
                 type="button"
@@ -412,6 +459,26 @@ export default function ListingForm({ listing }: ListingFormProps) {
               >
                 <X className="w-3.5 h-3.5" />
               </button>
+              <div className="absolute bottom-1.5 inset-x-1.5 flex items-center justify-between opacity-0 group-hover:opacity-100">
+                <button
+                  type="button"
+                  onClick={() => moveImage(i, -1)}
+                  disabled={i === 0}
+                  title={t('moveLeftAction')}
+                  className="w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 disabled:opacity-30"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveImage(i, 1)}
+                  disabled={i === images.length - 1}
+                  title={t('moveRightAction')}
+                  className="w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 disabled:opacity-30"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           ))}
           <label className="aspect-[4/3] rounded-lg border-2 border-dashed border-neutral-300 dark:border-neutral-600 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-primary-400 text-neutral-500">

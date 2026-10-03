@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
+import AmarRamaWordmark from '@/components/ui/AmarRamaWordmark';
 import { cityApi } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
@@ -104,6 +105,12 @@ export default function Footer() {
             <Link href="/privacy" className="text-sm text-neutral-500 hover:text-neutral-900">{t('privacyPolicy')}</Link>
             <Link href="/terms" className="text-sm text-neutral-500 hover:text-neutral-900">{t('termsOfService')}</Link>
           </div>
+        </div>
+
+        {/* Powered by */}
+        <div className="mt-8 flex items-center justify-center gap-3">
+          <span className="text-xs text-neutral-400">{t('poweredBy')}</span>
+          <AmarRamaWordmark className="text-sm" />
         </div>
       </div>
     </footer>

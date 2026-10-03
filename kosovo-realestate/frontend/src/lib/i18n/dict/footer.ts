@@ -21,6 +21,7 @@ export const footer = {
     copyright: 'Molla Real Estate. All rights reserved.',
     privacyPolicy: 'Privacy Policy',
     termsOfService: 'Terms of Service',
+    poweredBy: 'Powered by',
   },
   sq: {
     tagline: 'Platforma më e besuar për të blerë, shitur dhe dhënë me qira prona në të gjitha 38 komunat e Kosovës.',
@@ -44,5 +45,6 @@ export const footer = {
     copyright: 'Molla Real Estate. Të gjitha të drejtat e rezervuara.',
     privacyPolicy: 'Politika e Privatësisë',
     termsOfService: 'Kushtet e Përdorimit',
+    poweredBy: 'Mundësuar nga',
   },
 };

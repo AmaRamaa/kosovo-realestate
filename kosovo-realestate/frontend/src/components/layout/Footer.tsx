@@ -110,7 +110,15 @@ export default function Footer() {
         {/* Powered by */}
         <div className="mt-8 flex items-center justify-center gap-3">
           <span className="text-xs text-neutral-400">{t('poweredBy')}</span>
-          <AmarRamaWordmark className="text-sm" />
+          <a
+            href="https://amarrama.com/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Amar Rama"
+            className="rounded transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+          >
+            <AmarRamaWordmark className="text-sm" />
+          </a>
         </div>
       </div>
     </footer>
